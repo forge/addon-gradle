@@ -8,6 +8,8 @@ package org.jboss.forge.addon.gradle.projects.model;
 
 import java.util.List;
 
+import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
+
 /**
  * Contains information about Gradle build script.
  * 
@@ -16,14 +18,44 @@ import java.util.List;
 public interface GradleModel
 {
    List<GradleTask> getTasks();
-   
+
    List<GradleDependency> getDependencies();
-   
+
+   List<GradleDependency> getManagedDependencies();
+
    List<GradleProfile> getProfiles();
-   
+
    List<GradlePlugin> getPlugins();
-   
+
    List<GradleRepository> getRepositories();
-   
+
    void createTask(GradleTaskBuilder builder);
+   
+   void createDependency(GradleDependencyBuilder builder);
+   
+   void createManagedDependency(GradleDependencyBuilder builder);
+   
+   /**
+    * @see GradleProfile
+    */
+   void createProfile(String name);
+   
+   /**
+    * Applies plugin with given name or class.
+    */
+   void applyPlugin(String name);
+   
+   void createGradleRepository(GradleRepositoryBuilder builder);
+   
+   void removeTask(GradleTaskBuilder builder) throws UnremovableElementException;
+   
+   void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
+   
+   void removeManagedDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
+   
+   void removeProfile(String name);
+   
+   void removeAppliedPlugin(String name) throws UnremovableElementException;
+   
+   void removeGradleRepository(GradleRepositoryBuilder builder) throws UnremovableElementException;
 }

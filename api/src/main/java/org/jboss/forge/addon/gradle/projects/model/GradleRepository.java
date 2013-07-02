@@ -11,5 +11,7 @@ package org.jboss.forge.addon.gradle.projects.model;
  */
 public interface GradleRepository
 {
-
+   String getName();
+   
+   String getURL();
 }

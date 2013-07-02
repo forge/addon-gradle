@@ -15,5 +15,12 @@ public interface GradleDependency
    
    String getGroup();
    
+   String getVersion();
+   
    GradleDependencyConfiguration getConfiguration();
+
+   /**
+    * Returns real configuration name, if {@link #getConfiguration()} is set to {@link GradleDependencyConfiguration#OTHER}. 
+    */
+   String getConfigurationName();
 }

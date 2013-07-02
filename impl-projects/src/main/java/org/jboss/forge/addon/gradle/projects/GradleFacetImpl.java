@@ -10,6 +10,7 @@ import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleTask;
 import org.jboss.forge.addon.projects.Project;
+import org.jboss.forge.addon.resource.FileResource;
 
 /**
  * @author Adam Wyłuda
@@ -44,6 +45,13 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public GradleModel getModel()
    {
+      return null;
+   }
+
+   @Override
+   public FileResource<?> getGradleResource()
+   {
+      // TODO Auto-generated method stub
       return null;
    }
 }

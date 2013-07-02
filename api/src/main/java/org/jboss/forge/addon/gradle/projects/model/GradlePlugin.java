@@ -12,4 +12,10 @@ package org.jboss.forge.addon.gradle.projects.model;
 public interface GradlePlugin
 {
    String getClazz();
+
+   /**
+    * If this is one of the common plugins then it will return a convenient enum value, otherwise it will return
+    * {@link GradlePluginType#OTHER}.
+    */
+   GradlePluginType getType();
 }

@@ -7,7 +7,9 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
 import org.jboss.forge.addon.projects.ProjectFacet;
+import org.jboss.forge.addon.resource.FileResource;
 
 /**
  * Performs Gradle specific operations.
@@ -16,9 +18,21 @@ import org.jboss.forge.addon.projects.ProjectFacet;
  */
 public interface GradleFacet extends ProjectFacet
 {
+   /**
+    * Executes Gradle build with specified task.
+    * @param task Task to be executed.
+    */
    void executeTask(String task);
    
+   /**
+    * Runs Gradle applying given profile.
+    * @param profile Used profile.
+    * @see GradleFacet#executeTask(String)
+    * @see GradleProfile
+    */
    void executeTask(String task, String profile);
    
    GradleModel getModel();
+   
+   FileResource<?> getGradleResource();
 }
