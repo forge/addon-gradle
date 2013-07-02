@@ -1,0 +1,27 @@
+apply plugin: 'java'
+
+version = '0.7'
+sourceCompatibility = '1.5'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'org.slf4j:slf4j-simple:1.7.5'
+    
+    testCompile 'junit:junit:4.11'
+}
+
+task abc << {
+    println 'abc'
+}
+
+task ghi << {
+    println 'def'
+}
+
+(1..5).each {
+    task "taskNum$it"
+}
