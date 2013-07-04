@@ -15,6 +15,9 @@ import org.jboss.forge.furnace.services.Exported;
 @Exported
 public class GradleModelLoader
 {
+   /**
+    * Parses XML source into Gradle model, setting given file resource as Gradle resource.
+    */
    public GradleModel loadFromXML(FileResource<?> fileResource, String source)
    {
       // TODO load gradle model from xml

@@ -91,6 +91,48 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
+   public boolean hasTask(GradleTaskBuilder builder)
+   {
+      // TODO Auto-generated method stub
+      return false;
+   }
+
+   @Override
+   public boolean hasDependency(GradleDependencyBuilder builder)
+   {
+      // TODO Auto-generated method stub
+      return false;
+   }
+
+   @Override
+   public boolean hasManagedDependency(GradleDependencyBuilder builder)
+   {
+      // TODO Auto-generated method stub
+      return false;
+   }
+
+   @Override
+   public boolean hasProfile(String name)
+   {
+      // TODO Auto-generated method stub
+      return false;
+   }
+
+   @Override
+   public boolean hasPlugin(String name)
+   {
+      // TODO Auto-generated method stub
+      return false;
+   }
+
+   @Override
+   public boolean hasRepository(String url)
+   {
+      // TODO Auto-generated method stub
+      return false;
+   }
+
+   @Override
    public void setProjectName(String name) throws UnremovableElementException
    {
       // TODO Auto-generated method stub

@@ -1,11 +1,54 @@
-/*
- * Copyright 2013 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Eclipse Public License version 1.0, available at
- * http://www.eclipse.org/legal/epl-v10.html
- */
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'scala'
+apply plugin: 'eclipse'
 
-// @author Adam Wyłuda
+if (hasProperty('profile')) {
+    apply from: "$profile-profile.gradle"
+}
+
+sourceCompatibility = '1.7'
+version = '0.1-SNAPSHOT'
+
+def mainClass = 'org.test.MainClass'
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClass
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/alter'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://repo.gradle.org/gradle/libs-releases-local/'
+    }
+}
+
+dependencies {
+    compile 'org.gradle:gradle-tooling-api:1.6'
+    compile 'org.gradle:gradle-core:1.6'
+
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'org.slf4j:slf4j-simple:1.7.5'
+
+    testCompile 'junit:junit:4.11'
+}
+
+task zxyz(dependsOn: [build, test]) << {
+    println "DEF"
+}
 
 task forgeOutput << {
     def indentLevel = 0

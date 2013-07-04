@@ -1,0 +1,7 @@
+task runApplicationServer << {
+    println "Running WildFly!"
+}
+
+dependencies {
+    compile 'log4j:log4j:1.2.17'
+}

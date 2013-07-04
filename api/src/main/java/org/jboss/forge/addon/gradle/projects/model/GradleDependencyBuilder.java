@@ -6,6 +6,8 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
+import org.jboss.forge.addon.gradle.projects.util.Preconditions;
+
 /**
  * @author Adam Wyłuda
  */
@@ -15,14 +17,32 @@ public class GradleDependencyBuilder
    private String group;
    private String version;
    private String configuration;
-   
+
    private GradleDependencyBuilder()
    {
    }
-   
+
    public static GradleDependencyBuilder create()
    {
       return new GradleDependencyBuilder();
+   }
+
+   /**
+    * Creates gradle dependency using given configuration and parsing gradleString in format:
+    * {@code group:name:version}
+    */
+   public static GradleDependencyBuilder fromGradleString(String configuration, String gradleString)
+   {
+      String[] split = gradleString.split(":");
+      Preconditions.checkArgument(split.length == 3, "Invalid gradle string format");
+      String group = split[0];
+      String name = split[1];
+      String version = split[2];
+      return create()
+               .setName(name)
+               .setGroup(group)
+               .setVersion(version)
+               .setConfiguration(configuration);
    }
 
    public String getName()

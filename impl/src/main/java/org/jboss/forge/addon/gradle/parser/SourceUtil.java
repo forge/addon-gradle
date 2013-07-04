@@ -6,6 +6,8 @@
  */
 package org.jboss.forge.addon.gradle.parser;
 
+import org.jboss.forge.addon.gradle.projects.util.Preconditions;
+
 /**
  * @author Adam Wyłuda
  */
@@ -31,8 +33,8 @@ public class SourceUtil
     */
    public static int positionInSource(String source, int lineNumber, int columnNumber)
    {
-      checkArgument(lineNumber >= 1, "Line number must be greater than 0");
-      checkArgument(columnNumber >= 1, "Column number must be greater than 0");
+      Preconditions.checkArgument(lineNumber >= 1, "Line number must be greater than 0");
+      Preconditions.checkArgument(columnNumber >= 1, "Column number must be greater than 0");
 
       // Position is indexed from 1, arrays are indexed from 0, so we fix it
       lineNumber--;
@@ -40,8 +42,8 @@ public class SourceUtil
 
       String[] sourceLines = source.split("\n");
 
-      checkArgument(lineNumber < sourceLines.length, "Given line number exceeds line count");
-      checkArgument(columnNumber <= sourceLines[lineNumber].length(),
+      Preconditions.checkArgument(lineNumber < sourceLines.length, "Given line number exceeds line count");
+      Preconditions.checkArgument(columnNumber <= sourceLines[lineNumber].length(),
                "Given column number exceeds column count in line");
 
       int precedingCharactersCount = 0;
@@ -62,13 +64,5 @@ public class SourceUtil
       int begginingPosition = positionInSource(source, lineNumber, columnNumber);
       int endingPosition = positionInSource(source, lastLineNumber, lastColumnNumber);
       return source.substring(0, begginingPosition) + source.substring(endingPosition);
-   }
-
-   static void checkArgument(boolean condition, String message)
-   {
-      if (!condition)
-      {
-         throw new IllegalArgumentException(message);
-      }
    }
 }

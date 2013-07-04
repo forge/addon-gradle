@@ -33,6 +33,18 @@ public interface GradleModel
 
    List<GradleRepository> getRepositories();
    
+   boolean hasTask(GradleTaskBuilder builder);
+   
+   boolean hasDependency(GradleDependencyBuilder builder);
+   
+   boolean hasManagedDependency(GradleDependencyBuilder builder);
+   
+   boolean hasProfile(String name);
+   
+   boolean hasPlugin(String name);
+   
+   boolean hasRepository(String url);
+   
    void setProjectName(String name) throws UnremovableElementException;
    
    void setVersion(String version) throws UnremovableElementException;
