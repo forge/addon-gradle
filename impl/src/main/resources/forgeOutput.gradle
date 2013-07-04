@@ -85,6 +85,7 @@ task forgeOutput << {
         }
         outputDec '</plugins>'
         outputInc '<sourceSets>'
+        def currentPathLength = new File("").absolutePath.length() + 1
         p.sourceSets.each { set ->
             outputInc '<sourceSet>'
             outputInc '<name>'
@@ -93,14 +94,14 @@ task forgeOutput << {
             outputInc '<java>'
             set.java.srcDirs.each {
                 outputInc '<directory>'
-                output it
+                output it.absolutePath.substring(currentPathLength)
                 outputDec '</directory>'
             }
             outputDec '</java>'
             outputInc '<resources>'
             set.resources.srcDirs.each {
                 outputInc '<directory>'
-                output it
+                output it.absolutePath.substring(currentPathLength)
                 outputDec '</directory>'
             }
             outputDec '</resources>'
@@ -113,7 +114,7 @@ task forgeOutput << {
     outputInc '<project>'
     outputProject project
     outputDec '</project>'
-    projectDir.eachFileMatch(FileType.FILES, {
+    projectDir.eachFileMatch(groovy.io.FileType.FILES, {
         it.matches('^[a-zA-Z0-9]+-profile\\.gradle$')
     }, {
         outputInc '<profile>'
