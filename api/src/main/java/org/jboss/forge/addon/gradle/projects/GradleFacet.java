@@ -20,19 +20,21 @@ public interface GradleFacet extends ProjectFacet
 {
    /**
     * Executes Gradle build with specified task.
+    * 
     * @param task Task to be executed.
     */
    void executeTask(String task);
-   
+
    /**
     * Runs Gradle applying given profile.
+    * 
     * @param profile Used profile.
     * @see GradleFacet#executeTask(String)
     * @see GradleProfile
     */
    void executeTask(String task, String profile);
-   
+
    GradleModel getModel();
-   
+
    FileResource<?> getGradleResource();
 }

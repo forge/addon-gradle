@@ -6,13 +6,16 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Adam Wyłuda
  */
 public class GradleTaskBuilder
 {
    private String name = "forgeTask";
-   private String dependsOn = "";
+   private List<String> dependsOn = new ArrayList<String>();
    private String type = "";
    private String code = "";
 
@@ -36,20 +39,25 @@ public class GradleTaskBuilder
       return this;
    }
 
-   public String getDependsOn()
+   public List<String> getDependsOn()
    {
       return dependsOn;
    }
 
-   public GradleTaskBuilder setDependsOn(String dependsOn)
+   public GradleTaskBuilder setDependsOn(List<String> dependsOn)
    {
       this.dependsOn = dependsOn;
+      return this;
+   }
+   
+   public GradleTaskBuilder setDependsOn(String dependsOn) {
+      this.dependsOn.add(dependsOn);
       return this;
    }
 
    public GradleTaskBuilder setDependsOn(GradleTask task)
    {
-      setDependsOn(task.getName());
+      dependsOn.add(task.getName());
       return this;
    }
 

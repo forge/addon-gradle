@@ -20,7 +20,8 @@ public class GradleDependencyBuilder
    {
    }
    
-   public static GradleDependencyBuilder create() {
+   public static GradleDependencyBuilder create()
+   {
       return new GradleDependencyBuilder();
    }
 

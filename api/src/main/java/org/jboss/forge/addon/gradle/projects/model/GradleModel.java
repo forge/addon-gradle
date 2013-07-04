@@ -17,6 +17,10 @@ import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementExcept
  */
 public interface GradleModel
 {
+   String getProjectName();
+   
+   String getVersion();
+   
    List<GradleTask> getTasks();
 
    List<GradleDependency> getDependencies();
@@ -28,6 +32,10 @@ public interface GradleModel
    List<GradlePlugin> getPlugins();
 
    List<GradleRepository> getRepositories();
+   
+   void setProjectName(String name) throws UnremovableElementException;
+   
+   void setVersion(String version) throws UnremovableElementException;
 
    void createTask(GradleTaskBuilder builder);
    
@@ -46,8 +54,6 @@ public interface GradleModel
    void applyPlugin(String name);
    
    void createGradleRepository(GradleRepositoryBuilder builder);
-   
-   void removeTask(GradleTaskBuilder builder) throws UnremovableElementException;
    
    void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
    

@@ -11,9 +11,21 @@ import java.util.Set;
 /**
  * @author Adam Wyłuda
  */
-public interface GradleTask
+public class GradleTaskImpl implements GradleTask
 {
-   String getName();
-   
-   Set<GradleTask> getDependsOn();
+
+   @Override
+   public String getName()
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public Set<GradleTask> getDependsOn()
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
 }

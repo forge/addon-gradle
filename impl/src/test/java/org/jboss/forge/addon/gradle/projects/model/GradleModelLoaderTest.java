@@ -6,14 +6,10 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
-import java.util.Set;
-
 /**
  * @author Adam Wyłuda
  */
-public interface GradleTask
+public class GradleModelLoaderTest
 {
-   String getName();
-   
-   Set<GradleTask> getDependsOn();
+
 }
