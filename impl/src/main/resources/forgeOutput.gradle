@@ -85,7 +85,7 @@ task forgeOutput << {
         }
         outputDec '</plugins>'
         outputInc '<sourceSets>'
-        def currentPathLength = new File("").absolutePath.length() + 1
+        def currentPathLength = projectDir.absolutePath.length() + 1
         p.sourceSets.each { set ->
             outputInc '<sourceSet>'
             outputInc '<name>'
