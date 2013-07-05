@@ -54,6 +54,8 @@ public class GradleUtil
       return source;
    }
 
+   // There is no way to remove task because tasks are composed of many actions
+   // so we can only insert new tasks
    public static String insertTask(String source, String name, List<String> dependsOn, String type, String code)
    {
       // TODO
