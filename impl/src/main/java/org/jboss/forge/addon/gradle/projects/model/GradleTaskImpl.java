@@ -13,19 +13,24 @@ import java.util.Set;
  */
 public class GradleTaskImpl implements GradleTask
 {
+   private final String name;
+   private final Set<GradleTask> dependsOn;
+
+   public GradleTaskImpl(String name, Set<GradleTask> dependsOn)
+   {
+      this.name = name;
+      this.dependsOn = dependsOn;
+   }
 
    @Override
    public String getName()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return name;
    }
 
    @Override
    public Set<GradleTask> getDependsOn()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return dependsOn;
    }
-
 }

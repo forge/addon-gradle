@@ -11,40 +11,50 @@ package org.jboss.forge.addon.gradle.projects.model;
  */
 public class GradleDependencyImpl implements GradleDependency
 {
+   private final String name;
+   private final String group;
+   private final String version;
+   private final GradleDependencyConfiguration configuration;
+   private final String configurationName;
+
+   public GradleDependencyImpl(String name, String group, String version, GradleDependencyConfiguration configuration,
+            String configurationName)
+   {
+      this.name = name;
+      this.group = group;
+      this.version = version;
+      this.configuration = configuration;
+      this.configurationName = configurationName;
+   }
 
    @Override
    public String getName()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return name;
    }
 
    @Override
    public String getGroup()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return group;
    }
 
    @Override
    public String getVersion()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return version;
    }
 
    @Override
    public GradleDependencyConfiguration getConfiguration()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return configuration;
    }
 
    @Override
    public String getConfigurationName()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return configurationName;
    }
 
 }

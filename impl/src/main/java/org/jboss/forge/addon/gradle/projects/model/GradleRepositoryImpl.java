@@ -11,19 +11,24 @@ package org.jboss.forge.addon.gradle.projects.model;
  */
 public class GradleRepositoryImpl implements GradleRepository
 {
+   private final String name;
+   private final String url;
+
+   public GradleRepositoryImpl(String name, String url)
+   {
+      this.name = name;
+      this.url = url;
+   }
 
    @Override
    public String getName()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return name;
    }
 
    @Override
    public String getURL()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return url;
    }
-
 }

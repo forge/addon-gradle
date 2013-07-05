@@ -11,19 +11,24 @@ package org.jboss.forge.addon.gradle.projects.model;
  */
 public class GradlePluginImpl implements GradlePlugin
 {
+   private final String clazz;
+   private final GradlePluginType type;
+
+   public GradlePluginImpl(String clazz, GradlePluginType type)
+   {
+      this.clazz = clazz;
+      this.type = type;
+   }
 
    @Override
    public String getClazz()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return clazz;
    }
 
    @Override
    public GradlePluginType getType()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return type;
    }
-
 }

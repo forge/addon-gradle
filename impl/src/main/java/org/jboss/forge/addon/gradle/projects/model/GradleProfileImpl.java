@@ -13,26 +13,33 @@ import org.jboss.forge.addon.resource.FileResource;
  */
 public class GradleProfileImpl implements GradleProfile
 {
+   private final String name;
+   private final GradleModel model;
+   private final FileResource<?> profileResource;
+
+   public GradleProfileImpl(String name, GradleModel model, FileResource<?> profileResource)
+   {
+      this.name = name;
+      this.model = model;
+      this.profileResource = profileResource;
+   }
 
    @Override
    public String getName()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return name;
    }
 
    @Override
    public GradleModel getModel()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return model;
    }
 
    @Override
    public FileResource<?> getProfileResource()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return profileResource;
    }
 
 }
