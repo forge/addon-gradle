@@ -1,0 +1,193 @@
+// FORGE_LIBRARY_VERSION=2.0
+
+allprojects {
+    afterEvaluate {
+        if (project.hasProperty('profile')) {
+            def profileFile = "$profile-profile.gradle"
+            if (new File(profileFile).exists()) {
+                project.apply from: profileFile
+            }
+        }
+    }
+}
+
+if (!project.hasProperty('forgeInstalled')) {
+    project.set('forgeInstalled', true)
+
+    project.set('_managedDependencies', [:])
+    project.set('managed', {
+        project._managedDependencies[[
+                group: it.group,
+                name: it.name
+        ]] = [
+                version: it.version,
+                config: it.config
+        ]
+    })
+    project.set('direct', {
+        def _groupName = [
+                group: it.group,
+                name: it.name
+        ]
+        it.handler.add(project._managedDependencies[_groupName].config,
+                _groupName.group + ':' + _groupName.name + ':' + project._managedDependencies[_groupName].version)
+    })
+
+    task forgeOutput << {
+        def indentLevel = 0
+        def outputFile = new File('forge-output.xml').newPrintWriter()
+        def indent = {
+            indentLevel.times {
+                outputFile.print '   '
+            }
+        }
+        def output = {
+            indent()
+            outputFile.println it
+        }
+        def outputInc = {
+            output it
+            indentLevel++
+        }
+        def outputDec = {
+            indentLevel--
+            output it
+        }
+        def outputProject = { p ->
+            outputInc '<name>'
+            output p.name
+            outputDec '</name>'
+            outputInc '<version>'
+            output p.version
+            outputDec '</version>'
+            outputInc '<tasks>'
+            p.tasks.each { t ->
+                outputInc '<task>'
+                outputInc '<name>'
+                output t.name
+                outputDec '</name>'
+                outputInc '<dependsOn>'
+                t.taskDependencies.getDependencies(t).each {
+                    outputInc '<task>'
+                    output it.name
+                    outputDec '</task>'
+                }
+                outputDec '</dependsOn>'
+                outputDec '</task>'
+            }
+            outputDec '</tasks>'
+            outputInc '<dependencies>'
+            p.configurations.each { c ->
+                if (c.allDependencies.size() > 0) {
+                    c.allDependencies.each { d ->
+                        outputInc '<dependency>'
+                        outputInc '<name>'
+                        output d.name
+                        outputDec '</name>'
+                        outputInc '<group>'
+                        output d.group
+                        outputDec '</group>'
+                        outputInc '<version>'
+                        output d.version
+                        outputDec '</version>'
+                        outputInc '<scope>'
+                        output c.name
+                        outputDec '</scope>'
+                        outputDec '</dependency>'
+                    }
+                }
+            }
+            outputDec '</dependencies>'
+            outputInc '<managedDependencies>'
+            p._managedDependencies.each { groupName, configVersion ->
+                outputInc '<dependency>'
+                outputInc '<name>'
+                output groupName.name
+                outputDec '</name>'
+                outputInc '<group>'
+                output groupName.group
+                outputDec '</group>'
+                outputInc '<version>'
+                output configVersion.version
+                outputDec '</version>'
+                outputInc '<scope>'
+                output configVersion.config
+                outputDec '</scope>'
+                outputDec '</dependency>'
+            }
+            outputDec '</managedDependencies>'
+            outputInc '<repositories>'
+            p.repositories.each { r ->
+                outputInc '<repository>'
+                outputInc '<name>'
+                output r.name
+                outputDec '</name>'
+                outputInc '<url>'
+                output r.url
+                outputDec '</url>'
+                outputDec '</repository>'
+            }
+            outputDec '</repositories>'
+            outputInc '<plugins>'
+            p.plugins.each { plugin ->
+                outputInc '<plugin>'
+                outputInc '<class>'
+                output plugin.class.name
+                outputDec '</class>'
+                outputDec '</plugin>'
+            }
+            outputDec '</plugins>'
+            outputInc '<sourceSets>'
+            p.sourceSets.each { set ->
+                outputInc '<sourceSet>'
+                outputInc '<name>'
+                output set.name
+                outputDec '</name>'
+                outputInc '<java>'
+                set.java.srcDirs.each {
+                    outputInc '<directory>'
+                    output it
+                    outputDec '</directory>'
+                }
+                outputDec '</java>'
+                outputInc '<resources>'
+                set.resources.srcDirs.each {
+                    outputInc '<directory>'
+                    output it
+                    outputDec '</directory>'
+                }
+                outputDec '</resources>'
+                outputDec '</sourceSet>'
+            }
+            outputDec '</sourceSets>'
+        }
+
+        outputInc '<forgeOutput>'
+        outputInc '<project>'
+        outputProject project
+        outputDec '</project>'
+        projectDir.eachFileMatch(groovy.io.FileType.FILES, {
+            it.matches('^[a-zA-Z0-9]+-profile\\.gradle$')
+        }, {
+            outputInc '<profile>'
+            outputInc '<name>'
+            output it.name.substring(0, it.name.indexOf('-'))
+            outputDec '</name>'
+
+            project.configurations.each {
+                it.allDependencies.clear()
+            }
+            project.plugins.clear()
+            project.sourceSets.clear()
+            project.repositories.clear()
+            project.tasks.clear()
+
+            project.apply from: it
+            outputProject project
+            outputDec '</profile>'
+        })
+        outputDec '</forgeOutput>'
+
+        outputFile.close()
+    }
+}
