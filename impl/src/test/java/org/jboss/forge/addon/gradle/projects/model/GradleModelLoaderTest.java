@@ -117,7 +117,7 @@ public class GradleModelLoaderTest
          {
             glassfishSet = true;
             assertTrue("Glassfish profile doesn't contain runApplicationServer task",
-                     profile.getModel().hasTask(GradleTaskBuilder.create().setName("runApplicationServer")));
+                     profile.getModel().hasTask("runApplicationServer"));
             assertTrue("Glassfish profile doesn't contain specified dependency",
                      profile.getModel().hasDependency(GradleDependencyBuilder.fromGradleString("compile", "javax.annotation:jsr250-api:1.0")));
          }
@@ -125,7 +125,7 @@ public class GradleModelLoaderTest
          {
             wildflySet = true;  glassfishSet = true;
             assertTrue("Wildfly profile doesn't contain runApplicationServer task",
-                     profile.getModel().hasTask(GradleTaskBuilder.create().setName("runApplicationServer")));
+                     profile.getModel().hasTask("runApplicationServer"));
             assertTrue("Glassfish profile doesn't contain specified dependency",
                      profile.getModel().hasDependency(GradleDependencyBuilder.fromGradleString("compile", "log4j:log4j:1.2.17")));
          }

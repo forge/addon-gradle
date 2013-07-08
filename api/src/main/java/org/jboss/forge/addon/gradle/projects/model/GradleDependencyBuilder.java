@@ -88,4 +88,9 @@ public class GradleDependencyBuilder
       this.configuration = configuration;
       return this;
    }
+   
+   public boolean equalsToDep(GradleDependency dep) {
+      return group.equals(dep.getGroup()) && name.equals(dep.getName()) && version.equals(dep.getVersion())
+               && configuration.equals(dep.getConfigurationName());
+   }
 }

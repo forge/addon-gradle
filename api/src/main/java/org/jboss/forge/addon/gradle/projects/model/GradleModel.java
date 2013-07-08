@@ -18,9 +18,9 @@ import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementExcept
 public interface GradleModel
 {
    String getProjectName();
-   
+
    String getVersion();
-   
+
    List<GradleTask> getTasks();
 
    List<GradleDependency> getDependencies();
@@ -32,48 +32,68 @@ public interface GradleModel
    List<GradlePlugin> getPlugins();
 
    List<GradleRepository> getRepositories();
-   
-   boolean hasTask(GradleTaskBuilder builder);
-   
+
+   /**
+    * Returns true if exists task with given name.
+    */
+   boolean hasTask(String name);
+
+   /**
+    * Returns true if there exists dependency for which {@link GradleDependencyBuilder#equalsToDep(GradleDependency)}
+    * return true.
+    */
    boolean hasDependency(GradleDependencyBuilder builder);
-   
+
+   /**
+    * Returns true if there exists managed dependency for which
+    * {@link GradleDependencyBuilder#equalsToDep(GradleDependency)} return true.
+    */
    boolean hasManagedDependency(GradleDependencyBuilder builder);
-   
+
+   /**
+    * Returns true if there is profile with given name. 
+    */
    boolean hasProfile(String name);
-   
-   boolean hasPlugin(String name);
-   
+
+   /**
+    * Returns true if project has applied plugin with given name. 
+    */
+   boolean hasPlugin(String clazz);
+
+   /**
+    * Returns true if project defined repository with given name. 
+    */
    boolean hasRepository(String url);
-   
+
    void setProjectName(String name) throws UnremovableElementException;
-   
+
    void setVersion(String version) throws UnremovableElementException;
 
    void createTask(GradleTaskBuilder builder);
-   
+
    void createDependency(GradleDependencyBuilder builder);
-   
+
    void createManagedDependency(GradleDependencyBuilder builder);
-   
+
    /**
     * @see GradleProfile
     */
    void createProfile(String name);
-   
+
    /**
     * Applies plugin with given name or class.
     */
    void applyPlugin(String name);
-   
+
    void createGradleRepository(GradleRepositoryBuilder builder);
-   
+
    void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
-   
+
    void removeManagedDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
-   
+
    void removeProfile(String name);
-   
+
    void removeAppliedPlugin(String name) throws UnremovableElementException;
-   
+
    void removeGradleRepository(GradleRepositoryBuilder builder) throws UnremovableElementException;
 }

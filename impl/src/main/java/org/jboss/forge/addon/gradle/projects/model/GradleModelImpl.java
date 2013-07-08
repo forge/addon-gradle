@@ -91,44 +91,68 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public boolean hasTask(GradleTaskBuilder builder)
+   public boolean hasTask(String name)
    {
-      // TODO Auto-generated method stub
+      for (GradleTask task : tasks) {
+         if (task.getName().equals(name)) {
+            return true;
+         }
+      }
       return false;
    }
 
    @Override
    public boolean hasDependency(GradleDependencyBuilder builder)
    {
-      // TODO Auto-generated method stub
+      for (GradleDependency dep : dependencies) {
+         if (builder.equalsToDep(dep)) {
+            return true;
+         }
+      }
       return false;
    }
 
    @Override
    public boolean hasManagedDependency(GradleDependencyBuilder builder)
    {
-      // TODO Auto-generated method stub
+      for (GradleDependency dep : managedDependencies) {
+         if (builder.equalsToDep(dep)) {
+            return true;
+         }
+      }
       return false;
    }
 
    @Override
    public boolean hasProfile(String name)
    {
-      // TODO Auto-generated method stub
+      for (GradleProfile profile : profiles) {
+         if (profile.getName().equals(name)) {
+            return true;
+         }
+      }
       return false;
    }
 
    @Override
-   public boolean hasPlugin(String name)
+   public boolean hasPlugin(String clazz)
    {
-      // TODO Auto-generated method stub
+      for (GradlePlugin plugin : plugins) {
+         if (plugin.getClazz().equals(clazz)) {
+            return true;
+         }
+      }
       return false;
    }
 
    @Override
    public boolean hasRepository(String url)
    {
-      // TODO Auto-generated method stub
+      for (GradleRepository repo : repositories) {
+         if (repo.getURL().equals(url)) {
+            return true;
+         }
+      }
       return false;
    }
 
