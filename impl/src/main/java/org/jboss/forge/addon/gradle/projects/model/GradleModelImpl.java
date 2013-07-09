@@ -26,10 +26,12 @@ public class GradleModelImpl implements GradleModel
    private List<GradleProfile> profiles;
    private List<GradlePlugin> plugins;
    private List<GradleRepository> repositories;
+   private List<GradleSourceSet> sourceSets;
    
    public GradleModelImpl(FileResource<?> gradleResource, String projectName, String version, List<GradleTask> tasks,
             List<GradleDependency> dependencies, List<GradleDependency> managedDependencies,
-            List<GradleProfile> profiles, List<GradlePlugin> plugins, List<GradleRepository> repositories)
+            List<GradleProfile> profiles, List<GradlePlugin> plugins, List<GradleRepository> repositories,
+            List<GradleSourceSet> sourceSets)
    {
       this.gradleResource = gradleResource;
       this.projectName = projectName;
@@ -40,6 +42,7 @@ public class GradleModelImpl implements GradleModel
       this.profiles = profiles;
       this.plugins = plugins;
       this.repositories = repositories;
+      this.sourceSets = sourceSets;
    }
 
    @Override
@@ -88,6 +91,12 @@ public class GradleModelImpl implements GradleModel
    public List<GradleRepository> getRepositories()
    {
       return repositories;
+   }
+
+   @Override
+   public List<GradleSourceSet> getSourceSets()
+   {
+      return sourceSets;
    }
 
    @Override

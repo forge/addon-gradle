@@ -80,19 +80,19 @@ public class GradleModelLoaderTest
       boolean gradleToolingSet = false, junitSet = false;
       for (GradleDependency dep : model.getDependencies())
       {
-         if (dep.getName().equals("gradle-tooling-api"))
+         if (dep.getName().equals("gradle-tooling-api")
+                  && dep.getConfiguration().equals(GradleDependencyConfiguration.COMPILE))
          {
             gradleToolingSet = true;
             assertEquals("org.gradle", dep.getGroup());
             assertEquals("1.6", dep.getVersion());
-            assertEquals(GradleDependencyConfiguration.COMPILE, dep.getConfiguration());
          }
-         else if (dep.getName().equals("junit"))
+         else if (dep.getName().equals("junit")
+                  && dep.getConfiguration().equals(GradleDependencyConfiguration.TEST_COMPILE))
          {
             junitSet = true;
             assertEquals("junit", dep.getGroup());
             assertEquals("4.11", dep.getVersion());
-            assertEquals(GradleDependencyConfiguration.TEST_COMPILE, dep.getConfiguration());
          }
       }
       assertTrue("gradle-tooling-api dependency not found", gradleToolingSet);
@@ -100,10 +100,14 @@ public class GradleModelLoaderTest
    }
 
    @Test
-   @Ignore
    public void testManagedDependencies()
    {
-      // TODO test managed dependencies
+      assertEquals(1, model.getManagedDependencies().size());
+      GradleDependency dep = model.getManagedDependencies().get(0);
+      assertEquals("com.google.guava", dep.getGroup());
+      assertEquals("guava", dep.getName());
+      assertEquals("14.0.1", dep.getVersion());
+      assertEquals("compile", dep.getConfigurationName());
    }
 
    @Test
@@ -118,16 +122,21 @@ public class GradleModelLoaderTest
             glassfishSet = true;
             assertTrue("Glassfish profile doesn't contain runApplicationServer task",
                      profile.getModel().hasTask("runApplicationServer"));
-            assertTrue("Glassfish profile doesn't contain specified dependency",
-                     profile.getModel().hasDependency(GradleDependencyBuilder.fromGradleString("compile", "javax.annotation:jsr250-api:1.0")));
+            assertTrue(
+                     "Glassfish profile doesn't contain specified dependency",
+                     profile.getModel().hasDependency(
+                              GradleDependencyBuilder.fromGradleString("compile", "javax.annotation:jsr250-api:1.0")));
          }
          else if (profile.getName().equals("wildfly"))
          {
-            wildflySet = true;  glassfishSet = true;
+            wildflySet = true;
+            glassfishSet = true;
             assertTrue("Wildfly profile doesn't contain runApplicationServer task",
                      profile.getModel().hasTask("runApplicationServer"));
-            assertTrue("Glassfish profile doesn't contain specified dependency",
-                     profile.getModel().hasDependency(GradleDependencyBuilder.fromGradleString("compile", "log4j:log4j:1.2.17")));
+            assertTrue(
+                     "Glassfish profile doesn't contain specified dependency",
+                     profile.getModel().hasDependency(
+                              GradleDependencyBuilder.fromGradleString("compile", "log4j:log4j:1.2.17")));
          }
       }
       assertTrue("glassfish profile not found", glassfishSet);
@@ -142,10 +151,56 @@ public class GradleModelLoaderTest
       assertTrue("There is no scala plugin", model.hasPlugin(GradlePluginType.SCALA.getClazz()));
       assertTrue("There is no eclipse plugin", model.hasPlugin(GradlePluginType.ECLIPSE.getClazz()));
    }
-   
+
    @Test
    public void testRepositories()
    {
-      assertTrue("There is no Gradle repository", model.hasRepository("http://repo.gradle.org/gradle/libs-releases-local/"));
+      assertTrue("There is no Gradle repository",
+               model.hasRepository("http://repo.gradle.org/gradle/libs-releases-local/"));
+   }
+
+   @Test
+   public void testSourceSets()
+   {
+      assertEquals("There are two or less source sets", 2, model.getSourceSets().size());
+      boolean mainSetSet = false, testSetSet = false;
+      for (GradleSourceSet sourceSet : model.getSourceSets())
+      {
+         if (sourceSet.getName().equals("main"))
+         {
+            mainSetSet = true;
+
+            assertEquals(2, sourceSet.getJavaDirectories().size());
+            boolean javaSet = false, alterSet = false;
+            for (GradleSourceDirectory dir : sourceSet.getJavaDirectories())
+            {
+               if (dir.getPath().equals("src/main/java"))
+               {
+                  javaSet = true;
+               }
+               if (dir.getPath().equals("src/main/alter"))
+               {
+                  alterSet = true;
+               }
+            }
+            assertTrue("Java directory set not found", javaSet);
+            assertTrue("Alter directory set not found", alterSet);
+
+            assertEquals(1, sourceSet.getResourcesDirectories().size());
+            assertEquals("src/main/resources", sourceSet.getResourcesDirectories().get(0).getPath());
+         }
+         if (sourceSet.getName().equals("test"))
+         {
+            testSetSet = true;
+
+            assertEquals(1, sourceSet.getJavaDirectories().size());
+            assertEquals("src/test/java", sourceSet.getJavaDirectories().get(0).getPath());
+
+            assertEquals(1, sourceSet.getResourcesDirectories().size());
+            assertEquals("src/test/resources", sourceSet.getResourcesDirectories().get(0).getPath());
+         }
+      }
+      assertTrue("main source set not found", mainSetSet);
+      assertTrue("test source set not found", testSetSet);
    }
 }

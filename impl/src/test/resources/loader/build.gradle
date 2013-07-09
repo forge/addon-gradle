@@ -3,9 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'scala'
 apply plugin: 'eclipse'
 
-if (hasProperty('profile')) {
-    apply from: "$profile-profile.gradle"
-}
+apply from: '../../../main/resources/forge.gradle'
 
 sourceCompatibility = '1.7'
 version = '0.1-SNAPSHOT'
@@ -36,6 +34,10 @@ repositories {
     }
 }
 
+allprojects {
+    managed group: 'com.google.guava', name: 'guava', version: '14.0.1', config: 'compile'
+}
+
 dependencies {
     compile 'org.gradle:gradle-tooling-api:1.6'
     compile 'org.gradle:gradle-core:1.6'
@@ -48,147 +50,4 @@ dependencies {
 
 task zxyz(dependsOn: [build, test]) << {
     println "DEF"
-}
-
-task forgeOutput << {
-    def indentLevel = 0
-    def outputFile = new File('forge-output.xml').newPrintWriter()
-    def indent = {
-        indentLevel.times {
-            outputFile.print '   '
-        }
-    }
-    def output = {
-        indent()
-        outputFile.println it
-    }
-    def outputInc = {
-        output it
-        indentLevel++
-    }
-    def outputDec = {
-        indentLevel--
-        output it
-    }
-    def outputProject = { p ->
-        outputInc '<name>'
-        output p.name
-        outputDec '</name>'
-        outputInc '<version>'
-        output p.version
-        outputDec '</version>'
-        outputInc '<tasks>'
-        p.tasks.each { t ->
-            outputInc '<task>'
-            outputInc '<name>'
-            output t.name
-            outputDec '</name>'
-            outputInc '<dependsOn>'
-            t.taskDependencies.getDependencies(t).each {
-                outputInc '<task>'
-                output it.name
-                outputDec '</task>'
-            }
-            outputDec '</dependsOn>'
-            outputDec '</task>'
-        }
-        outputDec '</tasks>'
-        outputInc '<dependencies>'
-        p.configurations.each { c ->
-            if (c.allDependencies.size() > 0) {
-                c.allDependencies.each { d ->
-                    outputInc '<dependency>'
-                    outputInc '<name>'
-                    output d.name
-                    outputDec '</name>'
-                    outputInc '<group>'
-                    output d.group
-                    outputDec '</group>'
-                    outputInc '<version>'
-                    output d.version
-                    outputDec '</version>'
-                    outputInc '<scope>'
-                    output c.name
-                    outputDec '</scope>'
-                    outputDec '</dependency>'
-                }
-            }
-        }
-        outputDec '</dependencies>'
-        outputInc '<repositories>'
-        p.repositories.each { r ->
-            outputInc '<repository>'
-            outputInc '<name>'
-            output r.name
-            outputDec '</name>'
-            outputInc '<url>'
-            output r.url
-            outputDec '</url>'
-            outputDec '</repository>'
-        }
-        outputDec '</repositories>'
-        outputInc '<plugins>'
-        p.plugins.each { plugin ->
-            outputInc '<plugin>'
-            outputInc '<class>'
-            output plugin.class.name
-            outputDec '</class>'
-            outputDec '</plugin>'
-        }
-        outputDec '</plugins>'
-        outputInc '<sourceSets>'
-        def currentPathLength = projectDir.absolutePath.length() + 1
-        p.sourceSets.each { set ->
-            outputInc '<sourceSet>'
-            outputInc '<name>'
-            output set.name
-            outputDec '</name>'
-            outputInc '<java>'
-            set.java.srcDirs.each {
-                outputInc '<directory>'
-                output it.absolutePath.substring(currentPathLength)
-                outputDec '</directory>'
-            }
-            outputDec '</java>'
-            outputInc '<resources>'
-            set.resources.srcDirs.each {
-                outputInc '<directory>'
-                output it.absolutePath.substring(currentPathLength)
-                outputDec '</directory>'
-            }
-            outputDec '</resources>'
-            outputDec '</sourceSet>'
-        }
-        outputDec '</sourceSets>'
-    }
-
-    outputInc '<forgeOutput>'
-    outputInc '<project>'
-    outputProject project
-    outputDec '</project>'
-    outputInc '<profiles>'
-    projectDir.eachFileMatch(groovy.io.FileType.FILES, {
-        it.matches('^[a-zA-Z0-9]+-profile\\.gradle$')
-    }, {
-        outputInc '<profile>'
-        outputInc '<name>'
-        output it.name.substring(0, it.name.indexOf('-'))
-        outputDec '</name>'
-
-        project.configurations.each {
-            it.allDependencies.clear()
-        }
-        project.plugins.clear()
-        project.sourceSets.clear()
-        project.repositories.clear()
-        project.tasks.clear()
-
-        project.apply from: it
-        outputProject project
-        outputDec '</profile>'
-    })
-    outputDec '</profiles>'
-    outputDec '</forgeOutput>'
-
-    outputFile.close()
 }

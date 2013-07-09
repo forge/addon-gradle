@@ -32,6 +32,8 @@ public interface GradleModel
    List<GradlePlugin> getPlugins();
 
    List<GradleRepository> getRepositories();
+   
+   List<GradleSourceSet> getSourceSets();
 
    /**
     * Returns true if exists task with given name.

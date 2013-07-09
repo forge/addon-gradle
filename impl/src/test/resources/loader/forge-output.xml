@@ -66,13 +66,13 @@
             </name>
             <dependsOn>
                <task>
+                  processResources
+               </task>
+               <task>
                   compileScala
                </task>
                <task>
                   compileGroovy
-               </task>
-               <task>
-                  processResources
                </task>
                <task>
                   compileJava
@@ -92,13 +92,13 @@
             </name>
             <dependsOn>
                <task>
+                  cleanEclipseProject
+               </task>
+               <task>
                   cleanEclipseJdt
                </task>
                <task>
                   cleanEclipseClasspath
-               </task>
-               <task>
-                  cleanEclipseProject
                </task>
             </dependsOn>
          </task>
@@ -195,10 +195,10 @@
                   eclipseClasspath
                </task>
                <task>
-                  eclipseJdt
+                  eclipseProject
                </task>
                <task>
-                  eclipseProject
+                  eclipseJdt
                </task>
             </dependsOn>
          </task>
@@ -339,10 +339,10 @@
                   compileTestScala
                </task>
                <task>
-                  compileTestJava
+                  compileTestGroovy
                </task>
                <task>
-                  compileTestGroovy
+                  compileTestJava
                </task>
             </dependsOn>
          </task>
@@ -371,9 +371,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                compile
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -385,9 +385,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                compile
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -399,9 +399,9 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                compile
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -413,9 +413,9 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                compile
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -427,9 +427,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                default
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -441,9 +441,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                default
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -455,9 +455,9 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                default
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -469,9 +469,9 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                default
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -483,9 +483,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                runtime
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -497,9 +497,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                runtime
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -511,9 +511,9 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                runtime
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -525,9 +525,9 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                runtime
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -539,9 +539,9 @@
             <version>
                4.11
             </version>
-            <scope>
+            <configuration>
                testCompile
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -553,9 +553,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                testCompile
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -567,9 +567,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                testCompile
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -581,9 +581,9 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                testCompile
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -595,9 +595,9 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                testCompile
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -609,9 +609,9 @@
             <version>
                4.11
             </version>
-            <scope>
+            <configuration>
                testRuntime
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -623,9 +623,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                testRuntime
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -637,9 +637,9 @@
             <version>
                1.6
             </version>
-            <scope>
+            <configuration>
                testRuntime
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -651,9 +651,9 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                testRuntime
-            </scope>
+            </configuration>
          </dependency>
          <dependency>
             <name>
@@ -665,11 +665,27 @@
             <version>
                1.7.5
             </version>
-            <scope>
+            <configuration>
                testRuntime
-            </scope>
+            </configuration>
          </dependency>
       </dependencies>
+      <managedDependencies>
+         <dependency>
+            <name>
+               guava
+            </name>
+            <group>
+               com.google.guava
+            </group>
+            <version>
+               14.0.1
+            </version>
+            <configuration>
+               compile
+            </configuration>
+         </dependency>
+      </managedDependencies>
       <repositories>
          <repository>
             <name>
@@ -767,15 +783,15 @@
             </name>
             <java>
                <directory>
-                  src\main\java
+                  src/main/java
                </directory>
                <directory>
-                  src\main\alter
+                  src/main/alter
                </directory>
             </java>
             <resources>
                <directory>
-                  src\main\resources
+                  src/main/resources
                </directory>
             </resources>
          </sourceSet>
@@ -785,120 +801,22 @@
             </name>
             <java>
                <directory>
-                  src\test\java
+                  src/test/java
                </directory>
             </java>
             <resources>
                <directory>
-                  src\test\resources
+                  src/test/resources
                </directory>
             </resources>
          </sourceSet>
       </sourceSets>
    </project>
-   <profiles>
-      <profile>
-         <name>
-            glassfish
-         </name>
-         <name>
-            Gradle Test Project
-         </name>
-         <version>
-            0.1-SNAPSHOT
-         </version>
-         <tasks>
-            <task>
-               <name>
-                  runApplicationServer
-               </name>
-               <dependsOn>
-               </dependsOn>
-            </task>
-         </tasks>
-         <dependencies>
-            <dependency>
-               <name>
-                  jsr250-api
-               </name>
-               <group>
-                  javax.annotation
-               </group>
-               <version>
-                  1.0
-               </version>
-               <scope>
-                  compile
-               </scope>
-            </dependency>
-            <dependency>
-               <name>
-                  jsr250-api
-               </name>
-               <group>
-                  javax.annotation
-               </group>
-               <version>
-                  1.0
-               </version>
-               <scope>
-                  default
-               </scope>
-            </dependency>
-            <dependency>
-               <name>
-                  jsr250-api
-               </name>
-               <group>
-                  javax.annotation
-               </group>
-               <version>
-                  1.0
-               </version>
-               <scope>
-                  runtime
-               </scope>
-            </dependency>
-            <dependency>
-               <name>
-                  jsr250-api
-               </name>
-               <group>
-                  javax.annotation
-               </group>
-               <version>
-                  1.0
-               </version>
-               <scope>
-                  testCompile
-               </scope>
-            </dependency>
-            <dependency>
-               <name>
-                  jsr250-api
-               </name>
-               <group>
-                  javax.annotation
-               </group>
-               <version>
-                  1.0
-               </version>
-               <scope>
-                  testRuntime
-               </scope>
-            </dependency>
-         </dependencies>
-         <repositories>
-         </repositories>
-         <plugins>
-         </plugins>
-         <sourceSets>
-         </sourceSets>
-      </profile>
-      <profile>
-         <name>
-            wildfly
-         </name>
+   <profile>
+      <name>
+         glassfish
+      </name>
+      <project>
          <name>
             Gradle Test Project
          </name>
@@ -917,81 +835,213 @@
          <dependencies>
             <dependency>
                <name>
-                  log4j
+                  jsr250-api
                </name>
                <group>
-                  log4j
+                  javax.annotation
                </group>
                <version>
-                  1.2.17
+                  1.0
                </version>
-               <scope>
+               <configuration>
                   compile
-               </scope>
+               </configuration>
             </dependency>
             <dependency>
                <name>
-                  log4j
+                  jsr250-api
                </name>
                <group>
-                  log4j
+                  javax.annotation
                </group>
                <version>
-                  1.2.17
+                  1.0
                </version>
-               <scope>
+               <configuration>
                   default
-               </scope>
+               </configuration>
             </dependency>
             <dependency>
                <name>
-                  log4j
+                  jsr250-api
                </name>
                <group>
-                  log4j
+                  javax.annotation
                </group>
                <version>
-                  1.2.17
+                  1.0
                </version>
-               <scope>
+               <configuration>
                   runtime
-               </scope>
+               </configuration>
             </dependency>
             <dependency>
                <name>
-                  log4j
+                  jsr250-api
                </name>
                <group>
-                  log4j
+                  javax.annotation
                </group>
                <version>
-                  1.2.17
+                  1.0
                </version>
-               <scope>
+               <configuration>
                   testCompile
-               </scope>
+               </configuration>
             </dependency>
             <dependency>
                <name>
-                  log4j
+                  jsr250-api
                </name>
                <group>
-                  log4j
+                  javax.annotation
                </group>
                <version>
-                  1.2.17
+                  1.0
                </version>
-               <scope>
+               <configuration>
                   testRuntime
-               </scope>
+               </configuration>
             </dependency>
          </dependencies>
+         <managedDependencies>
+            <dependency>
+               <name>
+                  guava
+               </name>
+               <group>
+                  com.google.guava
+               </group>
+               <version>
+                  14.0.1
+               </version>
+               <configuration>
+                  compile
+               </configuration>
+            </dependency>
+         </managedDependencies>
          <repositories>
          </repositories>
          <plugins>
          </plugins>
          <sourceSets>
          </sourceSets>
-      </profile>
-   </profiles>
+      </project>
+   </profile>
+   <profile>
+      <name>
+         wildfly
+      </name>
+      <project>
+         <name>
+            Gradle Test Project
+         </name>
+         <version>
+            0.1-SNAPSHOT
+         </version>
+         <tasks>
+            <task>
+               <name>
+                  runApplicationServer
+               </name>
+               <dependsOn>
+               </dependsOn>
+            </task>
+         </tasks>
+         <dependencies>
+            <dependency>
+               <name>
+                  log4j
+               </name>
+               <group>
+                  log4j
+               </group>
+               <version>
+                  1.2.17
+               </version>
+               <configuration>
+                  compile
+               </configuration>
+            </dependency>
+            <dependency>
+               <name>
+                  log4j
+               </name>
+               <group>
+                  log4j
+               </group>
+               <version>
+                  1.2.17
+               </version>
+               <configuration>
+                  default
+               </configuration>
+            </dependency>
+            <dependency>
+               <name>
+                  log4j
+               </name>
+               <group>
+                  log4j
+               </group>
+               <version>
+                  1.2.17
+               </version>
+               <configuration>
+                  runtime
+               </configuration>
+            </dependency>
+            <dependency>
+               <name>
+                  log4j
+               </name>
+               <group>
+                  log4j
+               </group>
+               <version>
+                  1.2.17
+               </version>
+               <configuration>
+                  testCompile
+               </configuration>
+            </dependency>
+            <dependency>
+               <name>
+                  log4j
+               </name>
+               <group>
+                  log4j
+               </group>
+               <version>
+                  1.2.17
+               </version>
+               <configuration>
+                  testRuntime
+               </configuration>
+            </dependency>
+         </dependencies>
+         <managedDependencies>
+            <dependency>
+               <name>
+                  guava
+               </name>
+               <group>
+                  com.google.guava
+               </group>
+               <version>
+                  14.0.1
+               </version>
+               <configuration>
+                  compile
+               </configuration>
+            </dependency>
+         </managedDependencies>
+         <repositories>
+         </repositories>
+         <plugins>
+         </plugins>
+         <sourceSets>
+         </sourceSets>
+      </project>
+   </profile>
 </forgeOutput>

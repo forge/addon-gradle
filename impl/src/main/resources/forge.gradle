@@ -53,7 +53,11 @@ if (!project.hasProperty('forgeInstalled')) {
             indentLevel--
             output it
         }
+        def outputRelative = { file, to ->
+            output file.absolutePath.substring(to.absolutePath.length() + 1).replace("\\", "/")
+        }
         def outputProject = { p ->
+            outputInc '<project>'
             outputInc '<name>'
             output p.name
             outputDec '</name>'
@@ -90,9 +94,9 @@ if (!project.hasProperty('forgeInstalled')) {
                         outputInc '<version>'
                         output d.version
                         outputDec '</version>'
-                        outputInc '<scope>'
+                        outputInc '<configuration>'
                         output c.name
-                        outputDec '</scope>'
+                        outputDec '</configuration>'
                         outputDec '</dependency>'
                     }
                 }
@@ -110,9 +114,9 @@ if (!project.hasProperty('forgeInstalled')) {
                 outputInc '<version>'
                 output configVersion.version
                 outputDec '</version>'
-                outputInc '<scope>'
+                outputInc '<configuration>'
                 output configVersion.config
-                outputDec '</scope>'
+                outputDec '</configuration>'
                 outputDec '</dependency>'
             }
             outputDec '</managedDependencies>'
@@ -146,26 +150,25 @@ if (!project.hasProperty('forgeInstalled')) {
                 outputInc '<java>'
                 set.java.srcDirs.each {
                     outputInc '<directory>'
-                    output it
+                    outputRelative(it, project.projectDir)
                     outputDec '</directory>'
                 }
                 outputDec '</java>'
                 outputInc '<resources>'
                 set.resources.srcDirs.each {
                     outputInc '<directory>'
-                    output it
+                    outputRelative(it, project.projectDir)
                     outputDec '</directory>'
                 }
                 outputDec '</resources>'
                 outputDec '</sourceSet>'
             }
             outputDec '</sourceSets>'
+            outputDec '</project>'
         }
 
         outputInc '<forgeOutput>'
-        outputInc '<project>'
         outputProject project
-        outputDec '</project>'
         projectDir.eachFileMatch(groovy.io.FileType.FILES, {
             it.matches('^[a-zA-Z0-9]+-profile\\.gradle$')
         }, {
