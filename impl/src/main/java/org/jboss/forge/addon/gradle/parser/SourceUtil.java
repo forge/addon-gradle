@@ -6,6 +6,9 @@
  */
 package org.jboss.forge.addon.gradle.parser;
 
+import java.util.Arrays;
+
+import org.gradle.jarjar.com.google.common.base.Optional;
 import org.jboss.forge.addon.gradle.projects.util.Preconditions;
 
 /**
@@ -13,6 +16,7 @@ import org.jboss.forge.addon.gradle.projects.util.Preconditions;
  */
 public class SourceUtil
 {
+   public static final String INDENT = "    ";
 
    /**
     * Inserts string at specified position in source.
@@ -23,6 +27,14 @@ public class SourceUtil
    public static String insertString(String source, String string, int lineNumber, int columnNumber)
    {
       int position = positionInSource(source, lineNumber, columnNumber);
+      return source.substring(0, position) + string + source.substring(position);
+   }
+   
+   /**
+    * Inserts string at specified position in source.
+    */
+   public static String insertString(String source, String string, int position)
+   {
       return source.substring(0, position) + string + source.substring(position);
    }
 
@@ -64,5 +76,111 @@ public class SourceUtil
       int begginingPosition = positionInSource(source, lineNumber, columnNumber);
       int endingPosition = positionInSource(source, lastLineNumber, lastColumnNumber);
       return source.substring(0, begginingPosition) + source.substring(endingPosition);
+   }
+   
+   /**
+    * Appends given code as the last line of the closure. 
+    */
+   public static String appendLineToClosure(String source, InvocationWithClosure invocation, String codeToBeInserted)
+   {
+      return insertString(source, codeToBeInserted, invocation.getLastLineNumber(), invocation.getLastColumnNumber() - 1);
+   }
+
+   /**
+    * Inserts given code into source at path, which means invocation path. For example, path "a", "b", "c" points to:
+    * 
+    * <pre>
+    * a {
+    *     b {
+    *         c {
+    *             // there
+    *         }
+    *     }
+    * }
+    * </pre>
+    */
+   public static String insertIntoInvocationAtPath(String source, String codeToBeInserted, String... path)
+   {
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      Optional<InvocationWithClosure> invocationOptional = parser.invocationWithClosureByName(path[0]);
+
+      // If the beginning of the path is not present then we append whole path at the end of the source
+      if (!invocationOptional.isPresent())
+      {
+         source = addNewLineAtEnd(source);
+         source += createInvocationPath(0, codeToBeInserted, path);
+         return source;
+      }
+
+      for (int level = 1; level < path.length; level++)
+      {
+         InvocationWithClosure previousInvocation = invocationOptional.get();
+         invocationOptional = previousInvocation.invocationWithClosureByName(path[level]);
+         if (!invocationOptional.isPresent())
+         {
+            String invocationPath = createInvocationPath(level, codeToBeInserted, Arrays.copyOfRange(path, level, path.length));
+            source = insertString(source, invocationPath, previousInvocation.getLastLineNumber(), previousInvocation.getLastColumnNumber() - 1);
+            return source;
+         }
+      }
+      
+      return source;
+   }
+
+   /**
+    * Creates an empty invocation path like described in {@link #insertIntoInvocationAtPath(String, String, String...)}.
+    * 
+    * @param indentLevel base indent level for each line in generated path
+    * @see #indent(int)
+    */
+   public static String createInvocationPath(int indentLevel, String content, String... path)
+   {
+      StringBuilder builder = new StringBuilder();
+
+      // What goes up...
+      for (int level = 0; level < path.length; level++)
+      {
+         indent(builder, indentLevel + level);
+         builder.append(path[level]);
+         builder.append(" {\n");
+      }
+      
+      indent(builder, indentLevel + path.length);
+      builder.append(addNewLineAtEnd(content));
+
+      // ...must come down
+      for (int level = path.length - 1; level >= 0; level--)
+      {
+         indent(builder, indentLevel + level);
+         builder.append("}\n");
+      }
+
+      return builder.toString();
+   }
+
+   /**
+    * Does the same thing as {@link #indent(int)} but appends it directly to string builder.
+    */
+   public static void indent(StringBuilder builder, int times)
+   {
+      for (int i = 0; i < times; i++)
+      {
+         builder.append(INDENT);
+      }
+   }
+
+   /**
+    * Returns {@link #INDENT} "times" times.
+    */
+   public static String indent(int times)
+   {
+      StringBuilder builder = new StringBuilder(INDENT.length() * times);
+      indent(builder, times);
+      return builder.toString();
+   }
+   
+   public static String addNewLineAtEnd(String source)
+   {
+      return source.endsWith("\n") ? source : source + "\n";
    }
 }

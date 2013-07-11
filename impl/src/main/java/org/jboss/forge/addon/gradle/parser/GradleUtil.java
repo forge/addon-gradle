@@ -8,6 +8,7 @@ package org.jboss.forge.addon.gradle.parser;
 
 import java.util.List;
 
+import org.gradle.jarjar.com.google.common.base.Preconditions;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 
 /**
@@ -17,7 +18,6 @@ public class GradleUtil
 {
    public static String insertDependency(String source, String name, String group, String version, String configuration)
    {
-      // TODO
       return source;
    }
 
@@ -54,7 +54,7 @@ public class GradleUtil
       return source;
    }
 
-   // There is no way to remove task because tasks are composed of many actions
+   // There is no way to remove a task because tasks are composed of many actions
    // so we can only insert new tasks
    public static String insertTask(String source, String name, List<String> dependsOn, String type, String code)
    {
@@ -63,12 +63,11 @@ public class GradleUtil
    }
 
    /**
-    * Checks if source contains profile declaration and if not, then it inserts it.
+    * Checks if source includes forge library and if not then adds it.
     */
-   public static String checkForIncludeProfileAndInsert(String source)
+   public static String checkForIncludeForgeLibraryAndInsert(String source)
    {
       // TODO
       return source;
    }
-
 }

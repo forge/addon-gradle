@@ -130,11 +130,10 @@ public class GradleModelLoaderTest
          else if (profile.getName().equals("wildfly"))
          {
             wildflySet = true;
-            glassfishSet = true;
             assertTrue("Wildfly profile doesn't contain runApplicationServer task",
                      profile.getModel().hasTask("runApplicationServer"));
             assertTrue(
-                     "Glassfish profile doesn't contain specified dependency",
+                     "Wildfly profile doesn't contain specified dependency",
                      profile.getModel().hasDependency(
                               GradleDependencyBuilder.fromGradleString("compile", "log4j:log4j:1.2.17")));
          }

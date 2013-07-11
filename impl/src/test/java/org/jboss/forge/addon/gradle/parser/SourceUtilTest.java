@@ -17,7 +17,7 @@ public class SourceUtilTest
 {
 
    @Test
-   public void insertLineTest()
+   public void testInsertLine()
    {
       String source =
                "dependencies {compile 'a:b:1.0'\n" +
@@ -34,7 +34,7 @@ public class SourceUtilTest
    }
 
    @Test
-   public void positionInSourceTest()
+   public void testPositionInSource()
    {
       String source =
                "public interface AwardProvider{\n" + // 32 characters
@@ -47,7 +47,7 @@ public class SourceUtilTest
    }
 
    @Test(expected = IllegalArgumentException.class)
-   public void positionInSourceTestException()
+   public void testPositionInSourceException()
    {
       String source =
                "#include <stdio.h>\n" +
@@ -57,7 +57,7 @@ public class SourceUtilTest
    }
 
    @Test
-   public void removeSourceCodeElementTest()
+   public void testRemoveSourceCodeElement()
    {
       String source =
                "import java.util.Scanner;";
@@ -66,5 +66,106 @@ public class SourceUtilTest
 
       String output = SourceUtil.removeSourceFragment(source, 1, 8, 1, 13);
       assertEquals(expectedOutput, output);
+   }
+
+   @Test
+   public void testAppendLineToClosure()
+   {
+      String source = "" +
+               "abc\n" +
+               "invo {\n" +
+               "    cation {\n" +
+               "        very important stuff\n" +
+               "    }\n" +
+               "}\n" +
+               "\n" +
+               "println xyz\n";
+      String expected = "" +
+               "abc\n" +
+               "invo {\n" +
+               "    cation {\n" +
+               "        very important stuff\n" +
+               "        something new\n" +
+               "    }\n" +
+               "}\n" +
+               "\n" +
+               "println xyz\n";
+      String codeToBeInserted = "" +
+               "        something new\n";
+      
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      InvocationWithClosure invocation;
+      invocation = parser.invocationWithClosureByName("invo").get();
+      invocation = invocation.invocationWithClosureByName("cation").get();
+      
+      String result = SourceUtil.appendLineToClosure(source, invocation, codeToBeInserted);
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testInsertIntoInvocationAtPath()
+   {
+      String source = "" +
+               "a {\n" +
+               "    b {\n" +
+               "        c {\n" +
+               "            compile 'x:y:z'\n" +
+               "        }\n" +
+               "        d {\n" +
+               "            e {\n" +
+               "                xyz\n" +
+               "            }\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
+      String expected = "" +
+               "a {\n" +
+               "    b {\n" +
+               "        c {\n" +
+               "            compile 'x:y:z'\n" +
+               "            configName xyzABC\n" +
+               "        }\n" +
+               "        d {\n" +
+               "            e {\n" +
+               "                xyz\n" +
+               "            }\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
+      String result = SourceUtil.insertIntoInvocationAtPath(source, "configName xyzABC", "a", "b", "c");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testInsertIntoInvocationAtPathCreatePath()
+   {
+      String source = "abcdefxyz";
+      String expected = "" +
+               "abcdefxyz\n" +
+               "a {\n" +
+               "    b {\n" +
+               "        c {\n" +
+               "            println x\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n" +
+               "";
+      String result = SourceUtil.insertIntoInvocationAtPath(source, "println x", "a", "b", "c");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testCreateInvocationPath()
+   {
+      String expected = "" +
+               "        x {\n" +
+               "            y {\n" +
+               "                z {\n" +
+               "                    content\n" +
+               "                }\n" +
+               "            }\n" +
+               "        }\n";
+      String result = SourceUtil.createInvocationPath(2, "content", "x", "y", "z");
+      assertEquals(expected, result);
    }
 }

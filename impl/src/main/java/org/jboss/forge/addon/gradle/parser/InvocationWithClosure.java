@@ -8,6 +8,11 @@ package org.jboss.forge.addon.gradle.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.gradle.jarjar.com.google.common.base.Optional;
+import org.gradle.jarjar.com.google.common.collect.ImmutableList;
+import org.gradle.jarjar.com.google.common.collect.Maps;
 
 /**
  * Represents invocations of a method which takes closure as a parameter.
@@ -21,6 +26,10 @@ public class InvocationWithClosure extends SourceCodeElement
    private final List<InvocationWithClosure> internalInvocations;
    private final List<InvocationWithString> stringInvocations;
    private final List<InvocationWithMap> mapInvocations;
+
+   private final Map<String, InvocationWithClosure> internalInvocationMap = Maps.newHashMap();
+   private final Map<String, InvocationWithString> stringInvocationMap = Maps.newHashMap();
+   private final Map<String, InvocationWithMap> mapInvocationMap = Maps.newHashMap();
 
    public InvocationWithClosure(String methodName, int lineNumber, int columnNumber, int lastLineNumber,
             int lastColumnNumber)
@@ -40,9 +49,23 @@ public class InvocationWithClosure extends SourceCodeElement
    {
       super(lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       this.methodName = methodName;
-      this.internalInvocations = internalInvocations;
-      this.stringInvocations = stringInvocations;
-      this.mapInvocations = mapInvocations;
+      this.internalInvocations = ImmutableList.<InvocationWithClosure> copyOf(internalInvocations);
+      this.stringInvocations = ImmutableList.<InvocationWithString> copyOf(stringInvocations);
+      this.mapInvocations = ImmutableList.<InvocationWithMap> copyOf(mapInvocations);
+
+      // Filling indexes
+      for (InvocationWithClosure invocation : internalInvocations)
+      {
+         internalInvocationMap.put(invocation.getMethodName(), invocation);
+      }
+      for (InvocationWithString invocation : stringInvocations)
+      {
+         stringInvocationMap.put(invocation.getMethodName(), invocation);
+      }
+      for (InvocationWithMap invocation : mapInvocations)
+      {
+         mapInvocationMap.put(invocation.getMethodName(), invocation);
+      }
    }
 
    public String getMethodName()
@@ -63,5 +86,20 @@ public class InvocationWithClosure extends SourceCodeElement
    public List<InvocationWithMap> getInternalMapInvocations()
    {
       return mapInvocations;
+   }
+   
+   public Optional<InvocationWithClosure> invocationWithClosureByName(String name)
+   {
+      return Optional.fromNullable(internalInvocationMap.get(name));
+   }
+   
+   public Optional<InvocationWithString> invocationWithStringByName(String name)
+   {
+      return Optional.fromNullable(stringInvocationMap.get(name));
+   }
+   
+   public Optional<InvocationWithMap> invocationWithMapByName(String name)
+   {
+      return Optional.fromNullable(mapInvocationMap.get(name));
    }
 }

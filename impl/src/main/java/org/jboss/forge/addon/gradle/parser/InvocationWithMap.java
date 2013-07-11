@@ -8,6 +8,8 @@ package org.jboss.forge.addon.gradle.parser;
 
 import java.util.Map;
 
+import org.gradle.jarjar.com.google.common.collect.ImmutableMap;
+
 /**
  * Represents invocations of a method which takes map as a parameter.
  * 
@@ -24,7 +26,7 @@ public class InvocationWithMap extends SourceCodeElement
    {
       super(lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       this.methodName = methodName;
-      this.parameters = parameters;
+      this.parameters = ImmutableMap.<String, String> copyOf(parameters);
    }
 
    public String getMethodName()

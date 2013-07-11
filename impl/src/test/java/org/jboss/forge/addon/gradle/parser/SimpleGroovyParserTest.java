@@ -6,11 +6,13 @@
  */
 package org.jboss.forge.addon.gradle.parser;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import org.gradle.jarjar.com.google.common.base.Optional;
+import org.junit.Test;
 
 /**
  * @author Adam Wyłuda
@@ -19,14 +21,14 @@ public class SimpleGroovyParserTest
 {
 
    @Test
-   public void flatSourceTest()
+   public void testFlatSource()
    {
       String source = "\n" +
                "compile 'com.google:summer:2.0.1.3'\n" +
                "testCompile {'abc:def:0.1'}\n" +
                "apply plugin: 'java'\n";
 
-      SimpleGroovyParser parser = new SimpleGroovyParser(source);
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       assertEquals(1, parser.getInvocationsWithClosure().size());
       assertEquals(1, parser.getInvocationsWithMap().size());
       assertEquals(1, parser.getInvocationsWithString().size());
@@ -50,7 +52,7 @@ public class SimpleGroovyParserTest
    }
 
    @Test
-   public void nestedSourceTest()
+   public void testNestedSource()
    {
       String source = "// comment\n" +
                "subprojects {\n" +
@@ -62,7 +64,7 @@ public class SimpleGroovyParserTest
                "    }\n" +
                "}\n";
 
-      SimpleGroovyParser parser = new SimpleGroovyParser(source);
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       assertEquals(1, parser.getInvocationsWithClosure().size());
 
       InvocationWithClosure subprojects = parser.getInvocationsWithClosure().get(0);
@@ -76,5 +78,46 @@ public class SimpleGroovyParserTest
       InvocationWithString compile = dependencies.getInternalStringInvocations().get(0);
       assertEquals("compile", compile.getMethodName());
       assertEquals("group:artifact:1.0.0", compile.getString());
+   }
+   
+   @Test
+   public void testInvocationWithClosureByName()
+   {
+      String source = "// comment\n" +
+               "subprojects {\n" +
+               "    apply plugin: 'groovy'\n" +
+               "    apply plugin: 'java'\n" +
+               "    \n" +
+               "    dependencies {\n" +
+               "        compile 'group:artifact:1.0.0'\n" +
+               "    }\n" +
+               "}\n";
+
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      
+      InvocationWithClosure subprojects = parser.invocationWithClosureByName("subprojects").get();
+      assertEquals("subprojects", subprojects.getMethodName());
+      
+      InvocationWithMap applyPlugin = subprojects.invocationWithMapByName("apply").get();
+      assertEquals("apply", applyPlugin.getMethodName());
+      
+      InvocationWithClosure dependencies = subprojects.invocationWithClosureByName("dependencies").get();
+      assertEquals("dependencies", dependencies.getMethodName());
+      
+      InvocationWithString compile = dependencies.invocationWithStringByName("compile").get();
+      assertEquals("compile", compile.getMethodName());
+   }
+   
+   @Test
+   public void testInvocationWithClosureByNameAbsent()
+   {
+      String sauce = "" +
+      		"x {\n" +
+      		"    y {\n" +
+      		"    }\n" +
+      		"}\n";
+      
+      Optional<InvocationWithClosure> optional = SimpleGroovyParser.fromSource(sauce).invocationWithClosureByName("z");
+      assertFalse(optional.isPresent());
    }
 }

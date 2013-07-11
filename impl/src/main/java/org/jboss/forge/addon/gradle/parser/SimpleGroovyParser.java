@@ -6,16 +6,25 @@
  */
 package org.jboss.forge.addon.gradle.parser;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.groovy.ast.ModuleNode;
-import org.codehaus.groovy.ast.expr.*;
+import org.codehaus.groovy.ast.expr.ArgumentListExpression;
+import org.codehaus.groovy.ast.expr.ClosureExpression;
+import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.MapEntryExpression;
+import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.expr.NamedArgumentListExpression;
+import org.codehaus.groovy.ast.expr.TupleExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.gradle.jarjar.com.google.common.base.Optional;
+import org.gradle.jarjar.com.google.common.collect.Lists;
 
 /**
  * This is a minimal groovy parser necessary to obtain information about gradle project. It can create method invocation
@@ -25,20 +34,39 @@ import java.util.Map;
  */
 public class SimpleGroovyParser
 {
+   private static class PreInvocationWithClosure
+   {
+      public String methodName;
+      public int lineNumber;
+      public int columnNumber;
+      public int lastLineNumber;
+      public int lastColumnNumber;
+      public List<InvocationWithClosure> invocationWithClosureList = Lists.newArrayList();
+      public List<InvocationWithMap> invocationWithMapList = Lists.newArrayList();
+      public List<InvocationWithString> invocationWithStringList = Lists.newArrayList();
 
+      public InvocationWithClosure create()
+      {
+         return new InvocationWithClosure(methodName, invocationWithClosureList, invocationWithStringList,
+                  invocationWithMapList,
+                  lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+      }
+   }
+
+   private final InvocationWithClosure root;
    private final List<InvocationWithClosure> invocationWithClosureList;
    private final List<InvocationWithMap> invocationWithMapList;
    private final List<InvocationWithString> invocationWithStringList;
 
-   SimpleGroovyParser(String source)
+   private SimpleGroovyParser(String source)
    {
-      InvocationWithClosure root = createInvocationWithClosureRoot(source);
+      root = createInvocationWithClosureRoot(source);
       invocationWithClosureList = root.getInternalInvocations();
       invocationWithMapList = root.getInternalMapInvocations();
       invocationWithStringList = root.getInternalStringInvocations();
    }
 
-   public SimpleGroovyParser fromSource(String source)
+   public static SimpleGroovyParser fromSource(String source)
    {
       return new SimpleGroovyParser(source);
    }
@@ -58,12 +86,27 @@ public class SimpleGroovyParser
       return invocationWithStringList;
    }
 
+   public Optional<InvocationWithClosure> invocationWithClosureByName(String name)
+   {
+      return root.invocationWithClosureByName(name);
+   }
+
+   public Optional<InvocationWithString> invocationWithStringByName(String name)
+   {
+      return root.invocationWithStringByName(name);
+   }
+
+   public Optional<InvocationWithMap> invocationWithMapByName(String name)
+   {
+      return root.invocationWithMapByName(name);
+   }
+
    static InvocationWithClosure createInvocationWithClosureRoot(String source)
    {
       BlockStatement sourceBlockStatement = parseSource(source);
-      InvocationWithClosure root = new InvocationWithClosure("", 0, 0, 0, 0);
+      PreInvocationWithClosure root = new PreInvocationWithClosure();
       fillInvocationFromStatement(sourceBlockStatement, root);
-      return root;
+      return root.create();
    }
 
    static BlockStatement parseSource(String source)
@@ -79,7 +122,7 @@ public class SimpleGroovyParser
    /**
     * Goes through blockStatement recursively to create InvocationWithClosure tree.
     */
-   static void fillInvocationFromStatement(BlockStatement blockStatement, InvocationWithClosure node)
+   static void fillInvocationFromStatement(BlockStatement blockStatement, PreInvocationWithClosure node)
    {
       for (Statement statement : blockStatement.getStatements())
       {
@@ -87,12 +130,13 @@ public class SimpleGroovyParser
       }
    }
 
-   static void processStatement(Statement statement, InvocationWithClosure node)
+   static void processStatement(Statement statement, PreInvocationWithClosure node)
    {
       // If statement is an expression like function call
       if (statement instanceof ExpressionStatement)
       {
          Expression expression = ((ExpressionStatement) statement).getExpression();
+         
          // If expression is method call
          if (expression instanceof MethodCallExpression)
          {
@@ -101,14 +145,16 @@ public class SimpleGroovyParser
       }
    }
 
-   static void processMethodCallExpression(Expression expression, InvocationWithClosure node)
+   static void processMethodCallExpression(Expression expression, PreInvocationWithClosure node)
    {
       String methodName = ((MethodCallExpression) expression).getMethodAsString();
       int lineNumber = expression.getLineNumber();
       int columnNumber = expression.getColumnNumber();
       int lastLineNumber = expression.getLastLineNumber();
       int lastColumnNumber = expression.getLastColumnNumber();
+      
       Expression argumentsExpression = ((MethodCallExpression) expression).getArguments();
+      
       // In case argument expression is string constant or closure
       if (argumentsExpression instanceof ArgumentListExpression &&
                ((ArgumentListExpression) argumentsExpression).getExpressions().size() == 1)
@@ -116,6 +162,7 @@ public class SimpleGroovyParser
          processArgumentListExpression((ArgumentListExpression) argumentsExpression, node,
                   methodName, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       }
+      
       // If argument expression is TupleExpression then it may be a map
       else if (argumentsExpression instanceof TupleExpression &&
                ((TupleExpression) argumentsExpression).getExpressions().size() == 1)
@@ -125,35 +172,44 @@ public class SimpleGroovyParser
       }
    }
 
-   static void processArgumentListExpression(ArgumentListExpression argumentsExpression, InvocationWithClosure node,
+   static void processArgumentListExpression(ArgumentListExpression argumentsExpression, PreInvocationWithClosure node,
             String methodName, int lineNumber, int columnNumber,
             int lastLineNumber, int lastColumnNumber)
    {
       Expression argumentExpression = ((ArgumentListExpression) argumentsExpression).getExpressions().get(0);
+      
       // If argument is string constant
       if (argumentExpression instanceof ConstantExpression)
       {
          String string = ((ConstantExpression) argumentExpression).getValue().toString();
          InvocationWithString invocation = new InvocationWithString(methodName, string, lineNumber, columnNumber,
                   lastLineNumber, lastColumnNumber);
-         node.getInternalStringInvocations().add(invocation);
+         node.invocationWithStringList.add(invocation);
       }
+      
       // If argument is closure
       else if (argumentExpression instanceof ClosureExpression)
       {
          BlockStatement blockStatement = (BlockStatement) ((ClosureExpression) argumentExpression).getCode();
-         InvocationWithClosure invocation = new InvocationWithClosure(methodName, lineNumber, columnNumber,
-                  lastLineNumber, lastColumnNumber);
+         
+         PreInvocationWithClosure invocation = new PreInvocationWithClosure();
+         invocation.methodName = methodName;
+         invocation.lineNumber = lineNumber;
+         invocation.columnNumber = columnNumber;
+         invocation.lastLineNumber = lastLineNumber;
+         invocation.lastColumnNumber = lastColumnNumber;
+         
          fillInvocationFromStatement(blockStatement, invocation);
-         node.getInternalInvocations().add(invocation);
+         node.invocationWithClosureList.add(invocation.create());
       }
    }
 
-   static void processTupleExpression(TupleExpression argumentsExpression, InvocationWithClosure node,
+   static void processTupleExpression(TupleExpression argumentsExpression, PreInvocationWithClosure node,
             String methodName, int lineNumber, int columnNumber,
             int lastLineNumber, int lastColumnNumber)
    {
       Expression argumentExpression = ((TupleExpression) argumentsExpression).getExpressions().get(0);
+      
       // In case argument expression is a map
       if (argumentExpression instanceof NamedArgumentListExpression)
       {
@@ -163,7 +219,7 @@ public class SimpleGroovyParser
    }
 
    static void processNamedArgumentListExpression(NamedArgumentListExpression argumentListExpression,
-            InvocationWithClosure node,
+            PreInvocationWithClosure node,
             String methodName, int lineNumber, int columnNumber,
             int lastLineNumber, int lastColumnNumber)
    {
@@ -182,6 +238,6 @@ public class SimpleGroovyParser
       }
       InvocationWithMap invocation = new InvocationWithMap(methodName, parameters,
                lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
-      node.getInternalMapInvocations().add(invocation);
+      node.invocationWithMapList.add(invocation);
    }
 }

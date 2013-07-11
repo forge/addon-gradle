@@ -139,7 +139,7 @@ public class GradleUtilTest
       String result = GradleUtil.removeRepository(source, "", "http://repo.com");
       assertEquals(expected, result);
    }
-   
+
    @Test(expected = UnremovableElementException.class)
    public void testRemoveRepositoryForException() throws UnremovableElementException
    {
@@ -153,9 +153,9 @@ public class GradleUtilTest
    public void testInsertTask()
    {
       String source = "" +
-      		"task abcd << {\n" +
-      		"    println 'ABCD!!'\n" +
-      		"}\n";
+               "task abcd << {\n" +
+               "    println 'ABCD!!'\n" +
+               "}\n";
       String expected = "" +
                "task abcd << {\n" +
                "    println 'ABCD!!'\n" +
@@ -173,9 +173,35 @@ public class GradleUtilTest
    }
 
    @Test
-   @Ignore
-   public void testCheckForIncludeProfileAndInsert()
+   public void testCheckForIncludeForgeLibraryAndInsert()
    {
-      // TODO implement test
+      String source = "" +
+               "task abcd << {\n" +
+               "    println 'ABCD!!'\n" +
+               "}\n";
+      String expected = "" +
+               "apply from: 'forge.gradle'\n" +
+               "task abcd << {\n" +
+               "    println 'ABCD!!'\n" +
+               "}\n";
+      String result = GradleUtil.checkForIncludeForgeLibraryAndInsert(source);
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testCheckForIncludeForgeLibraryAndInsertExisting()
+   {
+      String source = "" +
+               "apply from: 'forge.gradle'\n" +
+               "task abcd << {\n" +
+               "    println 'ABCD!!'\n" +
+               "}\n";
+      String expected = "" +
+               "apply from: 'forge.gradle'\n" +
+               "task abcd << {\n" +
+               "    println 'ABCD!!'\n" +
+               "}\n";
+      String result = GradleUtil.checkForIncludeForgeLibraryAndInsert(source);
+      assertEquals(expected, result);
    }
 }
