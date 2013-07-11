@@ -91,7 +91,7 @@ public class SourceUtilTest
                "\n" +
                "println xyz\n";
       String codeToBeInserted = "" +
-               "        something new\n";
+               "something new\n";
       
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       InvocationWithClosure invocation;
@@ -151,6 +151,34 @@ public class SourceUtilTest
                "}\n" +
                "";
       String result = SourceUtil.insertIntoInvocationAtPath(source, "println x", "a", "b", "c");
+      assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testInsertIntoInvocationAtPathPartiallyCreatePath()
+   {
+      String source = "" +
+               "a {\n" +
+               "    b {\n" +
+               "        c {\n" +
+               "            compile 'x:y:z'\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
+      String expected = "" +
+               "a {\n" +
+               "    b {\n" +
+               "        c {\n" +
+               "            compile 'x:y:z'\n" +
+               "            d {\n" +
+               "                e {\n" +
+               "                    xyz\n" +
+               "                }\n" +
+               "            }\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
+      String result = SourceUtil.insertIntoInvocationAtPath(source, "xyz", "a", "b", "c", "d", "e");
       assertEquals(expected, result);
    }
 

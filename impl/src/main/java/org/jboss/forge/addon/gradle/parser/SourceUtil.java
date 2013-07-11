@@ -29,7 +29,7 @@ public class SourceUtil
       int position = positionInSource(source, lineNumber, columnNumber);
       return source.substring(0, position) + string + source.substring(position);
    }
-   
+
    /**
     * Inserts string at specified position in source.
     */
@@ -77,13 +77,26 @@ public class SourceUtil
       int endingPosition = positionInSource(source, lastLineNumber, lastColumnNumber);
       return source.substring(0, begginingPosition) + source.substring(endingPosition);
    }
-   
+
    /**
-    * Appends given code as the last line of the closure. 
+    * Appends given code as the last line of the closure.
     */
    public static String appendLineToClosure(String source, InvocationWithClosure invocation, String codeToBeInserted)
    {
-      return insertString(source, codeToBeInserted, invocation.getLastLineNumber(), invocation.getLastColumnNumber() - 1);
+      codeToBeInserted = codeToBeInserted.trim();
+      
+      String sourceToInvocation = source.substring(0,
+               positionInSource(source, invocation.getLineNumber(), invocation.getColumnNumber()));
+      String invocationIndentation = sourceToInvocation.substring(sourceToInvocation.lastIndexOf("\n") + 1);
+      StringBuilder indent = new StringBuilder(invocationIndentation.length());
+      for (int i = 0; i < invocationIndentation.length(); i++)
+      {
+         indent.append(' ');
+      }
+      invocationIndentation = indent.toString();
+
+      return insertString(source, addNewLineAtEnd(INDENT + codeToBeInserted) + invocationIndentation, invocation.getLastLineNumber(),
+               invocation.getLastColumnNumber() - 1);
    }
 
    /**
@@ -118,12 +131,16 @@ public class SourceUtil
          invocationOptional = previousInvocation.invocationWithClosureByName(path[level]);
          if (!invocationOptional.isPresent())
          {
-            String invocationPath = createInvocationPath(level, codeToBeInserted, Arrays.copyOfRange(path, level, path.length));
-            source = insertString(source, invocationPath, previousInvocation.getLastLineNumber(), previousInvocation.getLastColumnNumber() - 1);
+            String invocationPath = createInvocationPath(level, codeToBeInserted,
+                     Arrays.copyOfRange(path, level, path.length));
+            source = appendLineToClosure(source, previousInvocation, invocationPath);
             return source;
          }
       }
-      
+
+      InvocationWithClosure invocation = invocationOptional.get();
+      source = appendLineToClosure(source, invocation, codeToBeInserted);
+
       return source;
    }
 
@@ -144,7 +161,7 @@ public class SourceUtil
          builder.append(path[level]);
          builder.append(" {\n");
       }
-      
+
       indent(builder, indentLevel + path.length);
       builder.append(addNewLineAtEnd(content));
 
@@ -178,7 +195,7 @@ public class SourceUtil
       indent(builder, times);
       return builder.toString();
    }
-   
+
    public static String addNewLineAtEnd(String source)
    {
       return source.endsWith("\n") ? source : source + "\n";
