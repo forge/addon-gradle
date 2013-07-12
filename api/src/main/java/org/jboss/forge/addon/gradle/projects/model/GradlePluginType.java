@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public enum GradlePluginType
 {
+   // TODO short names for plugin types
    JAVA("org.gradle.api.plugins.JavaPlugin"), GROOVY("org.gradle.api.plugins.GroovyPlugin"),
    SCALA("org.gradle.api.plugins.scala.ScalaPlugin"), WAR("org.gradle.api.plugins.WarPlugin"),
    EAR("org.gradle.plugins.EarPlugin"), JETTY("org.gradle.api.plugins.jetty.JettyPlugin"),
@@ -45,18 +46,30 @@ public enum GradlePluginType
    }
 
    private final String clazz;
+   private final String shortName;
 
    private GradlePluginType(String clazz)
    {
+      this(clazz, "");
+   }
+   
+   private GradlePluginType(String clazz, String shortName)
+   {
       this.clazz = clazz;
       TypeContainer.TYPE_MAP.put(clazz, this);
+      this.shortName = shortName;
    }
 
    public String getClazz()
    {
       return clazz;
    }
-
+   
+   public String getShortName()
+   {
+      return shortName;
+   }
+   
    /**
     * @return Plugin type for given class. If there is no such type then it returns {@link #OTHER}.
     */

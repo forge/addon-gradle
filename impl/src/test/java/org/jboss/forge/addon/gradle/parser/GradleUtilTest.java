@@ -117,7 +117,7 @@ public class GradleUtilTest
       String expected = "" +
                "repositories {\n" +
                "    maven {\n" +
-               "        url 'http://repo.com\n" +
+               "        url 'http://repo.com'\n" +
                "    }\n" +
                "}";
       String result = GradleUtil.insertRepository(source, "", "http://repo.com");
@@ -166,9 +166,52 @@ public class GradleUtilTest
                "    println variable\n" +
                "}\n";
       String result = GradleUtil.insertTask(source, "efgh", Lists.<String> newArrayList(), "", "" +
-               "\n" +
                "    def variable = 10\n" +
-               "    println variable\n");
+               "    println variable");
+      assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testInsertTaskWithDependenciesAndType()
+   {
+      String source = "" +
+               "task abcd << {\n" +
+               "    println 'ABCD!!'\n" +
+               "}\n";
+      String expected = "" +
+               "task abcd << {\n" +
+               "    println 'ABCD!!'\n" +
+               "}\n" +
+               "\n" +
+               "task (name: 'efgh', dependsOn: ['x', 'y', 'z'], type: Copy) << {\n" +
+               "    def variable = 10\n" +
+               "    println variable\n" +
+               "}\n";
+      String result = GradleUtil.insertTask(source, "efgh", Lists.<String> newArrayList("x", "y", "z"), "Copy", "" +
+               "    def variable = 10\n" +
+               "    println variable");
+      assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testInsertTaskWithOneDependency()
+   {
+      String source = "" +
+               "task abcd << {\n" +
+               "    println 'ABCD!!'\n" +
+               "}\n";
+      String expected = "" +
+               "task abcd << {\n" +
+               "    println 'ABCD!!'\n" +
+               "}\n" +
+               "\n" +
+               "task (name: 'efgh', dependsOn: 'x', type: Copy) << {\n" +
+               "    def variable = 10\n" +
+               "    println variable\n" +
+               "}\n";
+      String result = GradleUtil.insertTask(source, "efgh", Lists.<String> newArrayList("x"), "Copy", "" +
+               "    def variable = 10\n" +
+               "    println variable");
       assertEquals(expected, result);
    }
 
