@@ -30,21 +30,39 @@ public class GradleUtilTest
                "    compile 'a:b:1.0'\n" +
                "    testRuntime 'x:y:3.0'\n" +
                "}";
-      String result = GradleUtil.insertDependency(source, "y", "x", "3.0", "testRuntime");
+      String result = GradleUtil.insertDependency(source, "x", "y", "3.0", "testRuntime");
       assertEquals(expected, result);
    }
 
    @Test
-   public void testRemoveDependency() throws UnremovableElementException
+   public void testRemoveDependencyDefinedByString() throws UnremovableElementException
    {
       String source = "" +
                "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
                "    compile 'a:b:1.0'\n" +
                "}";
       String expected = "" +
                "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleUtil.removeDependency(source, "b", "a", "1.0", "compile");
+      String result = GradleUtil.removeDependency(source, "a", "b", "1.0", "compile");
+      assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testRemoveDependencyDefinedByMap() throws UnremovableElementException
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "    compile name: 'b', version: '1.0', group: 'a'\n" +
+               "}";
+      String expected = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "}";
+      String result = GradleUtil.removeDependency(source, "a", "b", "1.0", "compile");
       assertEquals(expected, result);
    }
 
@@ -56,7 +74,7 @@ public class GradleUtilTest
                "    def alias = compile" +
                "    alias 'a:b:1.0'\n" +
                "}";
-      GradleUtil.removeDependency(source, "b", "a", "1.0", "compile");
+      GradleUtil.removeDependency(source, "a", "b", "1.0", "compile");
    }
    
    @Test
@@ -79,12 +97,12 @@ public class GradleUtilTest
                "        managed config: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
                "    }\n" +
                "}\n";
-      String result = GradleUtil.insertManagedDependency(source, "yy", "xx", "vv", "compile");
+      String result = GradleUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile");
       assertEquals(expected, result);
    }
    
    @Test
-   public void testRemoveManagedDependency()
+   public void testRemoveManagedDependency() throws UnremovableElementException
    {
       String source = "" +
                "dependencies {\n" +
@@ -103,7 +121,7 @@ public class GradleUtilTest
                "    dependencies {\n" +
                "    }\n" +
                "}\n";
-      String result = GradleUtil.removeManagedDependency(source, "yy", "xx", "vv", "compile");
+      String result = GradleUtil.removeManagedDependency(source, "xx", "yy", "vv", "compile");
       assertEquals(expected, result);
    }
 
@@ -128,7 +146,7 @@ public class GradleUtilTest
    }
 
    @Test
-   public void testRemovePlugin() throws UnremovableElementException
+   public void testRemovePluginDefinedByApply() throws UnremovableElementException
    {
       String source = "" +
                "version = '4.0'\n" +
@@ -138,8 +156,22 @@ public class GradleUtilTest
                "repositories {}\n";
       String expected = "" +
                "version = '4.0'\n" +
+               "repositories {}\n";
+      String result = GradleUtil.removePlugin(source, "java");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testRemovePluginDefinedByProjectApply() throws UnremovableElementException
+   {
+      String source = "" +
+               "version = '4.0'\n" +
                "\n" +
+               "project.apply plugin: 'java'\n" +
                "\n" +
+               "repositories {}\n";
+      String expected = "" +
+               "version = '4.0'\n" +
                "repositories {}\n";
       String result = GradleUtil.removePlugin(source, "java");
       assertEquals(expected, result);
@@ -178,11 +210,11 @@ public class GradleUtilTest
       String source = "" +
                "repositories {\n" +
                "    maven {\n" +
-               "        url 'http://repo.com\n" +
+               "        url 'http://repo.com'\n" +
                "    }\n" +
                "}";
       String expected = "" +
-               "repositories {" +
+               "repositories {\n" +
                "    maven {\n" +
                "    }\n" +
                "}";

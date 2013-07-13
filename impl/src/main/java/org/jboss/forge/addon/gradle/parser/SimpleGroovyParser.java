@@ -63,9 +63,9 @@ public class SimpleGroovyParser
    private SimpleGroovyParser(String source)
    {
       root = createInvocationWithClosureRoot(source);
-      invocationWithClosureList = root.getInternalInvocations();
-      invocationWithMapList = root.getInternalMapInvocations();
-      invocationWithStringList = root.getInternalStringInvocations();
+      invocationWithClosureList = root.getInvocationsWithClosure();
+      invocationWithMapList = root.getInvocationsWithMap();
+      invocationWithStringList = root.getInvocationsWithString();
    }
 
    public static SimpleGroovyParser fromSource(String source)
@@ -119,7 +119,7 @@ public class SimpleGroovyParser
          return;
       }
       String name = path[0];
-      for (InvocationWithClosure subinvocation : invocation.getInternalInvocations())
+      for (InvocationWithClosure subinvocation : invocation.getInvocationsWithClosure())
       {
          if (subinvocation.getMethodName().equals(name))
          {

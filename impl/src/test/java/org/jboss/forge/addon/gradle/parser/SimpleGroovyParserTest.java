@@ -70,13 +70,13 @@ public class SimpleGroovyParserTest
 
       InvocationWithClosure subprojects = parser.getInvocationsWithClosure().get(0);
       assertEquals("subprojects", subprojects.getMethodName());
-      assertEquals(2, subprojects.getInternalMapInvocations().size());
-      assertEquals(1, subprojects.getInternalInvocations().size());
+      assertEquals(2, subprojects.getInvocationsWithMap().size());
+      assertEquals(1, subprojects.getInvocationsWithClosure().size());
 
-      InvocationWithClosure dependencies = subprojects.getInternalInvocations().get(0);
-      assertEquals(1, dependencies.getInternalStringInvocations().size());
+      InvocationWithClosure dependencies = subprojects.getInvocationsWithClosure().get(0);
+      assertEquals(1, dependencies.getInvocationsWithString().size());
 
-      InvocationWithString compile = dependencies.getInternalStringInvocations().get(0);
+      InvocationWithString compile = dependencies.getInvocationsWithString().get(0);
       assertEquals("compile", compile.getMethodName());
       assertEquals("group:artifact:1.0.0", compile.getString());
    }
@@ -146,11 +146,11 @@ public class SimpleGroovyParserTest
       assertEquals(2, list.size());
       
       InvocationWithClosure invocation = list.get(0);
-      assertEquals(1, invocation.getInternalStringInvocations().size());
-      assertEquals("compile", invocation.getInternalStringInvocations().get(0).getMethodName());
+      assertEquals(1, invocation.getInvocationsWithString().size());
+      assertEquals("compile", invocation.getInvocationsWithString().get(0).getMethodName());
       
       invocation = list.get(1);
-      assertEquals(1, invocation.getInternalStringInvocations().size());
-      assertEquals("testRuntime", invocation.getInternalStringInvocations().get(0).getMethodName());
+      assertEquals(1, invocation.getInvocationsWithString().size());
+      assertEquals("testRuntime", invocation.getInvocationsWithString().get(0).getMethodName());
    }
 }

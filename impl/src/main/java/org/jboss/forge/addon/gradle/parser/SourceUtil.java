@@ -20,8 +20,8 @@ public class SourceUtil
 {
    public static final String INDENT = "    ";
    public static final Pattern PRECEDING_WHITESPACE_PATTERN = Pattern.compile("\\s*$");
-   public static final Pattern SUCCEEDING_WHITESPACE_PATTERN = Pattern.compile("^\\s*");
-   
+   public static final Pattern SUCCEEDING_WHITESPACE_PATTERN = Pattern.compile("^\\s*\n");
+
    /**
     * Inserts string at specified position in source.
     * 
@@ -81,12 +81,21 @@ public class SourceUtil
       int endingPosition = positionInSource(source, lastLineNumber, lastColumnNumber);
       return removeSourceFragment(source, begginingPosition, endingPosition);
    }
-   
+
    public static String removeSourceFragment(String source, int start, int end)
    {
       return source.substring(0, start) + source.substring(end);
    }
-   
+
+   /**
+    * {@link #removeSourceFragmentWithLine(String, int, int)} 
+    */
+   public static String removeSourceFragmentWithLine(String source, SourceCodeElement element)
+   {
+      return removeSourceFragmentWithLine(source, element.getLineNumber(), element.getColumnNumber(),
+               element.getLastLineNumber(), element.getLastColumnNumber());
+   }
+
    /**
     * {@link #removeSourceFragmentWithLine(String, int, int)}
     */
@@ -97,7 +106,7 @@ public class SourceUtil
       int endingPosition = positionInSource(source, lastLineNumber, lastColumnNumber);
       return removeSourceFragmentWithLine(source, beginningPosition, endingPosition);
    }
-   
+
    /**
     * Replaces specified region and surrounding whitespaces with a single new line character.
     */
@@ -105,18 +114,18 @@ public class SourceUtil
    {
       String beforeCode = source.substring(0, start);
       String afterCode = source.substring(end);
-      
+
       Matcher precedingMatcher = PRECEDING_WHITESPACE_PATTERN.matcher(beforeCode);
       precedingMatcher.find();
       String precedingWhitespace = precedingMatcher.group();
-      
+
       Matcher succeedingMatcher = SUCCEEDING_WHITESPACE_PATTERN.matcher(afterCode);
       succeedingMatcher.find();
       String succeedingWhitespace = succeedingMatcher.group();
-      
+
       start -= precedingWhitespace.length();
       end += succeedingWhitespace.length();
-      
+
       return source.substring(0, start) + "\n" + source.substring(end);
    }
 
@@ -126,7 +135,7 @@ public class SourceUtil
    public static String appendLineToClosure(String source, InvocationWithClosure invocation, String codeToBeInserted)
    {
       codeToBeInserted = codeToBeInserted.trim();
-      
+
       String sourceToInvocation = source.substring(0,
                positionInSource(source, invocation.getLineNumber(), invocation.getColumnNumber()));
       String invocationIndentation = sourceToInvocation.substring(sourceToInvocation.lastIndexOf("\n") + 1);
@@ -137,7 +146,8 @@ public class SourceUtil
       }
       invocationIndentation = indent.toString();
 
-      return insertString(source, addNewLineAtEnd(INDENT + codeToBeInserted) + invocationIndentation, invocation.getLastLineNumber(),
+      return insertString(source, addNewLineAtEnd(INDENT + codeToBeInserted) + invocationIndentation,
+               invocation.getLastLineNumber(),
                invocation.getLastColumnNumber() - 1);
    }
 

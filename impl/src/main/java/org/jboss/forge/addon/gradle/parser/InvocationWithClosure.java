@@ -73,17 +73,17 @@ public class InvocationWithClosure extends SourceCodeElement
       return methodName;
    }
 
-   public List<InvocationWithClosure> getInternalInvocations()
+   public List<InvocationWithClosure> getInvocationsWithClosure()
    {
       return internalInvocations;
    }
 
-   public List<InvocationWithString> getInternalStringInvocations()
+   public List<InvocationWithString> getInvocationsWithString()
    {
       return stringInvocations;
    }
 
-   public List<InvocationWithMap> getInternalMapInvocations()
+   public List<InvocationWithMap> getInvocationsWithMap()
    {
       return mapInvocations;
    }

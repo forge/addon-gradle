@@ -8,7 +8,6 @@ package org.jboss.forge.addon.gradle.parser;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.gradle.jarjar.com.google.common.base.Joiner;
 import org.gradle.jarjar.com.google.common.collect.Lists;
@@ -22,51 +21,80 @@ import org.jboss.forge.furnace.util.Strings;
 public class GradleUtil
 {
    public static final String INCLUDE_FORGE_LIBRARY = "apply from: 'forge.gradle'\n";
-   
-   public static String insertDependency(String source, String name, String group, String version, String configuration)
+   public static final String MANAGED_CONFIG = "managed";
+   public static final String DIRECT_CONFIG = "direct";
+
+   public static String insertDependency(String source, String group, String name, String version, String configuration)
    {
       String depString = String.format("%s '%s:%s:%s'", configuration, group, name, version);
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "dependencies");
       return source;
    }
 
-   public static String removeDependency(String source, String name, String group, String version, String configuration)
+   public static String removeDependency(String source, String group, String name, String version, String configuration)
             throws UnremovableElementException
    {
-      String depString = String.format("%s '%s:%s:%s'", configuration, group, name, version);
+      String depString = String.format("%s:%s:%s", group, name, version);
       Map<String, String> depMap = Maps.newHashMap();
       depMap.put("group", group);
       depMap.put("name", name);
       depMap.put("version", version);
-      
+
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithClosure deps : parser.allInvocationsAtPath("dependencies"))
       {
          // Search in string invocations
-         for (InvocationWithString invocation : deps.getInternalStringInvocations())
+         for (InvocationWithString invocation : deps.getInvocationsWithString())
          {
-            if (invocation.getMethodName().equals(configuration))
+            if (invocation.getMethodName().equals(configuration) && invocation.getString().equals(depString))
             {
-               
+               return SourceUtil.removeSourceFragmentWithLine(source, invocation);
+            }
+         }
+
+         // Search in map invocations
+         for (InvocationWithMap invocation : deps.getInvocationsWithMap())
+         {
+            if (invocation.getMethodName().equals(configuration) && invocation.getParameters().equals(depMap))
+            {
+               return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
          }
       }
-      
+
       throw new UnremovableElementException();
    }
-   
-   public static String insertManagedDependency(String source, String name, String group, String version, String configuration)
+
+   public static String insertManagedDependency(String source, String group, String name, String version,
+            String configuration)
    {
       String depString = String.format("managed config: '%s', group: '%s', name: '%s', version: '%s'",
                configuration, group, name, version);
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "allprojects", "dependencies");
       return source;
    }
-   
-   public static String removeManagedDependency(String source, String name, String group, String version, String configuration)
+
+   public static String removeManagedDependency(String source, String group, String name, String version,
+            String configuration) throws UnremovableElementException
    {
-      // TODO
-      return source;
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithClosure deps : parser.allInvocationsAtPath("allprojects", "dependencies"))
+      {
+         for (InvocationWithMap invocation : deps.getInvocationsWithMap())
+         {
+            Map<String, String> params = invocation.getParameters();
+            if (invocation.getMethodName().equals(MANAGED_CONFIG) &&
+                     params.get("group").equals(group) &&
+                     params.get("name").equals(name) &&
+                     params.get("version").equals(version) &&
+                     params.get("config").equals(configuration))
+            {
+               return SourceUtil.removeSourceFragmentWithLine(source, invocation);
+            }
+         }
+      }
+
+      throw new UnremovableElementException();
    }
 
    /**
@@ -76,14 +104,16 @@ public class GradleUtil
    public static String insertPlugin(String source, String clazz)
    {
       String pluginString = String.format("\napply plugin: '%s'", clazz);
-      
+
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      if (parser.getInvocationsWithMap().size() > 0) 
+      if (parser.getInvocationsWithMap().size() > 0)
       {
-         InvocationWithMap lastInvocation = parser.getInvocationsWithMap().get(parser.getInvocationsWithMap().size() - 1);
-         source = SourceUtil.insertString(source, pluginString, lastInvocation.getLastLineNumber(), lastInvocation.getLastColumnNumber());
+         InvocationWithMap lastInvocation = parser.getInvocationsWithMap().get(
+                  parser.getInvocationsWithMap().size() - 1);
+         source = SourceUtil.insertString(source, pluginString, lastInvocation.getLastLineNumber(),
+                  lastInvocation.getLastColumnNumber());
       }
-      else 
+      else
       {
          source += pluginString;
       }
@@ -93,8 +123,18 @@ public class GradleUtil
    public static String removePlugin(String source, String clazz)
             throws UnremovableElementException
    {
-      // TODO
-      return source;
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithMap invocation : parser.getInvocationsWithMap())
+      {
+         if ((invocation.getMethodName().equals("apply") || invocation.getMethodName().equals("project.apply")) &&
+                  invocation.getParameters().size() == 1 &&
+                  clazz.equals(invocation.getParameters().get("plugin")))
+         {
+            return SourceUtil.removeSourceFragmentWithLine(source, invocation);
+         }
+      }
+
+      throw new UnremovableElementException();
    }
 
    public static String insertRepository(String source, String name, String url)
@@ -107,8 +147,20 @@ public class GradleUtil
    public static String removeRepository(String source, String name, String url)
             throws UnremovableElementException
    {
-      // TODO
-      return source;
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithClosure repos : parser.allInvocationsAtPath("repositories", "maven"))
+      {
+         for (InvocationWithString invocation : repos.getInvocationsWithString())
+         {
+            if (invocation.getMethodName().equals("url") &&
+                     invocation.getString().equals(url))
+            {
+               return SourceUtil.removeSourceFragmentWithLine(source, invocation);
+            }
+         }
+      }
+      
+      throw new UnremovableElementException();
    }
 
    // There is no way to remove a task because tasks are composed of many actions
@@ -120,21 +172,21 @@ public class GradleUtil
       source += taskString;
       return source;
    }
-   
+
    private static String taskDeclarationString(String name, List<String> dependsOn, String type)
    {
       if (dependsOn.isEmpty() && Strings.isNullOrEmpty(type))
       {
          return name;
       }
-      else 
+      else
       {
          String dependsOnString = dependsOnString(dependsOn);
          String typeString = Strings.isNullOrEmpty(type) ? "" : ", type: " + type;
          return String.format("(name: '%s'%s%s)", name, dependsOnString, typeString);
       }
    }
-   
+
    private static String dependsOnString(List<String> dependsOn)
    {
       if (dependsOn.size() == 0)
@@ -168,7 +220,7 @@ public class GradleUtil
          {
             Map<String, String> map = invocation.getParameters();
             String from = map.get("from");
-            
+
             // If it is already included in source then we just return the source
             if ("forge.gradle".equals(from))
             {
@@ -176,7 +228,7 @@ public class GradleUtil
             }
          }
       }
-      
+
       // If statement including forge library was not found then we add it
       return INCLUDE_FORGE_LIBRARY + source;
    }

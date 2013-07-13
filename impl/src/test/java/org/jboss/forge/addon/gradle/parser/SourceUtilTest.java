@@ -83,6 +83,32 @@ public class SourceUtilTest
       String result = SourceUtil.removeSourceFragmentWithLine(source, 3, 5, 3, 11);
       assertEquals(expected, result);
    }
+   
+   @Test
+   public void testRemoveSourceFragmentWithLineNested()
+   {
+      String source = "" +
+      		"a {\n" +
+      		"    b {\n" +
+      		"        c {\n" +
+      		"            println AAA\n" +
+      		"            println BBB\n" +
+      		"            println CCC\n" +
+      		"        }\n" +
+      		"    }\n" +
+      		"}\n";
+      String expected = "" +
+               "a {\n" +
+               "    b {\n" +
+               "        c {\n" +
+               "            println AAA\n" +
+               "            println CCC\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
+      String result = SourceUtil.removeSourceFragmentWithLine(source, 5, 13, 5, 24);
+      assertEquals(expected, result);
+   }
 
    @Test
    public void testAppendLineToClosure()
