@@ -7,9 +7,12 @@
 package org.jboss.forge.addon.gradle.parser;
 
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.gradle.jarjar.com.google.common.base.Joiner;
 import org.gradle.jarjar.com.google.common.collect.Lists;
+import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 import org.jboss.forge.furnace.util.Strings;
 
@@ -18,6 +21,8 @@ import org.jboss.forge.furnace.util.Strings;
  */
 public class GradleUtil
 {
+   public static final String INCLUDE_FORGE_LIBRARY = "apply from: 'forge.gradle'\n";
+   
    public static String insertDependency(String source, String name, String group, String version, String configuration)
    {
       String depString = String.format("%s '%s:%s:%s'", configuration, group, name, version);
@@ -27,6 +32,38 @@ public class GradleUtil
 
    public static String removeDependency(String source, String name, String group, String version, String configuration)
             throws UnremovableElementException
+   {
+      String depString = String.format("%s '%s:%s:%s'", configuration, group, name, version);
+      Map<String, String> depMap = Maps.newHashMap();
+      depMap.put("group", group);
+      depMap.put("name", name);
+      depMap.put("version", version);
+      
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithClosure deps : parser.allInvocationsAtPath("dependencies"))
+      {
+         // Search in string invocations
+         for (InvocationWithString invocation : deps.getInternalStringInvocations())
+         {
+            if (invocation.getMethodName().equals(configuration))
+            {
+               
+            }
+         }
+      }
+      
+      throw new UnremovableElementException();
+   }
+   
+   public static String insertManagedDependency(String source, String name, String group, String version, String configuration)
+   {
+      String depString = String.format("managed config: '%s', group: '%s', name: '%s', version: '%s'",
+               configuration, group, name, version);
+      source = SourceUtil.insertIntoInvocationAtPath(source, depString, "allprojects", "dependencies");
+      return source;
+   }
+   
+   public static String removeManagedDependency(String source, String name, String group, String version, String configuration)
    {
       // TODO
       return source;
@@ -124,7 +161,23 @@ public class GradleUtil
     */
    public static String checkForIncludeForgeLibraryAndInsert(String source)
    {
-      // TODO
-      return source;
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithMap invocation : parser.getInvocationsWithMap())
+      {
+         if (invocation.getMethodName().equals("apply"))
+         {
+            Map<String, String> map = invocation.getParameters();
+            String from = map.get("from");
+            
+            // If it is already included in source then we just return the source
+            if ("forge.gradle".equals(from))
+            {
+               return source;
+            }
+         }
+      }
+      
+      // If statement including forge library was not found then we add it
+      return INCLUDE_FORGE_LIBRARY + source;
    }
 }

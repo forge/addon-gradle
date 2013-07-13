@@ -57,7 +57,7 @@ public class SourceUtilTest
    }
 
    @Test
-   public void testRemoveSourceCodeElement()
+   public void testRemoveSourceFragment()
    {
       String source =
                "import java.util.Scanner;";
@@ -66,6 +66,22 @@ public class SourceUtilTest
 
       String output = SourceUtil.removeSourceFragment(source, 1, 8, 1, 13);
       assertEquals(expectedOutput, output);
+   }
+   
+   @Test
+   public void testRemoveSourceFragmentWithLine()
+   {
+      String source =
+               "subprojects {\n" +
+               "    println 'abcdef'\n" +
+               "    abcdef\n" +
+               "}\n";
+      String expected =
+               "subprojects {\n" +
+               "    println 'abcdef'\n" +
+               "}\n";
+      String result = SourceUtil.removeSourceFragmentWithLine(source, 3, 5, 3, 11);
+      assertEquals(expected, result);
    }
 
    @Test

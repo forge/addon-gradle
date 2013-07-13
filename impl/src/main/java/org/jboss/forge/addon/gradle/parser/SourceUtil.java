@@ -7,6 +7,8 @@
 package org.jboss.forge.addon.gradle.parser;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.gradle.jarjar.com.google.common.base.Optional;
 import org.jboss.forge.addon.gradle.projects.util.Preconditions;
@@ -17,7 +19,9 @@ import org.jboss.forge.addon.gradle.projects.util.Preconditions;
 public class SourceUtil
 {
    public static final String INDENT = "    ";
-
+   public static final Pattern PRECEDING_WHITESPACE_PATTERN = Pattern.compile("\\s*$");
+   public static final Pattern SUCCEEDING_WHITESPACE_PATTERN = Pattern.compile("^\\s*");
+   
    /**
     * Inserts string at specified position in source.
     * 
@@ -75,7 +79,45 @@ public class SourceUtil
    {
       int begginingPosition = positionInSource(source, lineNumber, columnNumber);
       int endingPosition = positionInSource(source, lastLineNumber, lastColumnNumber);
-      return source.substring(0, begginingPosition) + source.substring(endingPosition);
+      return removeSourceFragment(source, begginingPosition, endingPosition);
+   }
+   
+   public static String removeSourceFragment(String source, int start, int end)
+   {
+      return source.substring(0, start) + source.substring(end);
+   }
+   
+   /**
+    * {@link #removeSourceFragmentWithLine(String, int, int)}
+    */
+   public static String removeSourceFragmentWithLine(String source, int lineNumber, int columnNumber,
+            int lastLineNumber, int lastColumnNumber)
+   {
+      int beginningPosition = positionInSource(source, lineNumber, columnNumber);
+      int endingPosition = positionInSource(source, lastLineNumber, lastColumnNumber);
+      return removeSourceFragmentWithLine(source, beginningPosition, endingPosition);
+   }
+   
+   /**
+    * Replaces specified region and surrounding whitespaces with a single new line character.
+    */
+   public static String removeSourceFragmentWithLine(String source, int start, int end)
+   {
+      String beforeCode = source.substring(0, start);
+      String afterCode = source.substring(end);
+      
+      Matcher precedingMatcher = PRECEDING_WHITESPACE_PATTERN.matcher(beforeCode);
+      precedingMatcher.find();
+      String precedingWhitespace = precedingMatcher.group();
+      
+      Matcher succeedingMatcher = SUCCEEDING_WHITESPACE_PATTERN.matcher(afterCode);
+      succeedingMatcher.find();
+      String succeedingWhitespace = succeedingMatcher.group();
+      
+      start -= precedingWhitespace.length();
+      end += succeedingWhitespace.length();
+      
+      return source.substring(0, start) + "\n" + source.substring(end);
    }
 
    /**

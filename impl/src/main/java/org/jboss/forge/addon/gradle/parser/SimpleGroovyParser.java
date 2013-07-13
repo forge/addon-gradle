@@ -6,6 +6,7 @@
  */
 package org.jboss.forge.addon.gradle.parser;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.gradle.jarjar.com.google.common.base.Optional;
+import org.gradle.jarjar.com.google.common.base.Preconditions;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 
 /**
@@ -99,6 +101,31 @@ public class SimpleGroovyParser
    public Optional<InvocationWithMap> invocationWithMapByName(String name)
    {
       return root.invocationWithMapByName(name);
+   }
+   
+   public List<InvocationWithClosure> allInvocationsAtPath(String... path)
+   {
+      Preconditions.checkArgument(path.length > 0, "Path must have at least one element");
+      List<InvocationWithClosure> list = Lists.newArrayList();
+      allInvocationsAtPath(list, root, path);
+      return list;
+   }
+   
+   private void allInvocationsAtPath(List<InvocationWithClosure> list, InvocationWithClosure invocation, String... path)
+   {
+      if (path.length == 0)
+      {
+         list.add(invocation);
+         return;
+      }
+      String name = path[0];
+      for (InvocationWithClosure subinvocation : invocation.getInternalInvocations())
+      {
+         if (subinvocation.getMethodName().equals(name))
+         {
+            allInvocationsAtPath(list, subinvocation, Arrays.copyOfRange(path, 1, path.length));
+         }
+      }
    }
 
    static InvocationWithClosure createInvocationWithClosureRoot(String source)

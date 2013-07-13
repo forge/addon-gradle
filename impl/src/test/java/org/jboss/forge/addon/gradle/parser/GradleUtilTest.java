@@ -58,6 +58,54 @@ public class GradleUtilTest
                "}";
       GradleUtil.removeDependency(source, "b", "a", "1.0", "compile");
    }
+   
+   @Test
+   public void testInsertManagedDependency()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "    }\n" +
+               "}\n";
+      String expected = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "        managed config: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
+               "    }\n" +
+               "}\n";
+      String result = GradleUtil.insertManagedDependency(source, "yy", "xx", "vv", "compile");
+      assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testRemoveManagedDependency()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "        managed config: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
+               "    }\n" +
+               "}\n";
+      String expected = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "    }\n" +
+               "}\n";
+      String result = GradleUtil.removeManagedDependency(source, "yy", "xx", "vv", "compile");
+      assertEquals(expected, result);
+   }
 
    @Test
    public void testInsertPlugin()
@@ -134,7 +182,9 @@ public class GradleUtilTest
                "    }\n" +
                "}";
       String expected = "" +
-               "repositories {\n" +
+               "repositories {" +
+               "    maven {\n" +
+               "    }\n" +
                "}";
       String result = GradleUtil.removeRepository(source, "", "http://repo.com");
       assertEquals(expected, result);

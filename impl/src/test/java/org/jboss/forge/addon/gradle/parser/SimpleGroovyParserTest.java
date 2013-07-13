@@ -6,9 +6,10 @@
  */
 package org.jboss.forge.addon.gradle.parser;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
+import java.util.List;
 import java.util.Map;
 
 import org.gradle.jarjar.com.google.common.base.Optional;
@@ -119,5 +120,37 @@ public class SimpleGroovyParserTest
       
       Optional<InvocationWithClosure> optional = SimpleGroovyParser.fromSource(sauce).invocationWithClosureByName("z");
       assertFalse(optional.isPresent());
+   }
+   
+   @Test
+   public void testAllInvocationAtPath()
+   {
+      String source = "// comment\n" +
+               "subprojects {\n" +
+               "    dependencies {\n" +
+               "        compile 'group:artifact:1.0.0'\n" +
+               "    }\n" +
+               "}\n" +
+               "xyz\n" +
+               "subprojects {\n" +
+               "    qwerty\n" +
+               "    dependencies {\n" +
+               "        testRuntime 'x:y:z'\n" +
+               "    }\n" +
+               "    println 'asdf'\n" +
+               "}\n" +
+               "";
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      
+      List<InvocationWithClosure> list = parser.allInvocationsAtPath("subprojects", "dependencies");
+      assertEquals(2, list.size());
+      
+      InvocationWithClosure invocation = list.get(0);
+      assertEquals(1, invocation.getInternalStringInvocations().size());
+      assertEquals("compile", invocation.getInternalStringInvocations().get(0).getMethodName());
+      
+      invocation = list.get(1);
+      assertEquals(1, invocation.getInternalStringInvocations().size());
+      assertEquals("testRuntime", invocation.getInternalStringInvocations().get(0).getMethodName());
    }
 }
