@@ -18,16 +18,15 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.gradle.projects.model.GradleTask;
 import org.jboss.forge.addon.gradle.projects.model.GradleTaskBuilder;
 import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 
 /**
  * @author Adam Wyłuda
@@ -46,6 +45,8 @@ public class GradleFacetTest
       return ShrinkWrap
                .create(ForgeArchive.class)
                .addBeansXML()
+               .addClass(GradleTestProjectProvider.class)
+               .addAsResource("build.gradle")
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:resources", "2.0.0-SNAPSHOT"),
@@ -53,16 +54,21 @@ public class GradleFacetTest
                         AddonDependencyEntry.create("org.jboss.forge.addon:projects", "2.0.0-SNAPSHOT")
                );
    }
-
+   
    @Inject
-   private ProjectFactory projectFactory;
-
+   private GradleTestProjectProvider projectProvider;
    private Project project;
 
    @Before
    public void setUp()
    {
-      project = projectFactory.createTempProject();
+      project = projectProvider.create();
+   }
+
+   @After
+   public void cleanUp()
+   {
+      projectProvider.clean();
    }
 
    @Test
@@ -100,16 +106,30 @@ public class GradleFacetTest
                         .setType("Copy")
                         .setCode("println 'myTask!'"));
 
-      Project theSameProject = projectFactory.findProject(project.getProjectRoot());
+      Project theSameProject = projectProvider.findProject();
       GradleFacet newGradleFacet = theSameProject.getFacet(GradleFacet.class);
-      
+
       boolean containsMyTask = false;
-      for (GradleTask task : newGradleFacet.getModel().getTasks()) {
-         if (task.getName().equals("myTask")) {
+      for (GradleTask task : newGradleFacet.getModel().getTasks())
+      {
+         if (task.getName().equals("myTask"))
+         {
             containsMyTask = true;
             break;
          }
       }
       assertTrue(containsMyTask);
+   }
+   
+   @Test
+   public void testExecuteTask()
+   {
+      // TODO
+   }
+   
+   @Test
+   public void testExecuteTaskWithProfile()
+   {
+      // TODO
    }
 }

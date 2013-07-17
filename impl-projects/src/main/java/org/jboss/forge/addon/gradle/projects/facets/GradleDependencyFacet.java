@@ -22,7 +22,7 @@ import org.jboss.forge.addon.dependencies.DependencyRepository;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
-import org.jboss.forge.addon.gradle.projects.GradleConnectionManager;
+import org.jboss.forge.addon.gradle.projects.GradleManagerImpl;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 
@@ -32,7 +32,7 @@ import org.jboss.forge.addon.projects.facets.DependencyFacet;
 public class GradleDependencyFacet extends AbstractFacet<Project> implements DependencyFacet
 {
    @Inject
-   private GradleConnectionManager gradleManager;
+   private GradleManager gradleManager;
 
    @Override
    public boolean install()

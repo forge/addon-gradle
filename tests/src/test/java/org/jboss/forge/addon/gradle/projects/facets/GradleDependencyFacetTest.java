@@ -9,7 +9,6 @@ package org.jboss.forge.addon.gradle.projects.facets;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -20,17 +19,15 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
+import org.jboss.forge.addon.gradle.projects.GradleTestProjectProvider;
 import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
-import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.FileAsset;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +49,8 @@ public class GradleDependencyFacetTest
       return ShrinkWrap
                .create(ForgeArchive.class)
                .addBeansXML()
-               .add(new FileAsset(new File("src/test/resources/build.gradle")), "build.gradle")
+               .addClass(GradleTestProjectProvider.class)
+               .addAsResource("build.gradle")
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:resources", "2.0.0-SNAPSHOT"),
@@ -60,19 +58,21 @@ public class GradleDependencyFacetTest
                         AddonDependencyEntry.create("org.jboss.forge.addon:projects", "2.0.0-SNAPSHOT")
                );
    }
-
-   @Inject
-   private ProjectFactory projectFactory;
    
    @Inject
-   private ResourceFactory resourceFactory;
-
+   private GradleTestProjectProvider projectProvider;
    private Project project;
 
    @Before
    public void setUp()
    {
-      project = projectFactory.findProject((FileResource<?>) resourceFactory.create(new File("src/test/resources")));
+      project = projectProvider.create();
+   }
+
+   @After
+   public void cleanUp()
+   {
+      projectProvider.clean();
    }
 
    @Test
@@ -97,7 +97,7 @@ public class GradleDependencyFacetTest
                         .setArtifactId("junit")
                         .setGroupId("junit")
                         .setScopeType("test"));
-      
+
       project.getProjectRoot();
 
       for (Dependency dep : deps)
@@ -125,13 +125,15 @@ public class GradleDependencyFacetTest
                         .setArtifactId("mydep")
                         .setGroupId("mygroup")
                         .setScopeType("runtime"));
-      
-      Project theSameProject = projectFactory.findProject(project.getProjectRoot());
+
+      Project theSameProject = projectProvider.findProject();
       DependencyFacet theNewFacet = theSameProject.getFacet(DependencyFacet.class);
-      
+
       boolean newDependencyFound = false;
-      for (Dependency dep : theNewFacet.getDependencies()) {
-         if (dep.getCoordinate().getArtifactId().equals("mydep")) {
+      for (Dependency dep : theNewFacet.getDependencies())
+      {
+         if (dep.getCoordinate().getArtifactId().equals("mydep"))
+         {
             assertEquals("mygroup", dep.getCoordinate().getGroupId());
             assertEquals("runtime", dep.getScopeType());
             newDependencyFound = true;
