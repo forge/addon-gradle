@@ -6,16 +6,18 @@
  */
 package org.jboss.forge.addon.gradle.projects;
 
-import java.io.IOException;
-
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.furnace.services.Exported;
 
 /**
  * Simple caching service for Gradle project models.
  * 
  * @author Adam Wyłuda
  */
+@Exported
 public interface GradleProjectCache
 {
-   GradleModel getModel(String buildScriptPath) throws IOException;
+   GradleModel getModel(String buildScriptPath);
+   
+   void putModel(String buildScriptPath, GradleModel model);
 }

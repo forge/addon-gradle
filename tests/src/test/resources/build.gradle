@@ -37,3 +37,5 @@ if (project.hasProperty('profile')) {
 } else {
     println 'Profile not set!'
 }
+
+println "Running in $projectDir.path"

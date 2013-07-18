@@ -11,10 +11,14 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.jboss.forge.addon.facets.AbstractFacet;
+import org.jboss.forge.addon.gradle.parser.GradleUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleModelLoader;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.addon.resource.ResourceFactory;
 
 /**
  * @author Adam Wyłuda
@@ -23,6 +27,10 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 {
    @Inject
    private GradleManager manager;
+   @Inject
+   private GradleModelLoader modelLoader;
+   @Inject
+   private ResourceFactory resourceFactory;
    @Inject
    private GradleProjectCache cache;
 
@@ -55,8 +63,18 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    {
       try
       {
-         String buildScriptFilePath = new File(new File(getFaceted().getProjectRoot().getFullyQualifiedName()), "build.gradle").getAbsolutePath();
-         return cache.getModel(buildScriptFilePath);
+         String buildScriptPath = new File(new File(getFaceted().getProjectRoot().getFullyQualifiedName()),
+                  "build.gradle").getAbsolutePath();
+         // TODO Check if file has been modified since last use and reload
+         GradleModel model = cache.getModel(buildScriptPath);
+         if (model != null)
+         {
+            return model;
+         }
+         checkIfIsForgeLibraryInstalled(buildScriptPath);
+         model = loadModel(buildScriptPath);
+         cache.putModel(buildScriptPath, model);
+         return model;
       }
       catch (IOException e)
       {
@@ -68,7 +86,43 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public FileResource<?> getGradleResource()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return (FileResource<?>) getFaceted().getProjectRoot().getChild("build.gradle");
+   }
+
+   private GradleModel loadModel(String buildScriptPath) throws IOException
+   {
+      String directory = new File(buildScriptPath).getParent();
+
+      manager.runGradleBuild(directory, GradleUtil.FORGE_OUTPUT_TASK, "");
+
+      File forgeOutputFile = new File(directory, GradleUtil.FORGE_OUTPUT_XML);
+      String forgeOutput = FileUtils.readFileToString(forgeOutputFile);
+
+      forgeOutputFile.delete();
+
+      // TODO create file resource instance for forge output XML
+      return modelLoader.loadFromXML(null, forgeOutput);
+   }
+
+   private void checkIfIsForgeLibraryInstalled(String buildScriptPath) throws IOException
+   {
+      File directory = new File(buildScriptPath).getParentFile();
+      File scriptFile = new File(buildScriptPath);
+
+      String script = FileUtils.readFileToString(scriptFile);
+      String newScript = GradleUtil.checkForIncludeForgeLibraryAndInsert(script);
+
+      // If Forge library is not included
+      if (!script.equals(newScript))
+      {
+         FileUtils.writeStringToFile(scriptFile, newScript);
+      }
+
+      File forgeLib = new File(directory, GradleUtil.FORGE_LIBRARY);
+      // TODO check existing forge library version and replace with newer if necessary
+      if (!forgeLib.exists())
+      {
+         FileUtils.copyInputStreamToFile(getClass().getResourceAsStream(GradleUtil.FORGE_LIBRARY_RESOURCE), forgeLib);
+      }
    }
 }
