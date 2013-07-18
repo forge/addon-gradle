@@ -25,3 +25,8 @@ task ghi << {
 (1..5).each {
     task "taskNum$it"
 }
+
+task someOutput << {
+    def output= new File('output.txt').newPrintWriter()
+    output.println 'XYZ'
+}

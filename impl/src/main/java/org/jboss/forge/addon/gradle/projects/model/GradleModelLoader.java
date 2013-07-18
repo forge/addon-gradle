@@ -27,9 +27,6 @@ import org.jboss.forge.parser.xml.XMLParser;
 @Exported
 public class GradleModelLoader
 {
-   @Inject
-   private ResourceFactory factory;
-
    /**
     * Parses XML source into Gradle model, setting given file resource as Gradle resource.
     */

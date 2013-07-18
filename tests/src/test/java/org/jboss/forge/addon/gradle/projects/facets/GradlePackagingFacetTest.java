@@ -4,20 +4,13 @@
  * Licensed under the Eclipse Public License version 1.0, available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.jboss.forge.addon.gradle.projects;
-
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
+package org.jboss.forge.addon.gradle.projects.facets;
 
 import javax.inject.Inject;
 
-import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.addon.gradle.projects.model.GradleTask;
-import org.jboss.forge.addon.gradle.projects.model.GradleTaskBuilder;
+import org.jboss.forge.addon.gradle.projects.GradleTestProjectProvider;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
@@ -26,14 +19,13 @@ import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
  * @author Adam Wyłuda
  */
 @RunWith(Arquillian.class)
-public class GradleFacetTest
+public class GradlePackagingFacetTest
 {
    @Deployment
    @Dependencies({
@@ -60,82 +52,16 @@ public class GradleFacetTest
    @Inject
    private GradleTestProjectProvider projectProvider;
    private Project project;
-   private GradleFacet facet;
 
    @Before
    public void setUp()
    {
       project = projectProvider.create();
-      facet = project.getFacet(GradleFacet.class);
    }
 
    @After
    public void cleanUp()
    {
       projectProvider.clean();
-   }
-
-   @Test
-   public void testReadTaskList()
-   {
-      List<GradleTask> tasks = facet.getModel().getTasks();
-
-      List<String> taskNames = Lists.newArrayListWithCapacity(tasks.size());
-      for (GradleTask task : tasks)
-      {
-         taskNames.add(task.getName());
-      }
-
-      assertTrue(taskNames.contains("abc"));
-      assertTrue(taskNames.contains("ghi"));
-      assertTrue(taskNames.contains("taskNum1"));
-      assertTrue(taskNames.contains("taskNum2"));
-      assertTrue(taskNames.contains("taskNum3"));
-      assertTrue(taskNames.contains("taskNum4"));
-      assertTrue(taskNames.contains("taskNum5"));
-   }
-
-   @Test
-   public void testCreateTask()
-   {
-      facet.getModel().createTask(
-               GradleTaskBuilder
-                        .create()
-                        .setName("myTask")
-                        .setDependsOn("abc")
-                        .setType("Copy")
-                        .setCode("println 'myTask!'"));
-
-      Project theSameProject = projectProvider.findProject();
-      GradleFacet newGradleFacet = theSameProject.getFacet(GradleFacet.class);
-
-      boolean containsMyTask = false;
-      for (GradleTask task : newGradleFacet.getModel().getTasks())
-      {
-         if (task.getName().equals("myTask"))
-         {
-            containsMyTask = true;
-            break;
-         }
-      }
-      assertTrue(containsMyTask);
-   }
-   
-   @Test
-   public void testGetModel()
-   {
-      assertNotNull(facet.getModel());
-   }
-   
-   @Test
-   public void testExecuteTask()
-   {
-      // TODO
-   }
-   
-   @Test
-   public void testExecuteTaskWithProfile()
-   {
-      // TODO
    }
 }

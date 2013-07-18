@@ -51,6 +51,7 @@ public class GradleDependencyFacetTest
                .addBeansXML()
                .addClass(GradleTestProjectProvider.class)
                .addAsResource("build.gradle")
+               .addAsResource("test-profile.gradle")
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:resources", "2.0.0-SNAPSHOT"),

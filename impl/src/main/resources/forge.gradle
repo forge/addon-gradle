@@ -35,7 +35,7 @@ if (!project.hasProperty('forgeInstalled')) {
 
     task forgeOutput << {
         def indentLevel = 0
-        def outputFile = new File('forge-output.xml').newPrintWriter()
+        def outputFile = new File("$projectDir.path/forge-output.xml").newPrintWriter()
         def indent = {
             indentLevel.times {
                 outputFile.print '   '

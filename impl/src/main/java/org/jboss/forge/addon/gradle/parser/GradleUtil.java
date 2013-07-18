@@ -20,6 +20,11 @@ import org.jboss.forge.furnace.util.Strings;
  */
 public class GradleUtil
 {
+   public static final String FORGE_LIBRARY = "forge.gradle";
+   public static final String FORGE_LIBRARY_RESOURCE = "/forge.gradle";
+   public static final String FORGE_OUTPUT_TASK = "forgeOutput";
+   public static final String FORGE_OUTPUT_XML = "forge-output.xml";
+   
    public static final String INCLUDE_FORGE_LIBRARY = "apply from: 'forge.gradle'\n";
    public static final String MANAGED_CONFIG = "managed";
    public static final String DIRECT_CONFIG = "direct";

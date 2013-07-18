@@ -6,9 +6,13 @@
  */
 package org.jboss.forge.addon.gradle.projects;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.inject.Inject;
+
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
-import org.jboss.forge.addon.gradle.projects.model.GradleTask;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.FileResource;
 
@@ -17,6 +21,10 @@ import org.jboss.forge.addon.resource.FileResource;
  */
 public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFacet
 {
+   @Inject
+   private GradleManager manager;
+   @Inject
+   private GradleProjectCache cache;
 
    @Override
    public boolean install()
@@ -39,13 +47,22 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public void executeTask(String task, String profile)
    {
-      // TODO
+      manager.runGradleBuild(getFaceted().getProjectRoot().getFullyQualifiedName(), task, profile);
    }
 
    @Override
    public GradleModel getModel()
    {
-      return null;
+      try
+      {
+         String buildScriptFilePath = new File(new File(getFaceted().getProjectRoot().getFullyQualifiedName()), "build.gradle").getAbsolutePath();
+         return cache.getModel(buildScriptFilePath);
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+         return null;
+      }
    }
 
    @Override

@@ -1,0 +1,4 @@
+task testProfileOutput << {
+    def output= new File('testOutput.txt').newPrintWriter()
+    output.println 'TEST'
+}
