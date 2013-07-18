@@ -1,4 +1,5 @@
 task testProfileOutput << {
-    def output= new File('testOutput.txt').newPrintWriter()
-    output.println 'TEST'
+    def output = new File("$projectDir.path/testOutput.txt").newPrintWriter()
+    output.print 'TEST'
+    output.close()
 }

@@ -27,6 +27,13 @@ task ghi << {
 }
 
 task someOutput << {
-    def output= new File('output.txt').newPrintWriter()
-    output.println 'XYZ'
+    def output = new File("$projectDir.path/output.txt").newPrintWriter()
+    output.print 'XYZ'
+    output.close()
+}
+
+if (project.hasProperty('profile')) {
+    println "Profile: $profile"
+} else {
+    println 'Profile not set!'
 }

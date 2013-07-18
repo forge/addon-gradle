@@ -42,7 +42,7 @@ public class GradleManagerImpl implements GradleManager
       BuildLauncher launcher = connection.newBuild().forTasks(task);
       if (!Strings.isNullOrEmpty(profile))
       {
-         launcher.withArguments("-Pprofile=" + profile);
+         launcher = launcher.withArguments("--project-prop", "profile=" + profile);
       }
       
       final ResultHolder holder = new ResultHolder();

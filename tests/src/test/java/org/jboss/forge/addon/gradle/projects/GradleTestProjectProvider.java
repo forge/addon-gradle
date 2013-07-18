@@ -38,9 +38,14 @@ public class GradleTestProjectProvider
       DirectoryResource addonDir = resourceFactory.create(furnace.getRepositories().get(0).getRootDirectory()).reify(
                DirectoryResource.class);
       projectDir = addonDir.createTempResource();
+      
       FileResource<?> gradleFile = projectDir.getChild("build.gradle").reify(FileResource.class);
       gradleFile.createNewFile();
       gradleFile.setContents(getClass().getResourceAsStream("/build.gradle"));
+      
+      FileResource<?> testProfileFile = projectDir.getChild("test-profile.gradle").reify(FileResource.class);
+      testProfileFile.createNewFile();
+      testProfileFile.setContents(getClass().getResourceAsStream("/test-profile.gradle"));
       return findProject();
    }
 

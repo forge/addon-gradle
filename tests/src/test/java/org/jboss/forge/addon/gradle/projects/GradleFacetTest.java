@@ -7,12 +7,16 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -128,14 +132,20 @@ public class GradleFacetTest
    }
    
    @Test
-   public void testExecuteTask()
+   public void testExecuteTask() throws IOException
    {
-      // TODO
+      facet.getModel();
+      facet.executeTask("someOutput");
+      String output = FileUtils.readFileToString(new File(project.getProjectRoot().getFullyQualifiedName() + File.separator + "output.txt"));
+      assertEquals("XYZ", output);
    }
    
    @Test
-   public void testExecuteTaskWithProfile()
+   public void testExecuteTaskWithProfile() throws IOException
    {
-      // TODO
+      facet.getModel();
+      facet.executeTask("testProfileOutput", "test");
+      String output = FileUtils.readFileToString(new File(project.getProjectRoot().getFullyQualifiedName() + File.separator + "testOutput.txt"));
+      assertEquals("TEST", output);
    }
 }
