@@ -13,23 +13,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.addon.resource.ResourceFactory;
-import org.jboss.forge.furnace.services.Exported;
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
 
 /**
  * @author Adam Wyłuda
  */
-@Exported
-public class GradleModelLoader
+public class GradleModelLoaderImpl implements GradleModelLoader
 {
    /**
     * Parses XML source into Gradle model, setting given file resource as Gradle resource.
     */
+   @Override
    public GradleModel loadFromXML(FileResource<?> fileResource, String source)
    {
       Node root = XMLParser.parse(source);

@@ -26,7 +26,7 @@ public class GradleModelLoaderTest
    @BeforeClass
    public static void init() throws IOException
    {
-      GradleModelLoader loader = new GradleModelLoader();
+      GradleModelLoader loader = new GradleModelLoaderImpl();
       String source = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
       model = loader.loadFromXML(null, source);
    }
@@ -160,7 +160,7 @@ public class GradleModelLoaderTest
    @Test
    public void testSourceSets()
    {
-      assertEquals("There are two or less source sets", 2, model.getSourceSets().size());
+      assertEquals("There are more or less than two source sets", 2, model.getSourceSets().size());
       boolean mainSetSet = false, testSetSet = false;
       for (GradleSourceSet sourceSet : model.getSourceSets())
       {
