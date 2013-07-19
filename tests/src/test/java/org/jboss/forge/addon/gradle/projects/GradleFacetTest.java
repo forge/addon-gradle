@@ -6,7 +6,7 @@
  */
 package org.jboss.forge.addon.gradle.projects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -16,13 +16,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.FileUtils;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.gradle.projects.model.GradleTask;
 import org.jboss.forge.addon.gradle.projects.model.GradleTaskBuilder;
 import org.jboss.forge.addon.projects.Project;
+import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
@@ -63,6 +64,9 @@ public class GradleFacetTest
    
    @Inject
    private GradleTestProjectProvider projectProvider;
+   @Inject
+   private ResourceFactory resourceFactory;
+   
    private Project project;
    private GradleFacet facet;
 
@@ -136,7 +140,7 @@ public class GradleFacetTest
    {
       facet.getModel();
       facet.executeTask("someOutput");
-      String output = FileUtils.readFileToString(new File(project.getProjectRoot().getFullyQualifiedName() + File.separator + "output.txt"));
+      String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot().getFullyQualifiedName() + File.separator + "output.txt"))).getContents();
       assertEquals("XYZ", output);
    }
    
@@ -145,7 +149,7 @@ public class GradleFacetTest
    {
       facet.getModel();
       facet.executeTask("testProfileOutput", "test");
-      String output = FileUtils.readFileToString(new File(project.getProjectRoot().getFullyQualifiedName() + File.separator + "testOutput.txt"));
+      String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot().getFullyQualifiedName() + File.separator + "testOutput.txt"))).getContents();
       assertEquals("TEST", output);
    }
 }
