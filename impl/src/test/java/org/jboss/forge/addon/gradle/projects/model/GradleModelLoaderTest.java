@@ -12,9 +12,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
+import org.jboss.forge.furnace.util.Streams;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,7 +27,7 @@ public class GradleModelLoaderTest
    public static void init() throws IOException
    {
       GradleModelLoader loader = new GradleModelLoader();
-      String source = IOUtils.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
+      String source = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
       model = loader.loadFromXML(null, source);
    }
 

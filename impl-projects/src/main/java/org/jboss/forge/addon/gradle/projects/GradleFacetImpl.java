@@ -7,18 +7,21 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.FileUtils;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.parser.GradleUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelLoader;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFactory;
+import org.jboss.forge.furnace.util.Streams;
 
 /**
  * @author Adam Wyłuda
@@ -95,10 +98,11 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 
       manager.runGradleBuild(directory, GradleUtil.FORGE_OUTPUT_TASK, "");
 
-      File forgeOutputFile = new File(directory, GradleUtil.FORGE_OUTPUT_XML);
-      String forgeOutput = FileUtils.readFileToString(forgeOutputFile);
+      FileResource<?> forgeOutputfile = (FileResource<?>) resourceFactory.create(new File(directory,
+               GradleUtil.FORGE_OUTPUT_XML));
+      String forgeOutput = Streams.toString(forgeOutputfile.getResourceInputStream());
 
-      forgeOutputFile.delete();
+      forgeOutputfile.delete();
 
       // TODO create file resource instance for forge output XML
       return modelLoader.loadFromXML(null, forgeOutput);
@@ -108,21 +112,25 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    {
       File directory = new File(buildScriptPath).getParentFile();
       File scriptFile = new File(buildScriptPath);
+      FileResource<?> scriptResource = (FileResource<?>) resourceFactory.create(scriptFile);
 
-      String script = FileUtils.readFileToString(scriptFile);
+      InputStream scriptInputStream = scriptResource.getResourceInputStream();
+      String script = Streams.toString(scriptInputStream);
+      Streams.closeQuietly(scriptInputStream);
       String newScript = GradleUtil.checkForIncludeForgeLibraryAndInsert(script);
 
       // If Forge library is not included
       if (!script.equals(newScript))
       {
-         FileUtils.writeStringToFile(scriptFile, newScript);
+         scriptResource.setContents(newScript);
       }
 
-      File forgeLib = new File(directory, GradleUtil.FORGE_LIBRARY);
+      FileResource<?> forgeLib = (FileResource<?>) resourceFactory
+               .create(new File(directory, GradleUtil.FORGE_LIBRARY));
       // TODO check existing forge library version and replace with newer if necessary
       if (!forgeLib.exists())
       {
-         FileUtils.copyInputStreamToFile(getClass().getResourceAsStream(GradleUtil.FORGE_LIBRARY_RESOURCE), forgeLib);
+         forgeLib.setContents(getClass().getResourceAsStream(GradleUtil.FORGE_LIBRARY_RESOURCE));
       }
    }
 }

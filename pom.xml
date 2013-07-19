@@ -22,10 +22,6 @@
 		<module>tests</module>
 	</modules>
 
-	<properties>
-		<version.maven>3.0.5</version.maven>
-	</properties>
-
 	<repositories>
 		<repository>
 			<id>Gradle Repository</id>
