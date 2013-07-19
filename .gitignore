@@ -1,6 +1,7 @@
 .classpath
 .project
 .settings
+.gradle
 .DS_Store
 dependency-reduced-pom.xml
 target/
