@@ -6,12 +6,16 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.gradle.projects.GradleTestProjectProvider;
 import org.jboss.forge.addon.projects.Project;
+import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
@@ -19,6 +23,7 @@ import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
@@ -31,37 +36,94 @@ public class GradleMetadataFacetTest
    @Dependencies({
             @AddonDependency(name = "org.jboss.forge.addon:resources", version = "2.0.0-SNAPSHOT"),
             @AddonDependency(name = "org.jboss.forge.addon:projects", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:gradle", version = "2.0.0-SNAPSHOT")
-   })
+            @AddonDependency(name = "org.jboss.forge.addon:gradle", version = "2.0.0-SNAPSHOT") })
    public static ForgeArchive getDeployment()
    {
-      return ShrinkWrap
-               .create(ForgeArchive.class)
-               .addBeansXML()
-               .addClass(GradleTestProjectProvider.class)
-               .addAsResource("build.gradle")
-               .addAsResource("test-profile.gradle")
-               .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:resources", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:gradle", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:projects", "2.0.0-SNAPSHOT")
-               );
+      return GradleTestProjectProvider.getDeployment();
    }
-   
+
    @Inject
    private GradleTestProjectProvider projectProvider;
    private Project project;
+   private MetadataFacet facet;
 
    @Before
    public void setUp()
    {
       project = projectProvider.create();
+      facet = project.getFacet(MetadataFacet.class);
    }
 
    @After
    public void cleanUp()
    {
       projectProvider.clean();
+   }
+
+   @Test
+   public void testGetProjectName()
+   {
+      String name = facet.getProjectName();
+      assertEquals("test-project", name);
+   }
+
+   @Test
+   public void testSetProjectName()
+   {
+      facet.setProjectName("new-name");
+
+      Project sameProject = projectProvider.findProject();
+      MetadataFacet sameFacet = sameProject.getFacet(MetadataFacet.class);
+
+      String name = sameFacet.getProjectName();
+      assertEquals("new-name", name);
+   }
+
+   @Test
+   public void testGetTopLevelPackage()
+   {
+      String group = facet.getTopLevelPackage();
+      assertEquals("org.testproject", group);
+   }
+
+   @Test
+   public void testSetTopLevelPackage()
+   {
+      facet.setTopLevelPackage("org.new");
+
+      Project sameProject = projectProvider.findProject();
+      MetadataFacet sameFacet = sameProject.getFacet(MetadataFacet.class);
+
+      String group = sameFacet.getTopLevelPackage();
+      assertEquals("org.new", group);
+   }
+
+   @Test
+   public void testGetProjectVersion()
+   {
+      String version = facet.getProjectVersion();
+      assertEquals("0.7", version);
+   }
+
+   @Test
+   public void testSetProjectVersion()
+   {
+      facet.setProjectVersion("0.8");
+
+      Project sameProject = projectProvider.findProject();
+      MetadataFacet sameFacet = sameProject.getFacet(MetadataFacet.class);
+
+      String version = sameFacet.getProjectVersion();
+      assertEquals("0.8", version);
+   }
+
+   @Test
+   public void testGetOutputDependency()
+   {
+      Dependency dep = facet.getOutputDependency();
+
+      assertEquals("test-project", dep.getCoordinate().getArtifactId());
+      assertEquals("org.testproject", dep.getCoordinate().getGroupId());
+      assertEquals("0.7", dep.getCoordinate().getVersion());
    }
 }

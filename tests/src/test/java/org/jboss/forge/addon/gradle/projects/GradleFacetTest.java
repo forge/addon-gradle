@@ -27,8 +27,6 @@ import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,25 +46,14 @@ public class GradleFacetTest
    })
    public static ForgeArchive getDeployment()
    {
-      return ShrinkWrap
-               .create(ForgeArchive.class)
-               .addBeansXML()
-               .addClass(GradleTestProjectProvider.class)
-               .addAsResource("build.gradle")
-               .addAsResource("test-profile.gradle")
-               .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:resources", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:gradle", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:projects", "2.0.0-SNAPSHOT")
-               );
+      return GradleTestProjectProvider.getDeployment();
    }
-   
+
    @Inject
    private GradleTestProjectProvider projectProvider;
    @Inject
    private ResourceFactory resourceFactory;
-   
+
    private Project project;
    private GradleFacet facet;
 
@@ -128,28 +115,28 @@ public class GradleFacetTest
       }
       assertTrue(containsMyTask);
    }
-   
+
    @Test
    public void testGetModel()
    {
       assertNotNull(facet.getModel());
    }
-   
+
    @Test
    public void testExecuteTask() throws IOException
    {
-      facet.getModel();
       facet.executeTask("someOutput");
-      String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot().getFullyQualifiedName() + File.separator + "output.txt"))).getContents();
+      String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot()
+               .getFullyQualifiedName() + File.separator + "output.txt"))).getContents();
       assertEquals("XYZ", output);
    }
-   
+
    @Test
    public void testExecuteTaskWithProfile() throws IOException
    {
-      facet.getModel();
       facet.executeTask("testProfileOutput", "test");
-      String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot().getFullyQualifiedName() + File.separator + "testOutput.txt"))).getContents();
+      String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot()
+               .getFullyQualifiedName() + File.separator + "testOutput.txt"))).getContents();
       assertEquals("TEST", output);
    }
 }

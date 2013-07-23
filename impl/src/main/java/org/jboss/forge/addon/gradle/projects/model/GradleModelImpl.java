@@ -18,8 +18,11 @@ public class GradleModelImpl implements GradleModel
 {
    private final FileResource<?> gradleResource;
    
-   private String projectName;
+   private String name;
+   private String group;
    private String version;
+   private String packaging;
+   private String archivePath;
    private List<GradleTask> tasks;
    private List<GradleDependency> dependencies;
    private List<GradleDependency> managedDependencies;
@@ -28,14 +31,17 @@ public class GradleModelImpl implements GradleModel
    private List<GradleRepository> repositories;
    private List<GradleSourceSet> sourceSets;
    
-   public GradleModelImpl(FileResource<?> gradleResource, String projectName, String version, List<GradleTask> tasks,
+   public GradleModelImpl(FileResource<?> gradleResource, String projectName, String version, 
+            String packaging, String archivePath, List<GradleTask> tasks,
             List<GradleDependency> dependencies, List<GradleDependency> managedDependencies,
             List<GradleProfile> profiles, List<GradlePlugin> plugins, List<GradleRepository> repositories,
             List<GradleSourceSet> sourceSets)
    {
       this.gradleResource = gradleResource;
-      this.projectName = projectName;
+      this.name = projectName;
       this.version = version;
+      this.packaging = packaging;
+      this.archivePath = archivePath;
       this.tasks = tasks;
       this.dependencies = dependencies;
       this.managedDependencies = managedDependencies;
@@ -46,15 +52,33 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public String getProjectName()
+   public String getGroup()
    {
-      return projectName;
+      return group;
+   }
+
+   @Override
+   public String getName()
+   {
+      return name;
    }
 
    @Override
    public String getVersion()
    {
       return version;
+   }
+
+   @Override
+   public String getPackaging()
+   {
+      return packaging;
+   }
+
+   @Override
+   public String getArchivePath()
+   {
+      return archivePath;
    }
 
    @Override
@@ -164,9 +188,15 @@ public class GradleModelImpl implements GradleModel
       }
       return false;
    }
+   
+   @Override
+   public void setGroup(String group) throws UnremovableElementException
+   {
+      
+   }
 
    @Override
-   public void setProjectName(String name) throws UnremovableElementException
+   public void setName(String name) throws UnremovableElementException
    {
       // TODO Auto-generated method stub
    }
@@ -175,6 +205,20 @@ public class GradleModelImpl implements GradleModel
    public void setVersion(String version) throws UnremovableElementException
    {
       // TODO Auto-generated method stub
+   }
+
+   @Override
+   public void setPackaging(String packaging)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+   @Override
+   public void setArchiveName(String archiveName)
+   {
+      // TODO Auto-generated method stub
+      
    }
 
    @Override

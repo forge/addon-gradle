@@ -34,7 +34,7 @@ public class GradleModelLoaderTest
    @Test
    public void testProjectName()
    {
-      assertEquals("Gradle Test Project", model.getProjectName());
+      assertEquals("Gradle Test Project", model.getName());
    }
 
    @Test

@@ -17,9 +17,15 @@ import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementExcept
  */
 public interface GradleModel
 {
-   String getProjectName();
+   String getGroup();
+   
+   String getName();
 
    String getVersion();
+   
+   String getPackaging();
+   
+   String getArchivePath();
 
    List<GradleTask> getTasks();
 
@@ -66,10 +72,16 @@ public interface GradleModel
     * Returns true if project defined repository with given name. 
     */
    boolean hasRepository(String url);
+   
+   void setGroup(String group) throws UnremovableElementException;
 
-   void setProjectName(String name) throws UnremovableElementException;
+   void setName(String name) throws UnremovableElementException;
 
    void setVersion(String version) throws UnremovableElementException;
+
+   void setPackaging(String packaging);
+   
+   void setArchiveName(String archiveName);
 
    void createTask(GradleTaskBuilder builder);
 

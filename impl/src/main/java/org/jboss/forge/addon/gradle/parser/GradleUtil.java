@@ -28,6 +28,8 @@ public class GradleUtil
    public static final String INCLUDE_FORGE_LIBRARY = "apply from: 'forge.gradle'\n";
    public static final String MANAGED_CONFIG = "managed";
    public static final String DIRECT_CONFIG = "direct";
+   
+   // TODO set and get project: name, version
 
    public static String insertDependency(String source, String group, String name, String version, String configuration)
    {

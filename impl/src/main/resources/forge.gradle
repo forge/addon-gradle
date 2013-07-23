@@ -9,10 +9,22 @@ allprojects {
             }
         }
     }
+    if (project.hasProperty('_archiveName')) {
+        assemble.taskDependencies.getDependencies(assemble).each {
+            if (it.hasProperty('archiveName')) {
+                it.archiveName = project._archiveName +
+                        it.archiveName.substring(it.archiveName.lastIndexOf('.'))
+            }
+        }
+    }
 }
 
 if (!project.hasProperty('forgeInstalled')) {
     project.set('forgeInstalled', true)
+    
+	project.set('archiveName', {
+	    project.set('_archiveName', it)
+	})
 
     project.set('_managedDependencies', [:])
     project.set('managed', {
@@ -58,12 +70,31 @@ if (!project.hasProperty('forgeInstalled')) {
         }
         def outputProject = { p ->
             outputInc '<project>'
+            outputInc '<group>'
+            output p.group
+            outputDec '</group>'
             outputInc '<name>'
             output p.name
             outputDec '</name>'
             outputInc '<version>'
             output p.version
             outputDec '</version>'
+            def _assembleArchiveTask
+            if (p.tasks.findByPath('assemble') != null) {
+			    assemble.taskDependencies.getDependencies(assemble).each {
+			        if (it.hasProperty('archiveName')) {
+			        	_assembleArchiveTask = it
+			        }
+			    }
+		    }
+			outputInc '<packaging>'
+			output _assembleArchiveTask != null ? _assembleArchiveTask.name : ''
+			outputDec '</packaging>'
+			outputInc '<archivePath>'
+			output _assembleArchiveTask != null ? 
+					"$buildDir.name/$libsDirName/$_assembleArchiveTask.archiveName" 
+					: ''
+			outputDec '</archivePath>'
             outputInc '<tasks>'
             p.tasks.each { t ->
                 outputInc '<task>'

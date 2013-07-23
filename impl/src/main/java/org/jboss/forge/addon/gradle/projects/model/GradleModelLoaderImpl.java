@@ -60,7 +60,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       List<GradleRepository> repositories = reposFromNode(projectNode);
       List<GradleSourceSet> sourceSets = sourceSetsFromNode(projectNode);
 
-      return new GradleModelImpl(fileResource, projectName, version, tasks, deps,
+      return new GradleModelImpl(fileResource, projectName, version, "", "", tasks, deps,
                managedDeps, profiles, plugins, repositories, sourceSets);
    }
 
@@ -190,7 +190,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       }
       return new GradleSourceSetImpl(name, javaSourceDirs, resourceSourceDirs);
    }
-   
+
    private GradleSourceDirectory sourceDirectoryFromNode(Node directoryNode)
    {
       String path = directoryNode.getText().trim();

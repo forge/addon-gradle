@@ -35,18 +35,7 @@ public class GradleJavaSourceFacetTest
    })
    public static ForgeArchive getDeployment()
    {
-      return ShrinkWrap
-               .create(ForgeArchive.class)
-               .addBeansXML()
-               .addClass(GradleTestProjectProvider.class)
-               .addAsResource("build.gradle")
-               .addAsResource("test-profile.gradle")
-               .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:resources", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:gradle", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:projects", "2.0.0-SNAPSHOT")
-               );
+      return GradleTestProjectProvider.getDeployment();
    }
    
    @Inject

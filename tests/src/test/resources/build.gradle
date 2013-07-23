@@ -1,7 +1,28 @@
 apply plugin: 'java'
+apply plugin: 'war'
 
+group = 'org.testproject'
 version = '0.7'
 sourceCompatibility = '1.5'
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src/main/interfaces'
+		}
+		resources {
+			srcDir 'src/main/images'
+		}
+	}
+	test {
+		java {
+			srcDir 'src/test/mocks'
+		}
+		resources {
+			srcDir 'src/test/templates'
+		}
+	}
+}
 
 repositories {
     mavenCentral()
@@ -31,6 +52,8 @@ task someOutput << {
     output.print 'XYZ'
     output.close()
 }
+
+
 
 if (project.hasProperty('profile')) {
     println "Profile: $profile"

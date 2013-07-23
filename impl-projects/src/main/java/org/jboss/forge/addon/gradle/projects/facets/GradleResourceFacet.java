@@ -23,15 +23,13 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    @Override
    public boolean install()
    {
-      // TODO Auto-generated method stub
-      return false;
+      return true;
    }
 
    @Override
    public boolean isInstalled()
    {
-      // TODO Auto-generated method stub
-      return false;
+      return true;
    }
 
    @Override

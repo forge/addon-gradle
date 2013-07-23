@@ -1,11 +1,20 @@
 <forgeOutput>
    <project>
+      <group>
+         
+      </group>
       <name>
          Gradle Test Project
       </name>
       <version>
          0.1-SNAPSHOT
       </version>
+      <packaging>
+         jar
+      </packaging>
+      <archivePath>
+         build/libs/Gradle Test Project-0.1-SNAPSHOT.jar
+      </archivePath>
       <tasks>
          <task>
             <name>
@@ -66,13 +75,13 @@
             </name>
             <dependsOn>
                <task>
-                  processResources
-               </task>
-               <task>
                   compileScala
                </task>
                <task>
                   compileGroovy
+               </task>
+               <task>
+                  processResources
                </task>
                <task>
                   compileJava
@@ -92,13 +101,13 @@
             </name>
             <dependsOn>
                <task>
-                  cleanEclipseProject
-               </task>
-               <task>
                   cleanEclipseJdt
                </task>
                <task>
                   cleanEclipseClasspath
+               </task>
+               <task>
+                  cleanEclipseProject
                </task>
             </dependsOn>
          </task>
@@ -192,10 +201,10 @@
             </name>
             <dependsOn>
                <task>
-                  eclipseClasspath
+                  eclipseProject
                </task>
                <task>
-                  eclipseProject
+                  eclipseClasspath
                </task>
                <task>
                   eclipseJdt
@@ -333,9 +342,6 @@
             </name>
             <dependsOn>
                <task>
-                  processTestResources
-               </task>
-               <task>
                   compileTestScala
                </task>
                <task>
@@ -343,6 +349,9 @@
                </task>
                <task>
                   compileTestJava
+               </task>
+               <task>
+                  processTestResources
                </task>
             </dependsOn>
          </task>
@@ -817,12 +826,21 @@
          glassfish
       </name>
       <project>
+         <group>
+            
+         </group>
          <name>
             Gradle Test Project
          </name>
          <version>
             0.1-SNAPSHOT
          </version>
+         <packaging>
+            
+         </packaging>
+         <archivePath>
+            
+         </archivePath>
          <tasks>
             <task>
                <name>
@@ -933,12 +951,21 @@
          wildfly
       </name>
       <project>
+         <group>
+            
+         </group>
          <name>
             Gradle Test Project
          </name>
          <version>
             0.1-SNAPSHOT
          </version>
+         <packaging>
+            
+         </packaging>
+         <archivePath>
+            
+         </archivePath>
          <tasks>
             <task>
                <name>

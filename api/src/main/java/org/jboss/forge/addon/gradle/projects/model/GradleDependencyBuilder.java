@@ -28,8 +28,7 @@ public class GradleDependencyBuilder
    }
 
    /**
-    * Creates gradle dependency using given configuration and parsing gradleString in format:
-    * {@code group:name:version}
+    * Creates gradle dependency using given configuration and parsing gradleString in format: {@code group:name:version}
     */
    public static GradleDependencyBuilder fromGradleString(String configuration, String gradleString)
    {
@@ -88,8 +87,9 @@ public class GradleDependencyBuilder
       this.configuration = configuration;
       return this;
    }
-   
-   public boolean equalsToDep(GradleDependency dep) {
+
+   public boolean equalsToDep(GradleDependency dep)
+   {
       return group.equals(dep.getGroup()) && name.equals(dep.getName()) && version.equals(dep.getVersion())
                && configuration.equals(dep.getConfigurationName());
    }

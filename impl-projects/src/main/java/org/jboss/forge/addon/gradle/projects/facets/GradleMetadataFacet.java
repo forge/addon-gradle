@@ -20,15 +20,13 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    @Override
    public boolean install()
    {
-      // TODO Auto-generated method stub
-      return false;
+      return true;
    }
 
    @Override
    public boolean isInstalled()
    {
-      // TODO Auto-generated method stub
-      return false;
+      return true;
    }
 
    @Override
@@ -56,7 +54,6 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    public void setTopLevelPackage(String groupId)
    {
       // TODO Auto-generated method stub
-      
    }
 
    @Override
@@ -70,7 +67,6 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    public void setProjectVersion(String version)
    {
       // TODO Auto-generated method stub
-      
    }
 
    @Override
@@ -79,5 +75,4 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
       // TODO Auto-generated method stub
       return null;
    }
-
 }
