@@ -25,25 +25,34 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 @Exported
 public class GradleTestProjectProvider
 {
+   static final String[] RESOURCES = new String[] {
+            "build.gradle",
+            "test-profile.gradle",
+            "settings.gradle",
+            "src/main/interfaces/org/testproject/Service.java",
+            "src/main/images/forge.txt",
+            "src/test/mocks/org/testproject/TestMainClass.java",
+            "src/test/templates/pom.xml"
+   };
+
    public static ForgeArchive getDeployment()
    {
-      return ShrinkWrap
-               .create(ForgeArchive.class)
+      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
                .addBeansXML()
                .addClass(GradleTestProjectProvider.class)
-               .addAsResource("build.gradle")
-               .addAsResource("test-profile.gradle")
-               .addAsResource("settings.gradle")
-               .addAsResource("src/main/images/forge.txt")
-               .addAsResource("src/test/templates/pom.xml")
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:resources", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:gradle", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:projects", "2.0.0-SNAPSHOT")
                );
+      for (String resource : RESOURCES)
+      {
+         archive = archive.addAsResource(resource);
+      }
+      return archive;
    }
-   
+
    @Inject
    private Furnace furnace;
    @Inject
@@ -59,25 +68,7 @@ public class GradleTestProjectProvider
                DirectoryResource.class);
       projectDir = addonDir.createTempResource();
 
-      FileResource<?> gradleFile = projectDir.getChild("build.gradle").reify(FileResource.class);
-      gradleFile.createNewFile();
-      gradleFile.setContents(getClass().getResourceAsStream("/build.gradle"));
-
-      FileResource<?> testProfileFile = projectDir.getChild("test-profile.gradle").reify(FileResource.class);
-      testProfileFile.createNewFile();
-      testProfileFile.setContents(getClass().getResourceAsStream("/test-profile.gradle"));
-
-      FileResource<?> settingsFile = projectDir.getChild("settings.gradle").reify(FileResource.class);
-      settingsFile.createNewFile();
-      settingsFile.setContents(getClass().getResourceAsStream("/settings.gradle"));
-
-      FileResource<?> forgeFile = projectDir.getChild("src/main/images/forge.txt").reify(FileResource.class);
-      forgeFile.createNewFile();
-      forgeFile.setContents(getClass().getResourceAsStream("/src/main/images/forge.txt"));
-
-      FileResource<?> pomFile = projectDir.getChild("src/test/templates/pom.xml").reify(FileResource.class);
-      pomFile.createNewFile();
-      pomFile.setContents(getClass().getResourceAsStream("/src/test/templates/pom.xml"));
+      initFiles(RESOURCES);
 
       return findProject();
    }
@@ -90,5 +81,15 @@ public class GradleTestProjectProvider
    public void clean()
    {
       projectDir.delete(true);
+   }
+
+   private void initFiles(String... files)
+   {
+      for (String file : files)
+      {
+         FileResource<?> res = projectDir.getChild(file).reify(FileResource.class);
+         res.createNewFile();
+         res.setContents(getClass().getResourceAsStream("/" + file));
+      }
    }
 }

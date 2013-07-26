@@ -6,7 +6,7 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import javax.inject.Inject;
 
@@ -15,6 +15,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.gradle.projects.GradleTestProjectProvider;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
+import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
@@ -83,28 +84,40 @@ public class GradlePackagingFacetTest
       facet.executeBuild();
       Resource<?> res = facet.getFinalArtifact();
       String name = res.getName();
-      assertEquals("test-project-0.7.war", name);
+      assertEquals("archiveX.war", name);
    }
    
    @Test
    public void testCreateBuilder()
    {
-      
+      FileResource<?> archive = (FileResource<?>) facet.createBuilder().runTests(true).build();
+      assertEquals("archiveX.war", archive.getName());
+      assertTrue(project.getProjectRoot().getChild("test.log").exists());
    }
    
    @Test
    public void testCreateBuilderSkipTests()
    {
-      
+      FileResource<?> archive = (FileResource<?>) facet.createBuilder().runTests(false).build();
+      assertEquals("archiveX.war", archive.getName());
+      assertFalse(project.getProjectRoot().getChild("test.log").exists());
    }
    
    @Test
    public void testGetFinalName()
    {
-      
+      String finalName = facet.getFinalName();
+      assertEquals("archiveX", finalName);
    }
    
    public void testSetFinalName()
    {
+      facet.setFinalName("NEW_ARCHIVE_NAME");
+      
+      Project sameProject = projectProvider.findProject();
+      PackagingFacet sameFacet = sameProject.getFacet(PackagingFacet.class);
+      
+      String finalName = sameFacet.getFinalName();
+      assertEquals("NEW_ARCHIVE_NAME", finalName);
    }
 }
