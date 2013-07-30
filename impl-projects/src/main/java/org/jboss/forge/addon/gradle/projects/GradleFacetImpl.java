@@ -131,4 +131,11 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          forgeLib.setContents(getClass().getResourceAsStream(GradleUtil.FORGE_LIBRARY_RESOURCE));
       }
    }
+
+   @Override
+   public void setModel(GradleModel model)
+   {
+      // TODO Auto-generated method stub
+      
+   }
 }

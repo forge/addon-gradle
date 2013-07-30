@@ -122,7 +122,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    }
 
    @Override
-   public Dependency getManagedDependency(Dependency managedDependency)
+   public Dependency getDirectManagedDependency(Dependency arg0)
    {
       // TODO Auto-generated method stub
       return null;

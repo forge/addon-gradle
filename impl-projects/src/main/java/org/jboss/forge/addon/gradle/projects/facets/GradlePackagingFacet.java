@@ -7,6 +7,8 @@
 package org.jboss.forge.addon.gradle.projects.facets;
 
 import org.jboss.forge.addon.facets.AbstractFacet;
+import org.jboss.forge.addon.facets.constraints.RequiresFacet;
+import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.building.ProjectBuilder;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
@@ -15,28 +17,26 @@ import org.jboss.forge.addon.resource.Resource;
 /**
  * @author Adam Wyłuda
  */
+@RequiresFacet(value = {GradleFacet.class})
 public class GradlePackagingFacet extends AbstractFacet<Project> implements PackagingFacet
 {
 
    @Override
    public boolean install()
    {
-      // TODO Auto-generated method stub
-      return false;
+      return true;
    }
 
    @Override
    public boolean isInstalled()
    {
-      // TODO Auto-generated method stub
-      return false;
+      return true;
    }
 
    @Override
    public void setPackagingType(String type)
    {
       // TODO Auto-generated method stub
-      
    }
 
    @Override
@@ -78,7 +78,7 @@ public class GradlePackagingFacet extends AbstractFacet<Project> implements Pack
    public void setFinalName(String finalName)
    {
       // TODO Auto-generated method stub
-      
+
    }
 
 }

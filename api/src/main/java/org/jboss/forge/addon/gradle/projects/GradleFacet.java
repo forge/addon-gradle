@@ -35,6 +35,8 @@ public interface GradleFacet extends ProjectFacet
    void executeTask(String task, String profile);
 
    GradleModel getModel();
+   
+   void setModel(GradleModel model);
 
    FileResource<?> getGradleResource();
 }
