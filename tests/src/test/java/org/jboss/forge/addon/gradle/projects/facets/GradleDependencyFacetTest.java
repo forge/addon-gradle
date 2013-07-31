@@ -6,17 +6,26 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.Dependency;
+import org.jboss.forge.addon.dependencies.DependencyQuery;
 import org.jboss.forge.addon.dependencies.DependencyRepository;
+import org.jboss.forge.addon.dependencies.builder.CoordinateBuilder;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
+import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.gradle.projects.GradleTestProjectProvider;
 import org.jboss.forge.addon.gradle.projects.ProjectAssert;
 import org.jboss.forge.addon.projects.Project;
@@ -77,11 +86,11 @@ public class GradleDependencyFacetTest
 
       Project theSameProject = projectProvider.findProject();
       DependencyFacet theNewFacet = theSameProject.getFacet(DependencyFacet.class);
-      
-      ProjectAssert.assertContainsDependency(theNewFacet.getDependencies(), 
+
+      ProjectAssert.assertContainsDependency(theNewFacet.getDependencies(),
                "runtime", "mydep", "mygroup", "myversion");
    }
-   
+
    @Test
    public void testAddManagedDependency()
    {
@@ -95,11 +104,11 @@ public class GradleDependencyFacetTest
 
       Project theSameProject = projectProvider.findProject();
       DependencyFacet theNewFacet = theSameProject.getFacet(DependencyFacet.class);
-      
-      ProjectAssert.assertContainsDependency(theNewFacet.getManagedDependencies(), 
+
+      ProjectAssert.assertContainsDependency(theNewFacet.getManagedDependencies(),
                "runtime", "mydep", "mygroup", "myversion");
    }
-   
+
    @Test
    public void testAddDirectManagedDependency()
    {
@@ -113,219 +122,333 @@ public class GradleDependencyFacetTest
 
       Project theSameProject = projectProvider.findProject();
       DependencyFacet theNewFacet = theSameProject.getFacet(DependencyFacet.class);
-      
-      ProjectAssert.assertContainsDependency(theNewFacet.getManagedDependencies(), 
+
+      ProjectAssert.assertContainsDependency(theNewFacet.getManagedDependencies(),
                "runtime", "mydep", "mygroup", "myversion");
    }
-   
+
    @Test
    public void testAddRepository()
    {
       facet.addRepository("RepoName", "http://repo.com/");
-      
+
       Project sameProject = projectProvider.findProject();
       DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
-      
+
       ProjectAssert.assertContainsRepository(sameFacet.getRepositories(), "http://repo.com/");
    }
-   
+
    @Test
    public void testGetDependencies()
    {
       List<Dependency> deps = facet.getDependencies();
-      
+
       ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
-      ProjectAssert.assertContainsDependency(deps, "testCompile", "junit", "junit", "4.11");
+      ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
       ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
    }
-   
+
    @Test
    public void testGetDependenciesInScopes()
    {
-      List<Dependency> deps = facet.getDependenciesInScopes("testCompile", "runtime");
-      
-      ProjectAssert.assertContainsDependency(deps, "testCompile", "junit", "junit", "4.11");
+      List<Dependency> deps = facet.getDependenciesInScopes("test", "runtime");
+
+      ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
+      ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
+      ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
       ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
    }
-   
+
    @Test
    public void testGetDirectDependency()
    {
       Dependency dep = facet.getDirectDependency(DependencyBuilder.create("junit:junit:4.11"));
-      
+
       assertNotNull(dep);
       assertEquals("junit", dep.getCoordinate().getGroupId());
       assertEquals("junit", dep.getCoordinate().getArtifactId());
       assertEquals("4.11", dep.getCoordinate().getVersion());
       assertEquals("testCompile", dep.getScopeType());
    }
-   
+
    @Test
    public void testGetDirectDependencyOnManaged()
    {
       Dependency dep = facet.getDirectDependency(DependencyBuilder.create("org.group:name:1.0-SNAPSHOT"));
-      
+
       assertNull(dep);
    }
-   
+
    @Test
    public void testGetEffectiveDependencies()
    {
-      // TODO Make tests for effective dependencies
+      List<Dependency> deps = facet.getEffectiveDependencies();
+
+      // Proof that direct dependencies are there
+      ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
+      ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
+      ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
+
+      // Transitive dependencies
+      ProjectAssert.assertContainsDependency(deps, "test", "hamcrest-core", "org.hamcrest", "1.3");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "protobuf-java", "com.google.protobuf", "2.4.1");
    }
-   
+
    @Test
    public void testGetEffectiveDependenciesInScopes()
    {
-      // TODO Make tests for effective dependencies
+      List<Dependency> deps = facet.getEffectiveDependenciesInScopes("test");
+
+      // Proof that direct dependencies are there
+      ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
+      ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
+      ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
+
+      // Transitive dependencies
+      ProjectAssert.assertContainsDependency(deps, "test", "hamcrest-core", "org.hamcrest", "1.3");
+      ProjectAssert.assertNotContainsDependency(deps, "runtime", "protobuf-java", "com.google.protobuf", "2.4.1");
    }
-   
+
    @Test
    public void testGetEffectiveDependency()
    {
-      // TODO Make tests for effective dependencies
+      Dependency dep = facet
+               .getEffectiveDependency(DependencyBuilder.create("com.google.protobuf:protobuf-java:2.4.1"));
+
+      assertEquals("runtime", dep.getScopeType());
    }
-   
+
    @Test
    public void testGetEffectiveManagedDependency()
    {
-      // TODO Make tests for effective dependencies
+      Dependency dep = facet.getEffectiveManagedDependency(DependencyBuilder.create("antlr:antlr:2.7.7"));
+
+      assertEquals("runtime", dep.getScopeType());
    }
-   
+
    @Test
    public void testGetManagedDependencies()
    {
       List<Dependency> deps = facet.getManagedDependencies();
-      
+
       ProjectAssert.assertContainsDependency(deps, "compile", "name", "org.group", "1.0-SNAPSHOT");
    }
-   
+
    @Test
-   public void testGetManagedDependency()
+   public void testGetDirectManagedDependency()
    {
-      // TODO Make tests for effective dependencies
+      Dependency dep =
+               facet.getDirectManagedDependency(DependencyBuilder.create("org.codehaus.groovy:groovy:2.1.6"));
+
+      assertEquals("runtime", dep.getScopeType());
    }
-   
+
    @Test
    public void testGetProperties()
    {
-      // TODO How to declare build properties for Gradle?
+      Map<String, String> props = facet.getProperties();
+
+      assertEquals("https://github.com/forge/addon-gradle", props.get("githubRepo"));
+      assertEquals("JBoss", props.get("organization"));
+      assertNull(props.get("version"));
    }
-   
+
    @Test
    public void testGetProperty()
    {
-      // TODO How to declare build properties for Gradle?
+      assertEquals("https://github.com/forge/addon-gradle", facet.getProperty("githubRepo"));
+      assertEquals("JBoss", facet.getProperty("organization"));
+      assertNull(facet.getProperty("group"));
    }
-   
+
    @Test
    public void testGetRepositories()
    {
       List<DependencyRepository> repos = facet.getRepositories();
-      
+
       ProjectAssert.assertContainsRepository(repos, "http://maven-repo.com/");
    }
-   
+
    @Test
    public void testHasDirectDependency()
    {
       assertTrue(facet.hasDirectDependency(DependencyBuilder.create("org.slf4j:slf4j-api:1.7.5")));
    }
-   
+
+   @Test
+   public void testHasDirectDependencyNot()
+   {
+      assertFalse(facet.hasDirectDependency(DependencyBuilder.create("org.non:existing:30")));
+   }
+
    @Test
    public void testHasEffectiveDependency()
    {
-      // TODO Make tests for effective dependencies
+      assertTrue(facet.hasEffectiveDependency(
+               DependencyBuilder.create("com.google.protobuf:protobuf-java:2.4.1")));
    }
-   
+
+   @Test
+   public void tastHasEffectiveDependencyNot()
+   {
+      assertFalse(facet.hasEffectiveDependency(
+               DependencyBuilder.create("org.non:existing:30")));
+   }
+
    @Test
    public void testHasEffectiveManagedDependency()
    {
-      // TODO Make tests for effective dependencies
+      assertTrue(facet.hasEffectiveManagedDependency(
+               DependencyBuilder.create("antlr:antlr:2.7.7")));
    }
-   
+
+   @Test
+   public void testHassEffectiveManagedDependencyNot()
+   {
+      assertFalse(facet.hasEffectiveManagedDependency(
+               DependencyBuilder.create("org.non:existing:30")));
+   }
+
    @Test
    public void testHasDirectManagedDependency()
    {
-      // TODO Test multi-project build
+      assertTrue(facet.hasDirectManagedDependency(
+               DependencyBuilder.create("org.codehaus.groovy:groovy:2.1.6")));
    }
-   
+
+   @Test
+   public void testHasDirectManagedDependencyNot()
+   {
+      assertFalse(facet.hasDirectManagedDependency(
+               DependencyBuilder.create("org.non:existing:30")));
+   }
+
    @Test
    public void testHasRepository()
    {
       assertTrue(facet.hasRepository("http://maven-repo.com/"));
    }
-   
+
+   @Test
+   public void testHasRepositoryNot()
+   {
+      assertFalse(facet.hasRepository("gopher://nope.com/"));
+   }
+
    @Test
    public void testRemoveDependency()
    {
-      facet.removeDependency(DependencyBuilder.create("org.slf4j:slf4j-api:1.7.5").setScopeType("compile"));
-      
+      Dependency dep = DependencyBuilder.create("org.slf4j:slf4j-api:1.7.5").setScopeType("compile");
+      assertTrue(facet.hasDirectDependency(dep));
+
+      facet.removeDependency(dep);
+
       Project sameProject = projectProvider.findProject();
       DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
       List<Dependency> deps = sameFacet.getDependencies();
-      
+
       ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
    }
-   
+
    @Test
    public void testRemoveManagedDependency()
    {
-      facet.removeManagedDependency(DependencyBuilder.create("com.google.code.guice:guice:1.0"));
-      
+      Dependency dep = DependencyBuilder.create("org.group:name:1.0-SNAPSHOT");
+      assertTrue(facet.hasDirectManagedDependency(dep));
+
+      facet.removeManagedDependency(dep);
+
       Project sameProject = projectProvider.findProject();
       DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
       List<Dependency> managedDeps = sameFacet.getManagedDependencies();
-      
-      assertEquals(0, managedDeps.size());
+
+      ProjectAssert.assertNotContainsDependency(managedDeps, "compile", "name", "org.group", "1.0-SNAPSHOT");
    }
-   
+
    @Test
    public void testRemoveProperty()
    {
-      // TODO How to declare build properties for Gradle?
+      assertNotNull(facet.getProperty("githubRepo"));
+
+      facet.removeProperty("githubRepo");
+
+      Project sameProject = projectProvider.findProject();
+      DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
+
+      assertNull(sameFacet.getProperty("githubRepo"));
    }
-   
+
    @Test
    public void testRemoveRepository()
    {
       facet.removeRepository("http://maven-repo.com/");
-      
+
       Project sameProject = projectProvider.findProject();
       DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
       List<DependencyRepository> repos = sameFacet.getRepositories();
-      
-      assertEquals(0, repos.size());
+
+      ProjectAssert.assertNotContainsRepository(repos, "http://maven-repo.com");
    }
-   
+
    @Test
    public void testResolveAvailableVersionsForDependency()
    {
-      // TODO Dependency resolution in Gradle
+      Dependency dep = DependencyBuilder.create("junit:junit:[4.9,)");
+      List<Coordinate> coords = facet.resolveAvailableVersions(dep);
+      testResolveAvailableVersions(coords);
    }
-   
+
    @Test
    public void testResolveAvailableVersionsForGavs()
    {
-      // TODO Dependency resolution in Gradle
+      List<Coordinate> coords = facet.resolveAvailableVersions("junit:junit:[4.9,)");
+      testResolveAvailableVersions(coords);
    }
-   
+
    @Test
    public void testResolveAvailableVersionsForQuery()
    {
-      // TODO Dependency resolution in Gradle
+      DependencyQuery query = DependencyQueryBuilder.create("junit:junit:[4.9,)");
+      List<Coordinate> coords = facet.resolveAvailableVersions(query);
+      testResolveAvailableVersions(coords);
    }
-   
+
+   private void testResolveAvailableVersions(List<Coordinate> coords)
+   {
+      ProjectAssert.assertContainsCoordinate(coords,
+               CoordinateBuilder.create().setArtifactId("junit").setGroupId("junit").setVersion("4.9"));
+      ProjectAssert.assertContainsCoordinate(coords,
+               CoordinateBuilder.create().setArtifactId("junit").setGroupId("junit").setVersion("4.11"));
+      ProjectAssert.assertNotContainsCoordinate(coords,
+               CoordinateBuilder.create().setArtifactId("junit").setGroupId("junit").setVersion("4.8"));
+   }
+
    @Test
    public void testResolveProperties()
    {
-      // TODO Dependency resolution in Gradle
+      Dependency inputDep = DependencyBuilder.create("org.somedep:artifact:${ext.someVersion}");
+      
+      Dependency outputDep = facet.resolveProperties(inputDep);
+      
+      assertNotNull(outputDep);
+      assertEquals("org.somedep", outputDep.getCoordinate().getGroupId());
+      assertEquals("artifact", outputDep.getCoordinate().getArtifactId());
+      assertEquals(".45", outputDep.getCoordinate().getVersion());
    }
-   
+
    @Test
    public void testSetProperty()
    {
-      // TODO How to declare build properties for Gradle?
+      assertEquals("JBoss", facet.getProperty("organization"));
+
+      facet.setProperty("organization", "EJB-OSS");
+
+      Project sameProject = projectProvider.findProject();
+      DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
+
+      assertEquals("EJB-OSS", sameFacet.getProperty("organization"));
    }
 }

@@ -7,6 +7,12 @@ sourceCompatibility = '1.5'
 
 archiveName 'archiveX'
 
+// Test properties
+ext.githubRepo = 'https://github.com/forge/addon-gradle'
+ext.organization = 'JBoss'
+
+ext.someVersion = '.45'
+
 sourceSets {
 	main {
 		java {
@@ -37,6 +43,7 @@ repositories {
 allprojects {
 	dependencies {
 		managed group: 'org.group', name: 'name', version: '1.0-SNAPSHOT', config: 'compile'
+		managed group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.6', config: 'runtime'
 	} 
 }
 
@@ -46,6 +53,9 @@ dependencies {
     
     testCompile 'junit:junit:4.11'
     runtime group: 'com.google.code.guice', name: 'guice', version: '1.0'
+    
+    def nettyDep = 'org.jboss.netty:netty:3.2.9.Final'
+    runtime nettyDep
 }
 
 task abc << {
