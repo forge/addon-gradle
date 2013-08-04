@@ -1,119 +1,118 @@
 // FORGE_LIBRARY_VERSION=2.0
 
 allprojects {
-    afterEvaluate {
-        if (project.hasProperty('profile')) {
-            def profileFile = "$projectDir.path/$profile-profile.gradle"
-            if (new File(profileFile).exists()) {
-                project.apply from: profileFile
+    if (!project.ext.has('forgeInstalled')) {
+        project.ext.set('forgeInstalled', true)
+
+        afterEvaluate {
+            if (project.ext.has('profile')) {
+                def profileFile = "$projectDir.path/$profile-profile.gradle"
+                if (new File(profileFile).exists()) {
+                    project.apply from: profileFile
+                }
+            }
+            if (project.ext.has('_archiveName')) {
+                assemble.taskDependencies.getDependencies(assemble).each {
+                    if (it.hasProperty('archiveName')) {
+                        it.archiveName = project.ext._archiveName +
+                                it.archiveName.substring(it.archiveName.lastIndexOf('.'))
+                    }
+                }
             }
         }
-    }
-    if (project.hasProperty('_archiveName')) {
-        assemble.taskDependencies.getDependencies(assemble).each {
-            if (it.hasProperty('archiveName')) {
-                it.archiveName = project._archiveName +
-                        it.archiveName.substring(it.archiveName.lastIndexOf('.'))
+
+        project.ext.set('archiveName', {
+            project.ext.set('_archiveName', it)
+        })
+
+        project.ext.set('_managedDependencies', [:])
+        project.ext.set('managed', {
+            project.ext._managedDependencies[[
+                    group: it.group,
+                    name: it.name
+            ]] = [
+                    version: it.version,
+                    config: it.config
+            ]
+        })
+        project.ext.set('direct', {
+            def _groupName = [
+                    group: it.group,
+                    name: it.name
+            ]
+            it.handler.add(project.ext._managedDependencies[_groupName].config,
+                    _groupName.group + ':' + _groupName.name + ':'
+                            + project.ext._managedDependencies[_groupName].version)
+        })
+
+        task forgeOutput << {
+            def indentLevel = 0
+            def outputFile = new File("$projectDir.path/forge-output.xml").newPrintWriter()
+            def indent = {
+                indentLevel.times {
+                    outputFile.print '   '
+                }
             }
-        }
-    }
-}
-
-if (!project.hasProperty('forgeInstalled')) {
-    project.set('forgeInstalled', true)
-    
-	project.set('archiveName', {
-	    project.set('_archiveName', it)
-	})
-
-    project.set('_managedDependencies', [:])
-    project.set('managed', {
-        project._managedDependencies[[
-                group: it.group,
-                name: it.name
-        ]] = [
-                version: it.version,
-                config: it.config
-        ]
-    })
-    project.set('direct', {
-        def _groupName = [
-                group: it.group,
-                name: it.name
-        ]
-        it.handler.add(project._managedDependencies[_groupName].config,
-                _groupName.group + ':' + _groupName.name + ':' + project._managedDependencies[_groupName].version)
-    })
-
-    task forgeOutput << {
-        def indentLevel = 0
-        def outputFile = new File("$projectDir.path/forge-output.xml").newPrintWriter()
-        def indent = {
-            indentLevel.times {
-                outputFile.print '   '
+            def output = {
+                indent()
+                outputFile.println it
             }
-        }
-        def output = {
-            indent()
-            outputFile.println it
-        }
-        def outputInc = {
-            output it
-            indentLevel++
-        }
-        def outputDec = {
-            indentLevel--
-            output it
-        }
-        def outputRelative = { file, to ->
-            output file.absolutePath.substring(to.absolutePath.length() + 1).replace("\\", "/")
-        }
-        def outputProject = { p ->
-            outputInc '<project>'
-            outputInc '<group>'
-            output p.group
-            outputDec '</group>'
-            outputInc '<name>'
-            output p.name
-            outputDec '</name>'
-            outputInc '<version>'
-            output p.version
-            outputDec '</version>'
-            def _assembleArchiveTask
-            if (p.tasks.findByPath('assemble') != null) {
-			    assemble.taskDependencies.getDependencies(assemble).each {
-			        if (it.hasProperty('archiveName')) {
-			        	_assembleArchiveTask = it
-			        }
-			    }
-		    }
-			outputInc '<packaging>'
-			output _assembleArchiveTask != null ? _assembleArchiveTask.name : ''
-			outputDec '</packaging>'
-			outputInc '<archivePath>'
-			output _assembleArchiveTask != null ? 
-					"$buildDir.name/$libsDirName/$_assembleArchiveTask.archiveName" 
-					: ''
-			outputDec '</archivePath>'
-            outputInc '<tasks>'
-            p.tasks.each { t ->
-                outputInc '<task>'
+            def outputInc = {
+                output it
+                indentLevel++
+            }
+            def outputDec = {
+                indentLevel--
+                output it
+            }
+            def outputRelative = { file, to ->
+                output file.absolutePath.substring(to.absolutePath.length() + 1).replace("\\", "/")
+            }
+            def outputProject = { p ->
+                outputInc '<project>'
+                outputInc '<group>'
+                output p.group
+                outputDec '</group>'
                 outputInc '<name>'
-                output t.name
+                output p.name
                 outputDec '</name>'
-                outputInc '<dependsOn>'
-                t.taskDependencies.getDependencies(t).each {
+                outputInc '<version>'
+                output p.version
+                outputDec '</version>'
+                def _assembleArchiveTask
+                if (p.tasks.findByPath('assemble') != null) {
+                    assemble.taskDependencies.getDependencies(assemble).each {
+                        if (it.hasProperty('archiveName')) {
+                            _assembleArchiveTask = it
+                        }
+                    }
+                }
+                outputInc '<packaging>'
+                output _assembleArchiveTask != null ? _assembleArchiveTask.name : ''
+                outputDec '</packaging>'
+                outputInc '<archivePath>'
+                output _assembleArchiveTask != null ?
+                    "$buildDir.name/$libsDirName/$_assembleArchiveTask.archiveName"
+                : ''
+                outputDec '</archivePath>'
+                outputInc '<tasks>'
+                p.tasks.each { t ->
                     outputInc '<task>'
-                    output it.name
+                    outputInc '<name>'
+                    output t.name
+                    outputDec '</name>'
+                    outputInc '<dependsOn>'
+                    t.taskDependencies.getDependencies(t).each {
+                        outputInc '<task>'
+                        output it.name
+                        outputDec '</task>'
+                    }
+                    outputDec '</dependsOn>'
                     outputDec '</task>'
                 }
-                outputDec '</dependsOn>'
-                outputDec '</task>'
-            }
-            outputDec '</tasks>'
-            outputInc '<dependencies>'
-            p.configurations.each { c ->
-                if (c.allDependencies.size() > 0) {
+                outputDec '</tasks>'
+                outputInc '<dependencies>'
+                p.configurations.each { c ->
                     c.allDependencies.each { d ->
                         outputInc '<dependency>'
                         outputInc '<name>'
@@ -131,97 +130,98 @@ if (!project.hasProperty('forgeInstalled')) {
                         outputDec '</dependency>'
                     }
                 }
-            }
-            outputDec '</dependencies>'
-            outputInc '<managedDependencies>'
-            p._managedDependencies.each { groupName, configVersion ->
-                outputInc '<dependency>'
-                outputInc '<name>'
-                output groupName.name
-                outputDec '</name>'
-                outputInc '<group>'
-                output groupName.group
-                outputDec '</group>'
-                outputInc '<version>'
-                output configVersion.version
-                outputDec '</version>'
-                outputInc '<configuration>'
-                output configVersion.config
-                outputDec '</configuration>'
-                outputDec '</dependency>'
-            }
-            outputDec '</managedDependencies>'
-            outputInc '<repositories>'
-            p.repositories.each { r ->
-                outputInc '<repository>'
-                outputInc '<name>'
-                output r.name
-                outputDec '</name>'
-                outputInc '<url>'
-                output r.url
-                outputDec '</url>'
-                outputDec '</repository>'
-            }
-            outputDec '</repositories>'
-            outputInc '<plugins>'
-            p.plugins.each { plugin ->
-                outputInc '<plugin>'
-                outputInc '<class>'
-                output plugin.class.name
-                outputDec '</class>'
-                outputDec '</plugin>'
-            }
-            outputDec '</plugins>'
-            outputInc '<sourceSets>'
-            p.sourceSets.each { set ->
-                outputInc '<sourceSet>'
-                outputInc '<name>'
-                output set.name
-                outputDec '</name>'
-                outputInc '<java>'
-                set.java.srcDirs.each {
-                    outputInc '<directory>'
-                    outputRelative(it, project.projectDir)
-                    outputDec '</directory>'
+                outputDec '</dependencies>'
+                outputInc '<managedDependencies>'
+                p.ext._managedDependencies.each { groupName, configVersion ->
+                    outputInc '<dependency>'
+                    outputInc '<name>'
+                    output groupName.name
+                    outputDec '</name>'
+                    outputInc '<group>'
+                    output groupName.group
+                    outputDec '</group>'
+                    outputInc '<version>'
+                    output configVersion.version
+                    outputDec '</version>'
+                    outputInc '<configuration>'
+                    output configVersion.config
+                    outputDec '</configuration>'
+                    outputDec '</dependency>'
                 }
-                outputDec '</java>'
-                outputInc '<resources>'
-                set.resources.srcDirs.each {
-                    outputInc '<directory>'
-                    outputRelative(it, project.projectDir)
-                    outputDec '</directory>'
+                outputDec '</managedDependencies>'
+                outputInc '<repositories>'
+                p.repositories.each { r ->
+                    outputInc '<repository>'
+                    outputInc '<name>'
+                    output r.name
+                    outputDec '</name>'
+                    outputInc '<url>'
+                    output r.url
+                    outputDec '</url>'
+                    outputDec '</repository>'
                 }
-                outputDec '</resources>'
-                outputDec '</sourceSet>'
+                outputDec '</repositories>'
+                outputInc '<plugins>'
+                p.plugins.each { plugin ->
+                    outputInc '<plugin>'
+                    outputInc '<class>'
+                    output plugin.class.name
+                    outputDec '</class>'
+                    outputDec '</plugin>'
+                }
+                outputDec '</plugins>'
+                outputInc '<sourceSets>'
+                p.sourceSets.each { set ->
+                    outputInc '<sourceSet>'
+                    outputInc '<name>'
+                    output set.name
+                    outputDec '</name>'
+                    outputInc '<java>'
+                    set.java.srcDirs.each {
+                        outputInc '<directory>'
+                        outputRelative(it, project.projectDir)
+                        outputDec '</directory>'
+                    }
+                    outputDec '</java>'
+                    outputInc '<resources>'
+                    set.resources.srcDirs.each {
+                        outputInc '<directory>'
+                        outputRelative(it, project.projectDir)
+                        outputDec '</directory>'
+                    }
+                    outputDec '</resources>'
+                    outputDec '</sourceSet>'
+                }
+                outputDec '</sourceSets>'
+                outputDec '</project>'
             }
-            outputDec '</sourceSets>'
-            outputDec '</project>'
-        }
 
-        outputInc '<forgeOutput>'
-        outputProject project
-        projectDir.eachFileMatch(groovy.io.FileType.FILES, {
-            it.matches('^[a-zA-Z0-9]+-profile\\.gradle$')
-        }, {
-            outputInc '<profile>'
-            outputInc '<name>'
-            output it.name.substring(0, it.name.indexOf('-'))
-            outputDec '</name>'
-
-            project.configurations.each {
-                it.allDependencies.clear()
-            }
-            project.plugins.clear()
-            project.sourceSets.clear()
-            project.repositories.clear()
-            project.tasks.clear()
-
-            project.apply from: it
+            outputInc '<forgeOutput>'
             outputProject project
-            outputDec '</profile>'
-        })
-        outputDec '</forgeOutput>'
+            projectDir.eachFileMatch(groovy.io.FileType.FILES, {
+                it.matches('^[a-zA-Z0-9]+-profile\\.gradle$')
+            }, {
+                outputInc '<profile>'
+                outputInc '<name>'
+                output it.name.substring(0, it.name.indexOf('-'))
+                outputDec '</name>'
 
-        outputFile.close()
+                project.configurations.each {
+                    it.allDependencies.clear()
+                }
+                project.plugins.clear()
+                project.sourceSets.clear()
+                project.repositories.clear()
+                project.tasks.clear()
+                project.ext.set('_managedDependencies', [:])
+
+                project.apply from: it
+                outputProject project
+                outputDec '</profile>'
+            })
+            outputDec '</forgeOutput>'
+
+            outputFile.close()
+        }
     }
 }
