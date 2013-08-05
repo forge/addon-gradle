@@ -17,6 +17,8 @@ import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementExcept
  */
 public interface GradleModel
 {
+   String getScript();
+   
    String getGroup();
    
    String getName();

@@ -6,14 +6,12 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
 
@@ -26,30 +24,27 @@ public class GradleModelLoaderImpl implements GradleModelLoader
     * Parses XML source into Gradle model, setting given file resource as Gradle resource.
     */
    @Override
-   public GradleModel loadFromXML(FileResource<?> fileResource, String source)
+   public GradleModel loadFromXML(String source)
    {
       Node root = XMLParser.parse(source);
-      List<GradleProfile> profiles = profilesFromNode(fileResource, root);
-      GradleModel projectModel = modelFromNode(fileResource, root.getSingle("project"), profiles);
+      List<GradleProfile> profiles = profilesFromNode(source, root);
+      GradleModel projectModel = modelFromNode(source, root.getSingle("project"), profiles);
       return projectModel;
    }
 
-   private List<GradleProfile> profilesFromNode(FileResource<?> buildScriptResource, Node rootNode)
+   private List<GradleProfile> profilesFromNode(String script, Node rootNode)
    {
       List<GradleProfile> profiles = new ArrayList<GradleProfile>();
       for (Node profileNode : rootNode.get("profile"))
       {
          String name = profileNode.getSingle("name").getText().trim();
-         FileResource<?> resource = (buildScriptResource != null) ?
-                  (FileResource<?>) buildScriptResource.getParent()
-                           .createFrom(new File(String.format("%s-profile.gradle", name))) : null;
-         GradleModel model = modelFromNode(resource, profileNode.getSingle("project"), new ArrayList<GradleProfile>());
-         profiles.add(new GradleProfileImpl(name, model, resource));
+         GradleModel model = modelFromNode(script, profileNode.getSingle("project"), new ArrayList<GradleProfile>());
+         profiles.add(new GradleProfileImpl(name, model));
       }
       return profiles;
    }
 
-   private GradleModel modelFromNode(FileResource<?> fileResource, Node projectNode, List<GradleProfile> profiles)
+   private GradleModel modelFromNode(String script, Node projectNode, List<GradleProfile> profiles)
    {
       String projectName = projectNameFromNode(projectNode);
       String version = versionFromNode(projectNode);
@@ -60,7 +55,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       List<GradleRepository> repositories = reposFromNode(projectNode);
       List<GradleSourceSet> sourceSets = sourceSetsFromNode(projectNode);
 
-      return new GradleModelImpl(fileResource, "", projectName, version, "", "", tasks, deps,
+      return new GradleModelImpl("", projectName, version, "", "", tasks, deps,
                managedDeps, profiles, plugins, repositories, sourceSets);
    }
 

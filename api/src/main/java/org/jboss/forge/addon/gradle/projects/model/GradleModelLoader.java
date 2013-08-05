@@ -6,7 +6,6 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
-import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.furnace.services.Exported;
 
 /**
@@ -18,5 +17,5 @@ public interface GradleModelLoader
    /**
     * Parses XML source into Gradle model, setting given file resource as Gradle resource.
     */
-   public GradleModel loadFromXML(FileResource<?> fileResource, String source);
+   public GradleModel loadFromXML(String source);
 }

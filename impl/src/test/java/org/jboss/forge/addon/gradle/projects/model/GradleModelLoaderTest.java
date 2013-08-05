@@ -28,7 +28,7 @@ public class GradleModelLoaderTest
    {
       GradleModelLoader loader = new GradleModelLoaderImpl();
       String source = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
-      model = loader.loadFromXML(null, source);
+      model = loader.loadFromXML(source);
    }
 
    @Test

@@ -19,6 +19,8 @@ public interface GradleProfile
    String getName();
 
    GradleModel getModel();
+   
+   void setModel(GradleModel model);
 
    FileResource<?> getProfileResource();
 }

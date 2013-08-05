@@ -8,17 +8,15 @@ package org.jboss.forge.addon.gradle.projects.model;
 
 import java.util.List;
 
+import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
-import org.jboss.forge.addon.resource.FileResource;
 
 /**
  * @author Adam Wyłuda
  */
 public class GradleModelImpl implements GradleModel
 {
-   private final FileResource<?> gradleResource;
-
    private String script;
 
    private String name;
@@ -34,14 +32,13 @@ public class GradleModelImpl implements GradleModel
    private List<GradleRepository> repositories;
    private List<GradleSourceSet> sourceSets;
 
-   public GradleModelImpl(FileResource<?> gradleResource, String script, String projectName, String version,
+   public GradleModelImpl(String script, String projectName, String version,
             String packaging, String archivePath, List<GradleTask> tasks,
             List<GradleDependency> dependencies, List<GradleDependency> managedDependencies,
             List<GradleProfile> profiles, List<GradlePlugin> plugins, List<GradleRepository> repositories,
             List<GradleSourceSet> sourceSets)
    {
       this.script = script;
-      this.gradleResource = gradleResource;
       this.name = projectName;
       this.version = version;
       this.packaging = packaging;
@@ -53,6 +50,39 @@ public class GradleModelImpl implements GradleModel
       this.plugins = plugins;
       this.repositories = repositories;
       this.sourceSets = sourceSets;
+   }
+   
+   /**
+    * Performs copy of the given instance. 
+    */
+   public GradleModelImpl(GradleModel original)
+   {
+      this.script = original.getScript();
+      this.name = original.getName();
+      this.version = original.getVersion();
+      this.packaging = original.getPackaging();
+      this.archivePath = original.getArchivePath();
+      this.tasks = Lists.newArrayList(original.getTasks());
+      this.dependencies = Lists.newArrayList(original.getDependencies());
+      this.managedDependencies = Lists.newArrayList(original.getManagedDependencies());
+      this.profiles = Lists.newArrayList();
+      // Performs a copy of profile list
+      for (GradleProfile profile : original.getProfiles())
+      {
+         GradleProfileImpl newProfile = new GradleProfileImpl(profile.getName(),
+                  new GradleModelImpl(profile.getModel()));
+         newProfile.setProfileResource(profile.getProfileResource());
+         this.profiles.add(newProfile);
+      }
+      this.plugins = Lists.newArrayList(original.getPlugins());
+      this.repositories = Lists.newArrayList(original.getRepositories());
+      this.sourceSets = Lists.newArrayList(original.getSourceSets());
+   }
+   
+   @Override
+   public String getScript()
+   {
+      return script;
    }
 
    @Override

@@ -15,13 +15,12 @@ public class GradleProfileImpl implements GradleProfile
 {
    private final String name;
    private final GradleModel model;
-   private final FileResource<?> profileResource;
+   private FileResource<?> profileResource;
 
-   public GradleProfileImpl(String name, GradleModel model, FileResource<?> profileResource)
+   public GradleProfileImpl(String name, GradleModel model)
    {
       this.name = name;
       this.model = model;
-      this.profileResource = profileResource;
    }
 
    @Override
@@ -37,9 +36,19 @@ public class GradleProfileImpl implements GradleProfile
    }
 
    @Override
+   public void setModel(GradleModel model)
+   {
+      // TODO Auto-generated method stub
+   }
+
+   @Override
    public FileResource<?> getProfileResource()
    {
       return profileResource;
    }
-
+   
+   public void setProfileResource(FileResource<?> profileResource)
+   {
+      this.profileResource = profileResource;
+   }
 }

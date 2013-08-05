@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleModelImpl;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelLoader;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.FileResource;
@@ -32,6 +33,8 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    private GradleModelLoader modelLoader;
    @Inject
    private ResourceFactory resourceFactory;
+   
+   private GradleModel model;
 
    @Override
    public boolean install()
@@ -62,10 +65,15 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    {
       try
       {
+         if (model != null)
+         {
+            // Returns a copy of model
+            return new GradleModelImpl(model);
+         }
          String buildScriptPath = new File(new File(getFaceted().getProjectRoot().getFullyQualifiedName()),
                   "build.gradle").getAbsolutePath();
          checkIfIsForgeLibraryInstalled(buildScriptPath);
-         GradleModel model = loadModel(buildScriptPath);
+         model = loadModel(buildScriptPath);
          return model;
       }
       catch (IOException e)
@@ -73,6 +81,12 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          e.printStackTrace();
          return null;
       }
+   }
+
+   @Override
+   public void setModel(GradleModel model)
+   {
+      // TODO Update script contents
    }
 
    @Override
@@ -93,8 +107,9 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 
       forgeOutputfile.delete();
 
-      // TODO create file resource instance for forge output XML
-      return modelLoader.loadFromXML(null, forgeOutput);
+      GradleModel loadedModel = modelLoader.loadFromXML(forgeOutput);
+      // TODO Set resources for profiles
+      return loadedModel;
    }
 
    private void checkIfIsForgeLibraryInstalled(String buildScriptPath) throws IOException
@@ -121,12 +136,5 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       {
          forgeLib.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
       }
-   }
-
-   @Override
-   public void setModel(GradleModel model)
-   {
-      // TODO Auto-generated method stub
-      
    }
 }
