@@ -17,10 +17,10 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.addon.gradle.projects.ProjectAssert;
 import org.jboss.forge.addon.gradle.projects.GradleTestProjectProvider;
+import org.jboss.forge.addon.gradle.projects.ProjectAssert;
 import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.projects.facets.ResourceFacet;
+import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.arquillian.AddonDependency;
@@ -51,13 +51,13 @@ public class GradleResourceFacetTest
    @Inject
    private GradleTestProjectProvider projectProvider;
    private Project project;
-   private ResourceFacet facet;
+   private ResourcesFacet facet;
 
    @Before
    public void setUp()
    {
       project = projectProvider.create();
-      facet = project.getFacet(ResourceFacet.class);
+      facet = project.getFacet(ResourcesFacet.class);
    }
 
    @After

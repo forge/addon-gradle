@@ -7,6 +7,9 @@
 package org.jboss.forge.addon.gradle.projects.facets;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -123,5 +126,36 @@ public class GradleMetadataFacetTest
       assertEquals("test-project", dep.getCoordinate().getArtifactId());
       assertEquals("org.testproject", dep.getCoordinate().getGroupId());
       assertEquals("0.7", dep.getCoordinate().getVersion());
+   }
+
+   @Test
+   public void testGetProperties()
+   {
+      Map<String, String> props = facet.getDirectProperties();
+
+      assertEquals("https://github.com/forge/addon-gradle", props.get("githubRepo"));
+      assertEquals("JBoss", props.get("organization"));
+      assertNull(props.get("version"));
+   }
+
+   @Test
+   public void testGetProperty()
+   {
+      assertEquals("https://github.com/forge/addon-gradle", facet.getDirectProperty("githubRepo"));
+      assertEquals("JBoss", facet.getDirectProperty("organization"));
+      assertNull(facet.getDirectProperty("group"));
+   }
+
+   @Test
+   public void testSetProperty()
+   {
+      assertEquals("JBoss", facet.getDirectProperty("organization"));
+
+      facet.setProperty("organization", "EJB-OSS");
+
+      Project sameProject = projectProvider.findProject();
+      MetadataFacet sameFacet = sameProject.getFacet(MetadataFacet.class);
+
+      assertEquals("EJB-OSS", sameFacet.getDirectProperty("organization"));
    }
 }

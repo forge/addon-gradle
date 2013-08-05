@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -247,24 +246,6 @@ public class GradleDependencyFacetTest
    }
 
    @Test
-   public void testGetProperties()
-   {
-      Map<String, String> props = facet.getProperties();
-
-      assertEquals("https://github.com/forge/addon-gradle", props.get("githubRepo"));
-      assertEquals("JBoss", props.get("organization"));
-      assertNull(props.get("version"));
-   }
-
-   @Test
-   public void testGetProperty()
-   {
-      assertEquals("https://github.com/forge/addon-gradle", facet.getProperty("githubRepo"));
-      assertEquals("JBoss", facet.getProperty("organization"));
-      assertNull(facet.getProperty("group"));
-   }
-
-   @Test
    public void testGetRepositories()
    {
       List<DependencyRepository> repos = facet.getRepositories();
@@ -367,20 +348,7 @@ public class GradleDependencyFacetTest
 
       ProjectAssert.assertNotContainsDependency(managedDeps, "compile", "name", "org.group", "1.0-SNAPSHOT");
    }
-
-   @Test
-   public void testRemoveProperty()
-   {
-      assertNotNull(facet.getProperty("githubRepo"));
-
-      facet.removeProperty("githubRepo");
-
-      Project sameProject = projectProvider.findProject();
-      DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
-
-      assertNull(sameFacet.getProperty("githubRepo"));
-   }
-
+   
    @Test
    public void testRemoveRepository()
    {
@@ -437,18 +405,5 @@ public class GradleDependencyFacetTest
       assertEquals("org.somedep", outputDep.getCoordinate().getGroupId());
       assertEquals("artifact", outputDep.getCoordinate().getArtifactId());
       assertEquals(".45", outputDep.getCoordinate().getVersion());
-   }
-
-   @Test
-   public void testSetProperty()
-   {
-      assertEquals("JBoss", facet.getProperty("organization"));
-
-      facet.setProperty("organization", "EJB-OSS");
-
-      Project sameProject = projectProvider.findProject();
-      DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
-
-      assertEquals("EJB-OSS", sameFacet.getProperty("organization"));
    }
 }
