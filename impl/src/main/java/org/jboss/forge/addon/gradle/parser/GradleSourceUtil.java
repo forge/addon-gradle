@@ -146,6 +146,7 @@ public class GradleSourceUtil
 
    public static String insertRepository(String source, String name, String url)
    {
+      // TODO Repository name?
       String repoString = String.format("url '%s'", url);
       source = SourceUtil.insertIntoInvocationAtPath(source, repoString, "repositories", "maven");
       return source;

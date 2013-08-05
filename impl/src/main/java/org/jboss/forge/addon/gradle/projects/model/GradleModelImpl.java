@@ -32,6 +32,25 @@ public class GradleModelImpl implements GradleModel
    private List<GradleRepository> repositories;
    private List<GradleSourceSet> sourceSets;
 
+   /**
+    * Creates empty Gradle model.
+    */
+   public GradleModelImpl()
+   {
+      this.script = "";
+      this.name = "";
+      this.version = "";
+      this.packaging = "";
+      this.archivePath = "";
+      this.tasks = Lists.newArrayList();
+      this.dependencies = Lists.newArrayList();
+      this.managedDependencies = Lists.newArrayList();
+      this.profiles = Lists.newArrayList();
+      this.plugins = Lists.newArrayList();
+      this.repositories = Lists.newArrayList();
+      this.sourceSets = Lists.newArrayList();
+   }
+
    public GradleModelImpl(String script, String projectName, String version,
             String packaging, String archivePath, List<GradleTask> tasks,
             List<GradleDependency> dependencies, List<GradleDependency> managedDependencies,
@@ -51,9 +70,9 @@ public class GradleModelImpl implements GradleModel
       this.repositories = repositories;
       this.sourceSets = sourceSets;
    }
-   
+
    /**
-    * Performs copy of the given instance. 
+    * Performs copy of the given instance.
     */
    public GradleModelImpl(GradleModel original)
    {
@@ -78,7 +97,7 @@ public class GradleModelImpl implements GradleModel
       this.repositories = Lists.newArrayList(original.getRepositories());
       this.sourceSets = Lists.newArrayList(original.getSourceSets());
    }
-   
+
    @Override
    public String getScript()
    {
@@ -238,39 +257,42 @@ public class GradleModelImpl implements GradleModel
    @Override
    public void setGroup(String group) throws UnremovableElementException
    {
-
+      // TODO Set properties by GradleSourceUtil
    }
 
    @Override
    public void setName(String name) throws UnremovableElementException
    {
-      // TODO Auto-generated method stub
+      // TODO Set properties by GradleSourceUtil
+
+      // For this case we also need to add Gradle project path to forgeOutput
+      // and path to settings.gradle file
+      // (this is necessary to modify project name in Gradle)
    }
 
    @Override
    public void setVersion(String version) throws UnremovableElementException
    {
-      // TODO Auto-generated method stub
+      // TODO Set properties by GradleSourceUtil
    }
 
    @Override
    public void setPackaging(String packaging)
    {
-      // TODO Auto-generated method stub
-
+      // TODO Add packaging info to GradlePluginType to figure out which plugin must be applied to set given packaging
    }
 
    @Override
    public void setArchiveName(String archiveName)
    {
-      // TODO Auto-generated method stub
-
+      // TODO Set archive name by GradleSourceUtil
    }
 
    @Override
    public void createTask(GradleTaskBuilder builder)
    {
-      // TODO Auto-generated method stub
+      script = GradleSourceUtil.insertTask(script,
+               builder.getName(), builder.getDependsOn(), builder.getType(), builder.getCode());
    }
 
    @Override
@@ -283,54 +305,66 @@ public class GradleModelImpl implements GradleModel
    @Override
    public void createManagedDependency(GradleDependencyBuilder builder)
    {
-      // TODO Auto-generated method stub
+      script = GradleSourceUtil.insertManagedDependency(script,
+               builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
    }
 
    @Override
    public void createProfile(String name)
    {
-      // TODO Auto-generated method stub
+      profiles.add(new GradleProfileImpl(name, new GradleModelImpl()));
    }
 
    @Override
    public void applyPlugin(String name)
    {
-      // TODO Auto-generated method stub
+      script = GradleSourceUtil.insertPlugin(script, name);
    }
 
    @Override
-   public void createGradleRepository(GradleRepositoryBuilder builder)
+   public void createRepository(GradleRepositoryBuilder builder)
    {
-      // TODO Auto-generated method stub
+      script = GradleSourceUtil.insertRepository(script, builder.getName(), builder.getUrl());
    }
 
    @Override
    public void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException
    {
-      // TODO Auto-generated method stub
+      script = GradleSourceUtil.removeDependency(script,
+               builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
    }
 
    @Override
    public void removeManagedDependency(GradleDependencyBuilder builder) throws UnremovableElementException
    {
-      // TODO Auto-generated method stub
+      script = GradleSourceUtil.removeManagedDependency(script,
+               builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
    }
 
    @Override
    public void removeProfile(String name)
    {
-      // TODO Auto-generated method stub
+      for (GradleProfile profile : profiles)
+      {
+         if (profile.getName().equals(name)) 
+         {
+            profiles.remove(profile);
+            return;
+         }
+      }
+      
+      throw new RuntimeException("Can't remove profile non existing profile named " + name);
    }
 
    @Override
    public void removeAppliedPlugin(String name) throws UnremovableElementException
    {
-      // TODO Auto-generated method stub
+      script = GradleSourceUtil.removePlugin(script, name);
    }
 
    @Override
-   public void removeGradleRepository(GradleRepositoryBuilder builder) throws UnremovableElementException
+   public void removeRepository(GradleRepositoryBuilder builder) throws UnremovableElementException
    {
-      // TODO Auto-generated method stub
+      script = GradleSourceUtil.removeRepository(script, builder.getName(), builder.getUrl());
    }
 }

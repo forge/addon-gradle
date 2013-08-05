@@ -87,6 +87,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    public void setModel(GradleModel model)
    {
       // TODO Update script contents
+      // TODO Also update profile contents (and create if necessary)
    }
 
    @Override
