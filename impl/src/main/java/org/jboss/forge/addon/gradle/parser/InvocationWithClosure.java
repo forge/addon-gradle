@@ -21,15 +21,16 @@ import org.gradle.jarjar.com.google.common.collect.Maps;
  */
 public class InvocationWithClosure extends SourceCodeElement
 {
-
    private final String methodName;
    private final List<InvocationWithClosure> internalInvocations;
    private final List<InvocationWithString> stringInvocations;
    private final List<InvocationWithMap> mapInvocations;
+   private final List<VariableAssignment> variableAssignments;
 
    private final Map<String, InvocationWithClosure> internalInvocationMap = Maps.newHashMap();
    private final Map<String, InvocationWithString> stringInvocationMap = Maps.newHashMap();
    private final Map<String, InvocationWithMap> mapInvocationMap = Maps.newHashMap();
+   private final Map<String, VariableAssignment> variableAssignmentMap = Maps.newHashMap();
 
    public InvocationWithClosure(String methodName, int lineNumber, int columnNumber, int lastLineNumber,
             int lastColumnNumber)
@@ -38,6 +39,7 @@ public class InvocationWithClosure extends SourceCodeElement
                new ArrayList<InvocationWithClosure>(),
                new ArrayList<InvocationWithString>(),
                new ArrayList<InvocationWithMap>(),
+               new ArrayList<VariableAssignment>(),
                lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
    }
 
@@ -45,6 +47,7 @@ public class InvocationWithClosure extends SourceCodeElement
             List<InvocationWithClosure> internalInvocations,
             List<InvocationWithString> stringInvocations,
             List<InvocationWithMap> mapInvocations,
+            List<VariableAssignment> variableAssignments,
             int lineNumber, int columnNumber, int lastLineNumber, int lastColumnNumber)
    {
       super(lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
@@ -52,6 +55,7 @@ public class InvocationWithClosure extends SourceCodeElement
       this.internalInvocations = ImmutableList.<InvocationWithClosure> copyOf(internalInvocations);
       this.stringInvocations = ImmutableList.<InvocationWithString> copyOf(stringInvocations);
       this.mapInvocations = ImmutableList.<InvocationWithMap> copyOf(mapInvocations);
+      this.variableAssignments = variableAssignments;
 
       // Filling indexes
       for (InvocationWithClosure invocation : internalInvocations)
@@ -65,6 +69,10 @@ public class InvocationWithClosure extends SourceCodeElement
       for (InvocationWithMap invocation : mapInvocations)
       {
          mapInvocationMap.put(invocation.getMethodName(), invocation);
+      }
+      for (VariableAssignment assignment : variableAssignments)
+      {
+         variableAssignmentMap.put(assignment.getVariable(), assignment);
       }
    }
 
@@ -88,6 +96,11 @@ public class InvocationWithClosure extends SourceCodeElement
       return mapInvocations;
    }
    
+   public List<VariableAssignment> getVariableAssignments()
+   {
+      return variableAssignments;
+   }
+   
    public Optional<InvocationWithClosure> invocationWithClosureByName(String name)
    {
       return Optional.fromNullable(internalInvocationMap.get(name));
@@ -101,5 +114,10 @@ public class InvocationWithClosure extends SourceCodeElement
    public Optional<InvocationWithMap> invocationWithMapByName(String name)
    {
       return Optional.fromNullable(mapInvocationMap.get(name));
+   }
+   
+   public Optional<VariableAssignment> variableAssignmentByName(String name)
+   {
+      return Optional.fromNullable(variableAssignmentMap.get(name));
    }
 }

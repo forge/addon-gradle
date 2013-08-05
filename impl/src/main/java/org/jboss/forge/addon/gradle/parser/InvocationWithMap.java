@@ -17,7 +17,6 @@ import org.gradle.jarjar.com.google.common.collect.ImmutableMap;
  */
 public class InvocationWithMap extends SourceCodeElement
 {
-
    private final String methodName;
    private final Map<String, String> parameters;
 

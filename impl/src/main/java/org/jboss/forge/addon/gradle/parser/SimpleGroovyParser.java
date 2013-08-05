@@ -46,11 +46,12 @@ public class SimpleGroovyParser
       public List<InvocationWithClosure> invocationWithClosureList = Lists.newArrayList();
       public List<InvocationWithMap> invocationWithMapList = Lists.newArrayList();
       public List<InvocationWithString> invocationWithStringList = Lists.newArrayList();
+      public List<VariableAssignment> variableAssignmentList = Lists.newArrayList();
 
       public InvocationWithClosure create()
       {
          return new InvocationWithClosure(methodName, invocationWithClosureList, invocationWithStringList,
-                  invocationWithMapList,
+                  invocationWithMapList, variableAssignmentList,
                   lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       }
    }

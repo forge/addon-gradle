@@ -13,7 +13,6 @@ package org.jboss.forge.addon.gradle.parser;
  */
 public class InvocationWithString extends SourceCodeElement
 {
-
    private final String methodName;
    private final String string;
 

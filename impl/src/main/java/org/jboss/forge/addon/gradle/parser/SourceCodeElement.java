@@ -9,7 +9,7 @@ package org.jboss.forge.addon.gradle.parser;
 /**
  * @author Adam Wyłuda
  */
-public class SourceCodeElement
+public abstract class SourceCodeElement
 {
 
    private final int lineNumber;
