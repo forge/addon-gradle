@@ -8,7 +8,7 @@ package org.jboss.forge.addon.gradle.projects.model;
 
 import java.util.List;
 
-import org.jboss.forge.addon.gradle.parser.GradleUtil;
+import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 import org.jboss.forge.addon.resource.FileResource;
 
@@ -246,7 +246,7 @@ public class GradleModelImpl implements GradleModel
    @Override
    public void createDependency(GradleDependencyBuilder builder)
    {
-      script = GradleUtil.insertDependency(script, builder.getGroup(), builder.getName(), builder.getVersion(),
+      script = GradleSourceUtil.insertDependency(script, builder.getGroup(), builder.getName(), builder.getVersion(),
                builder.getConfiguration());
    }
 

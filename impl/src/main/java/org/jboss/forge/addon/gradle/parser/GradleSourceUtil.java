@@ -18,7 +18,7 @@ import org.jboss.forge.furnace.util.Strings;
 /**
  * @author Adam Wyłuda
  */
-public class GradleUtil
+public class GradleSourceUtil
 {
    public static final String FORGE_LIBRARY = "forge.gradle";
    public static final String FORGE_LIBRARY_RESOURCE = "/forge.gradle";

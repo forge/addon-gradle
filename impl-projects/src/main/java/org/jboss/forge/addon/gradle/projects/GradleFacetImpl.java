@@ -13,7 +13,7 @@ import java.io.InputStream;
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.facets.AbstractFacet;
-import org.jboss.forge.addon.gradle.parser.GradleUtil;
+import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelLoader;
 import org.jboss.forge.addon.projects.Project;
@@ -94,10 +94,10 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    {
       String directory = new File(buildScriptPath).getParent();
 
-      manager.runGradleBuild(directory, GradleUtil.FORGE_OUTPUT_TASK, "");
+      manager.runGradleBuild(directory, GradleSourceUtil.FORGE_OUTPUT_TASK, "");
 
       FileResource<?> forgeOutputfile = (FileResource<?>) resourceFactory.create(new File(directory,
-               GradleUtil.FORGE_OUTPUT_XML));
+               GradleSourceUtil.FORGE_OUTPUT_XML));
       String forgeOutput = Streams.toString(forgeOutputfile.getResourceInputStream());
 
       forgeOutputfile.delete();
@@ -115,7 +115,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       InputStream scriptInputStream = scriptResource.getResourceInputStream();
       String script = Streams.toString(scriptInputStream);
       Streams.closeQuietly(scriptInputStream);
-      String newScript = GradleUtil.checkForIncludeForgeLibraryAndInsert(script);
+      String newScript = GradleSourceUtil.checkForIncludeForgeLibraryAndInsert(script);
 
       // If Forge library is not included
       if (!script.equals(newScript))
@@ -124,11 +124,11 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       }
 
       FileResource<?> forgeLib = (FileResource<?>) resourceFactory
-               .create(new File(directory, GradleUtil.FORGE_LIBRARY));
+               .create(new File(directory, GradleSourceUtil.FORGE_LIBRARY));
       // TODO check existing forge library version and replace with newer if necessary
       if (!forgeLib.exists())
       {
-         forgeLib.setContents(getClass().getResourceAsStream(GradleUtil.FORGE_LIBRARY_RESOURCE));
+         forgeLib.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
       }
    }
 
