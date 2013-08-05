@@ -7,6 +7,7 @@
 package org.jboss.forge.addon.gradle.projects.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 
@@ -42,6 +43,8 @@ public interface GradleModel
    List<GradleRepository> getRepositories();
    
    List<GradleSourceSet> getSourceSets();
+   
+   Map<String, String> getProperties();
 
    /**
     * Returns true if exists task with given name.
@@ -75,6 +78,8 @@ public interface GradleModel
     */
    boolean hasRepository(String url);
    
+   boolean hasProperty(String key);
+   
    void setGroup(String group) throws UnremovableElementException;
 
    void setName(String name) throws UnremovableElementException;
@@ -102,6 +107,8 @@ public interface GradleModel
    void applyPlugin(String name);
 
    void createRepository(GradleRepositoryBuilder builder);
+   
+   void setProperty(String name, String value);
 
    void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
 
@@ -112,4 +119,6 @@ public interface GradleModel
    void removeAppliedPlugin(String name) throws UnremovableElementException;
 
    void removeRepository(GradleRepositoryBuilder builder) throws UnremovableElementException;
+   
+   void removeProperty(String name) throws UnremovableElementException;
 }

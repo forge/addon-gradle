@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import org.jboss.forge.furnace.util.Streams;
@@ -200,5 +201,14 @@ public class GradleModelLoaderTest
       }
       assertTrue("main source set not found", mainSetSet);
       assertTrue("test source set not found", testSetSet);
+   }
+   
+   @Test
+   public void testProperties()
+   {
+      Map<String, String> props = model.getProperties();
+      
+      assertEquals("testMe", props.get("someProperty"));
+      assertEquals("xyz", props.get("otherProperty"));
    }
 }

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
 
@@ -54,9 +55,11 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       List<GradlePlugin> plugins = pluginsFromNode(projectNode);
       List<GradleRepository> repositories = reposFromNode(projectNode);
       List<GradleSourceSet> sourceSets = sourceSetsFromNode(projectNode);
+      // TODO Parse forgeOutput properties
+      Map<String, String> properties = Maps.newHashMap();
 
       return new GradleModelImpl("", projectName, version, "", "", tasks, deps,
-               managedDeps, profiles, plugins, repositories, sourceSets);
+               managedDeps, profiles, plugins, repositories, sourceSets, properties);
    }
 
    private String projectNameFromNode(Node projectNode)

@@ -15,6 +15,24 @@
       <archivePath>
          build/libs/Gradle Test Project-0.1-SNAPSHOT.jar
       </archivePath>
+      <properties>
+         <property>
+            <key>
+               someProperty
+            </key>
+            <value>
+               testMe
+            </value>
+         </property>
+         <property>
+            <key>
+               otherProperty
+            </key>
+            <value>
+               xyz
+            </value>
+         </property>
+      </properties>
       <tasks>
          <task>
             <name>
@@ -188,10 +206,10 @@
             </name>
             <dependsOn>
                <task>
-                  classes
+                  compileTestJava
                </task>
                <task>
-                  compileTestJava
+                  classes
                </task>
             </dependsOn>
          </task>
@@ -201,13 +219,13 @@
             </name>
             <dependsOn>
                <task>
+                  eclipseJdt
+               </task>
+               <task>
                   eclipseProject
                </task>
                <task>
                   eclipseClasspath
-               </task>
-               <task>
-                  eclipseJdt
                </task>
             </dependsOn>
          </task>
@@ -841,6 +859,24 @@
          <archivePath>
             
          </archivePath>
+         <properties>
+            <property>
+               <key>
+                  someProperty
+               </key>
+               <value>
+                  testMe
+               </value>
+            </property>
+            <property>
+               <key>
+                  otherProperty
+               </key>
+               <value>
+                  xyz
+               </value>
+            </property>
+         </properties>
          <tasks>
             <task>
                <name>
@@ -923,20 +959,6 @@
             </dependency>
          </dependencies>
          <managedDependencies>
-            <dependency>
-               <name>
-                  guava
-               </name>
-               <group>
-                  com.google.guava
-               </group>
-               <version>
-                  14.0.1
-               </version>
-               <configuration>
-                  compile
-               </configuration>
-            </dependency>
          </managedDependencies>
          <repositories>
          </repositories>
@@ -966,6 +988,24 @@
          <archivePath>
             
          </archivePath>
+         <properties>
+            <property>
+               <key>
+                  someProperty
+               </key>
+               <value>
+                  testMe
+               </value>
+            </property>
+            <property>
+               <key>
+                  otherProperty
+               </key>
+               <value>
+                  xyz
+               </value>
+            </property>
+         </properties>
          <tasks>
             <task>
                <name>
@@ -1048,20 +1088,6 @@
             </dependency>
          </dependencies>
          <managedDependencies>
-            <dependency>
-               <name>
-                  guava
-               </name>
-               <group>
-                  com.google.guava
-               </group>
-               <version>
-                  14.0.1
-               </version>
-               <configuration>
-                  compile
-               </configuration>
-            </dependency>
          </managedDependencies>
          <repositories>
          </repositories>

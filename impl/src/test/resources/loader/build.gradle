@@ -51,3 +51,6 @@ dependencies {
 task zxyz(dependsOn: [build, test]) << {
     println "DEF"
 }
+
+ext.someProperty = 'testMe'
+ext.otherProperty = 'xyz'

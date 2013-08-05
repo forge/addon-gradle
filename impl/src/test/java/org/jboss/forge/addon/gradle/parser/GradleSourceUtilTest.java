@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -49,7 +48,7 @@ public class GradleSourceUtilTest
       String result = GradleSourceUtil.removeDependency(source, "a", "b", "1.0", "compile");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testRemoveDependencyDefinedByMap() throws UnremovableElementException
    {
@@ -76,7 +75,7 @@ public class GradleSourceUtilTest
                "}";
       GradleSourceUtil.removeDependency(source, "a", "b", "1.0", "compile");
    }
-   
+
    @Test
    public void testInsertManagedDependency()
    {
@@ -100,7 +99,7 @@ public class GradleSourceUtilTest
       String result = GradleSourceUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testRemoveManagedDependency() throws UnremovableElementException
    {
@@ -232,6 +231,66 @@ public class GradleSourceUtilTest
    }
 
    @Test
+   public void testSetPropertyNewProperty()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "}\n";
+      String expected = "" +
+               "dependencies {\n" +
+               "}\n" +
+               "myProp = 'value'";
+      String result = GradleSourceUtil.setProperty(source, "myProp", "value");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testSetPropertyChangeExistingProperty()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "}\n" +
+               "myProperty = 'oldValue'\n" +
+               "repositories {\n" +
+               "}\n";
+      String expected = "" +
+               "dependencies {\n" +
+               "}\n" +
+               "myProperty = 'newValue'\n" +
+               "repositories {\n" +
+               "}\n";
+      String result = GradleSourceUtil.setProperty(source, "myProperty", "newValue");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testRemoveProperty() throws UnremovableElementException
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "}\n" +
+               "myProperty = 'oldValue'\n" +
+               "repositories {\n" +
+               "}\n";
+      String expected = "" +
+               "dependencies {\n" +
+               "}\n" +
+               "repositories {\n" +
+               "}\n";
+      String result = GradleSourceUtil.removeProperty(source, "myProperty");
+      assertEquals(expected, result);
+   }
+
+   @Test(expected = UnremovableElementException.class)
+   public void testRemovePropertyForException() throws UnremovableElementException
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "}\n";
+      GradleSourceUtil.removeProperty(source, "myProp");
+   }
+
+   @Test
    public void testInsertTask()
    {
       String source = "" +
@@ -252,7 +311,7 @@ public class GradleSourceUtilTest
                "    println variable");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testInsertTaskWithDependenciesAndType()
    {
@@ -269,12 +328,13 @@ public class GradleSourceUtilTest
                "    def variable = 10\n" +
                "    println variable\n" +
                "}\n";
-      String result = GradleSourceUtil.insertTask(source, "efgh", Lists.<String> newArrayList("x", "y", "z"), "Copy", "" +
-               "    def variable = 10\n" +
-               "    println variable");
+      String result = GradleSourceUtil.insertTask(source, "efgh", Lists.<String> newArrayList("x", "y", "z"), "Copy",
+               "" +
+                        "    def variable = 10\n" +
+                        "    println variable");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testInsertTaskWithOneDependency()
    {

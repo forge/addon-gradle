@@ -95,6 +95,20 @@ allprojects {
                     "$buildDir.name/$libsDirName/$_assembleArchiveTask.archiveName"
                 : ''
                 outputDec '</archivePath>'
+                outputInc '<properties>'
+                project.ext.properties.each { key, value ->
+                    if (key instanceof String && value instanceof String) {
+                        outputInc '<property>'
+                        outputInc '<key>'
+                        output key
+                        outputDec '</key>'
+                        outputInc '<value>'
+                        output value
+                        outputDec '</value>'
+                        outputDec '</property>'
+                    }
+                }
+                outputDec '</properties>'
                 outputInc '<tasks>'
                 p.tasks.each { t ->
                     outputInc '<task>'

@@ -24,12 +24,10 @@ public class GradleSourceUtil
    public static final String FORGE_LIBRARY_RESOURCE = "/forge.gradle";
    public static final String FORGE_OUTPUT_TASK = "forgeOutput";
    public static final String FORGE_OUTPUT_XML = "forge-output.xml";
-   
+
    public static final String INCLUDE_FORGE_LIBRARY = "apply from: 'forge.gradle'\n";
    public static final String MANAGED_CONFIG = "managed";
    public static final String DIRECT_CONFIG = "direct";
-   
-   // TODO set and get project: name, version
 
    public static String insertDependency(String source, String group, String name, String version, String configuration)
    {
@@ -167,8 +165,28 @@ public class GradleSourceUtil
             }
          }
       }
-      
+
       throw new UnremovableElementException();
+   }
+
+   /**
+    * Sets <b>dynamic</b> project property in the build script.
+    * <p/>
+    * For example setProperty for key X and value Y will append X = Y to the build script.
+    * <p/>
+    * Be aware that dynamic properties are scheduled to be removed in Gradle 2.0 so always use project's <b>ext</b>
+    * namespace for non-standard properties, like setProperty(source, "ext.myProp", "value").
+    */
+   public static String setProperty(String source, String key, String value)
+   {
+      // TODO Set property
+      return source;
+   }
+
+   public static String removeProperty(String source, String key) throws UnremovableElementException
+   {
+      // TODO Remove property
+      return source;
    }
 
    // There is no way to remove a task because tasks are composed of many actions
