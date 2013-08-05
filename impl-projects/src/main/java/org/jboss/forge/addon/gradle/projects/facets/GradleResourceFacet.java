@@ -10,16 +10,15 @@ import java.util.List;
 
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.projects.facets.ResourceFacet;
+import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 
 /**
  * @author Adam Wyłuda
  */
-public class GradleResourceFacet extends AbstractFacet<Project> implements ResourceFacet
+public class GradleResourceFacet extends AbstractFacet<Project> implements ResourcesFacet
 {
-
    @Override
    public boolean install()
    {
@@ -80,5 +79,4 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
       // TODO Auto-generated method stub
       return null;
    }
-
 }

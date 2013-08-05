@@ -6,6 +6,8 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
+import java.util.Map;
+
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.projects.Project;
@@ -16,7 +18,6 @@ import org.jboss.forge.addon.projects.facets.MetadataFacet;
  */
 public class GradleMetadataFacet extends AbstractFacet<Project> implements MetadataFacet
 {
-
    @Override
    public boolean install()
    {
@@ -74,5 +75,40 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    {
       // TODO Auto-generated method stub
       return null;
+   }
+
+   @Override
+   public Map<String, String> getEffectiveProperties()
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public Map<String, String> getDirectProperties()
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public String getEffectiveProperty(String name)
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public String getDirectProperty(String name)
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public void setProperty(String name, String value)
+   {
+      // TODO Auto-generated method stub
+
    }
 }

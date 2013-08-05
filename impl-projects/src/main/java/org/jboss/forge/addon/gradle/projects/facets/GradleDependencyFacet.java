@@ -7,19 +7,11 @@
 package org.jboss.forge.addon.gradle.projects.facets;
 
 import java.util.List;
-import java.util.Map;
 
-import javax.inject.Inject;
-
-import org.gradle.jarjar.com.google.common.collect.Lists;
-import org.gradle.tooling.model.DomainObjectSet;
-import org.gradle.tooling.model.ExternalDependency;
-import org.gradle.tooling.model.GradleModuleVersion;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.DependencyQuery;
 import org.jboss.forge.addon.dependencies.DependencyRepository;
-import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.projects.Project;
@@ -122,21 +114,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    }
 
    @Override
-   public Dependency getDirectManagedDependency(Dependency arg0)
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-   @Override
-   public Map<String, String> getProperties()
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-   @Override
-   public String getProperty(String name)
+   public Dependency getDirectManagedDependency(Dependency managedDependency)
    {
       // TODO Auto-generated method stub
       return null;
@@ -188,6 +166,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    public void removeDependency(Dependency dependency)
    {
       // TODO Auto-generated method stub
+
    }
 
    @Override
@@ -236,17 +215,5 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    {
       // TODO Auto-generated method stub
       return null;
-   }
-
-   @Override
-   public void setProperty(String name, String value)
-   {
-      // TODO Auto-generated method stub
-   }
-
-   static String toForgeScopeType(String scopeType)
-   {
-      // TODO scope type conversion
-      return scopeType;
    }
 }
