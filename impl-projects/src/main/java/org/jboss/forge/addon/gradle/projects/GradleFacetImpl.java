@@ -32,8 +32,6 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    private GradleModelLoader modelLoader;
    @Inject
    private ResourceFactory resourceFactory;
-   @Inject
-   private GradleProjectCache cache;
 
    @Override
    public boolean install()
@@ -66,15 +64,8 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       {
          String buildScriptPath = new File(new File(getFaceted().getProjectRoot().getFullyQualifiedName()),
                   "build.gradle").getAbsolutePath();
-         // TODO Check if file has been modified since last use and reload
-         GradleModel model = cache.getModel(buildScriptPath);
-         if (model != null)
-         {
-            return model;
-         }
          checkIfIsForgeLibraryInstalled(buildScriptPath);
-         model = loadModel(buildScriptPath);
-         cache.putModel(buildScriptPath, model);
+         GradleModel model = loadModel(buildScriptPath);
          return model;
       }
       catch (IOException e)
