@@ -20,19 +20,22 @@ import org.junit.Test;
  */
 public class SimpleGroovyParserTest
 {
-
    @Test
    public void testFlatSource()
    {
       String source = "\n" +
                "compile 'com.google:summer:2.0.1.3'\n" +
                "testCompile {'abc:def:0.1'}\n" +
-               "apply plugin: 'java'\n";
+               "apply plugin: 'java'\n" +
+               "number = 30\n" +
+               "def newVar = 'xyz'\n" +
+               "x = 'y'\n";
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       assertEquals(1, parser.getInvocationsWithClosure().size());
       assertEquals(1, parser.getInvocationsWithMap().size());
       assertEquals(1, parser.getInvocationsWithString().size());
+      assertEquals(1, parser.getVariableAssignments().size());
 
       InvocationWithString invocationWithString = parser.getInvocationsWithString().get(0);
       assertEquals("compile", invocationWithString.getMethodName());
@@ -50,6 +53,10 @@ public class SimpleGroovyParserTest
       Map.Entry<String, String> entry = parameters.entrySet().iterator().next();
       assertEquals("plugin", entry.getKey());
       assertEquals("java", entry.getValue());
+      
+      VariableAssignment assignment = parser.getVariableAssignments().get(0);
+      assertEquals("x", assignment.getVariable());
+      assertEquals("y", assignment.getValue());
    }
 
    @Test
@@ -59,6 +66,8 @@ public class SimpleGroovyParserTest
                "subprojects {\n" +
                "    apply plugin: 'groovy'\n" +
                "    apply plugin: 'java'\n" +
+               "    \n" +
+               "    abc = 'def'\n" +
                "    \n" +
                "    dependencies {\n" +
                "        compile 'group:artifact:1.0.0'\n" +
@@ -72,6 +81,7 @@ public class SimpleGroovyParserTest
       assertEquals("subprojects", subprojects.getMethodName());
       assertEquals(2, subprojects.getInvocationsWithMap().size());
       assertEquals(1, subprojects.getInvocationsWithClosure().size());
+      assertEquals(1, subprojects.getVariableAssignments().size());
 
       InvocationWithClosure dependencies = subprojects.getInvocationsWithClosure().get(0);
       assertEquals(1, dependencies.getInvocationsWithString().size());
@@ -79,6 +89,10 @@ public class SimpleGroovyParserTest
       InvocationWithString compile = dependencies.getInvocationsWithString().get(0);
       assertEquals("compile", compile.getMethodName());
       assertEquals("group:artifact:1.0.0", compile.getString());
+      
+      VariableAssignment assignment = subprojects.getVariableAssignments().get(0);
+      assertEquals("abc", assignment.getVariable());
+      assertEquals("def", assignment.getValue());
    }
    
    @Test
@@ -113,10 +127,10 @@ public class SimpleGroovyParserTest
    public void testInvocationWithClosureByNameAbsent()
    {
       String sauce = "" +
-      		"x {\n" +
-      		"    y {\n" +
-      		"    }\n" +
-      		"}\n";
+            "x {\n" +
+            "    y {\n" +
+            "    }\n" +
+            "}\n";
       
       Optional<InvocationWithClosure> optional = SimpleGroovyParser.fromSource(sauce).invocationWithClosureByName("z");
       assertFalse(optional.isPresent());

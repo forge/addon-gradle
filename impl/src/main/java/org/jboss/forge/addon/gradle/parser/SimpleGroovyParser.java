@@ -57,16 +57,10 @@ public class SimpleGroovyParser
    }
 
    private final InvocationWithClosure root;
-   private final List<InvocationWithClosure> invocationWithClosureList;
-   private final List<InvocationWithMap> invocationWithMapList;
-   private final List<InvocationWithString> invocationWithStringList;
 
    private SimpleGroovyParser(String source)
    {
       root = createInvocationWithClosureRoot(source);
-      invocationWithClosureList = root.getInvocationsWithClosure();
-      invocationWithMapList = root.getInvocationsWithMap();
-      invocationWithStringList = root.getInvocationsWithString();
    }
 
    public static SimpleGroovyParser fromSource(String source)
@@ -76,17 +70,22 @@ public class SimpleGroovyParser
 
    public List<InvocationWithClosure> getInvocationsWithClosure()
    {
-      return invocationWithClosureList;
+      return root.getInvocationsWithClosure();
    }
 
    public List<InvocationWithMap> getInvocationsWithMap()
    {
-      return invocationWithMapList;
+      return root.getInvocationsWithMap();
    }
 
    public List<InvocationWithString> getInvocationsWithString()
    {
-      return invocationWithStringList;
+      return root.getInvocationsWithString();
+   }
+   
+   public List<VariableAssignment> getVariableAssignments()
+   {
+      return root.getVariableAssignments();
    }
 
    public Optional<InvocationWithClosure> invocationWithClosureByName(String name)
@@ -102,6 +101,11 @@ public class SimpleGroovyParser
    public Optional<InvocationWithMap> invocationWithMapByName(String name)
    {
       return root.invocationWithMapByName(name);
+   }
+   
+   public Optional<VariableAssignment> variableAssignmentByName(String name)
+   {
+      return root.variableAssignmentByName(name);
    }
    
    public List<InvocationWithClosure> allInvocationsAtPath(String... path)

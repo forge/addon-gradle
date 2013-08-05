@@ -1,5 +1,10 @@
 package org.jboss.forge.addon.gradle.parser;
 
+/**
+ * Represents assignment to string variable.
+ * 
+ * @author Adam Wyłuda
+ */
 public class VariableAssignment extends SourceCodeElement
 {
    private final String variable;
