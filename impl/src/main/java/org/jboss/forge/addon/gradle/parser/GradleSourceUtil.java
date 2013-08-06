@@ -28,7 +28,7 @@ public class GradleSourceUtil
    public static final String INCLUDE_FORGE_LIBRARY = "apply from: 'forge.gradle'\n";
    public static final String MANAGED_CONFIG = "managed";
    public static final String DIRECT_CONFIG = "direct";
-
+   
    public static String insertDependency(String source, String group, String name, String version, String configuration)
    {
       String depString = String.format("%s '%s:%s:%s'", configuration, group, name, version);
@@ -179,14 +179,43 @@ public class GradleSourceUtil
     */
    public static String setProperty(String source, String key, String value)
    {
-      // TODO Set property
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      String assignmentString = variableAssignmentString(key, value);
+      for (VariableAssignment assignment : parser.getVariableAssignments())
+      {
+         // If it's already defined somewhere
+         if (assignment.getVariable().equals(key))
+         {
+            source = SourceUtil.removeSourceFragment(source, assignment);
+            source = SourceUtil.insertString(source, assignmentString, 
+                     assignment.getLineNumber(), assignment.getColumnNumber());
+            return source;
+         }
+      }
+      
+      // If it was not defined anywhere
+      source = source + assignmentString;
+      
       return source;
+   }
+   
+   private static String variableAssignmentString(String variable, String value)
+   {
+      return String.format("%s = '%s'", variable, value);
    }
 
    public static String removeProperty(String source, String key) throws UnremovableElementException
    {
-      // TODO Remove property
-      return source;
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (VariableAssignment assignment : parser.getVariableAssignments())
+      {
+         if (assignment.getVariable().equals(key))
+         {
+            return SourceUtil.removeSourceFragmentWithLine(source, assignment);
+         }
+      }
+
+      throw new UnremovableElementException();
    }
 
    // There is no way to remove a task because tasks are composed of many actions

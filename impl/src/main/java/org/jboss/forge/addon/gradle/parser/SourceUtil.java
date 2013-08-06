@@ -73,13 +73,19 @@ public class SourceUtil
       int position = precedingCharactersCount + columnNumber;
       return position;
    }
+   
+   public static String removeSourceFragment(String source, SourceCodeElement element)
+   {
+      return removeSourceFragment(source, element.getLineNumber(), element.getColumnNumber(),
+               element.getLastLineNumber(), element.getLastColumnNumber());
+   }
 
    public static String removeSourceFragment(String source, int lineNumber, int columnNumber,
             int lastLineNumber, int lastColumnNumber)
    {
-      int begginingPosition = positionInSource(source, lineNumber, columnNumber);
+      int beginningPosition = positionInSource(source, lineNumber, columnNumber);
       int endingPosition = positionInSource(source, lastLineNumber, lastColumnNumber);
-      return removeSourceFragment(source, begginingPosition, endingPosition);
+      return removeSourceFragment(source, beginningPosition, endingPosition);
    }
 
    public static String removeSourceFragment(String source, int start, int end)
