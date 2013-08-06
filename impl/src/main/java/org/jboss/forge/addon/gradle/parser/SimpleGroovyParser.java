@@ -13,13 +13,16 @@ import java.util.Map;
 
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
+import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.ClosureExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.DeclarationExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.NamedArgumentListExpression;
 import org.codehaus.groovy.ast.expr.TupleExpression;
+import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
@@ -82,7 +85,7 @@ public class SimpleGroovyParser
    {
       return root.getInvocationsWithString();
    }
-   
+
    public List<VariableAssignment> getVariableAssignments()
    {
       return root.getVariableAssignments();
@@ -102,12 +105,12 @@ public class SimpleGroovyParser
    {
       return root.invocationWithMapByName(name);
    }
-   
+
    public Optional<VariableAssignment> variableAssignmentByName(String name)
    {
       return root.variableAssignmentByName(name);
    }
-   
+
    public List<InvocationWithClosure> allInvocationsAtPath(String... path)
    {
       Preconditions.checkArgument(path.length > 0, "Path must have at least one element");
@@ -115,7 +118,7 @@ public class SimpleGroovyParser
       allInvocationsAtPath(list, root, path);
       return list;
    }
-   
+
    private void allInvocationsAtPath(List<InvocationWithClosure> list, InvocationWithClosure invocation, String... path)
    {
       if (path.length == 0)
@@ -168,11 +171,17 @@ public class SimpleGroovyParser
       if (statement instanceof ExpressionStatement)
       {
          Expression expression = ((ExpressionStatement) statement).getExpression();
-         
+
          // If expression is method call
          if (expression instanceof MethodCallExpression)
          {
             processMethodCallExpression(expression, node);
+         }
+
+         // If expression is binary expression, which might be variable assignment
+         if (expression instanceof BinaryExpression)
+         {
+            processBinaryExpression((BinaryExpression) expression, node);
          }
       }
    }
@@ -184,9 +193,9 @@ public class SimpleGroovyParser
       int columnNumber = expression.getColumnNumber();
       int lastLineNumber = expression.getLastLineNumber();
       int lastColumnNumber = expression.getLastColumnNumber();
-      
+
       Expression argumentsExpression = ((MethodCallExpression) expression).getArguments();
-      
+
       // In case argument expression is string constant or closure
       if (argumentsExpression instanceof ArgumentListExpression &&
                ((ArgumentListExpression) argumentsExpression).getExpressions().size() == 1)
@@ -194,7 +203,7 @@ public class SimpleGroovyParser
          processArgumentListExpression((ArgumentListExpression) argumentsExpression, node,
                   methodName, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       }
-      
+
       // If argument expression is TupleExpression then it may be a map
       else if (argumentsExpression instanceof TupleExpression &&
                ((TupleExpression) argumentsExpression).getExpressions().size() == 1)
@@ -209,7 +218,7 @@ public class SimpleGroovyParser
             int lastLineNumber, int lastColumnNumber)
    {
       Expression argumentExpression = ((ArgumentListExpression) argumentsExpression).getExpressions().get(0);
-      
+
       // If argument is string constant
       if (argumentExpression instanceof ConstantExpression)
       {
@@ -218,19 +227,19 @@ public class SimpleGroovyParser
                   lastLineNumber, lastColumnNumber);
          node.invocationWithStringList.add(invocation);
       }
-      
+
       // If argument is closure
       else if (argumentExpression instanceof ClosureExpression)
       {
          BlockStatement blockStatement = (BlockStatement) ((ClosureExpression) argumentExpression).getCode();
-         
+
          PreInvocationWithClosure invocation = new PreInvocationWithClosure();
          invocation.methodName = methodName;
          invocation.lineNumber = lineNumber;
          invocation.columnNumber = columnNumber;
          invocation.lastLineNumber = lastLineNumber;
          invocation.lastColumnNumber = lastColumnNumber;
-         
+
          fillInvocationFromStatement(blockStatement, invocation);
          node.invocationWithClosureList.add(invocation.create());
       }
@@ -241,7 +250,7 @@ public class SimpleGroovyParser
             int lastLineNumber, int lastColumnNumber)
    {
       Expression argumentExpression = ((TupleExpression) argumentsExpression).getExpressions().get(0);
-      
+
       // In case argument expression is a map
       if (argumentExpression instanceof NamedArgumentListExpression)
       {
@@ -271,5 +280,32 @@ public class SimpleGroovyParser
       InvocationWithMap invocation = new InvocationWithMap(methodName, parameters,
                lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       node.invocationWithMapList.add(invocation);
+   }
+
+   static void processBinaryExpression(BinaryExpression expression, PreInvocationWithClosure node)
+   {
+      // This condition must be true to be string variable assignment
+      // but not new variable declaration
+      if (!(expression instanceof DeclarationExpression) &&
+               expression.getLeftExpression() instanceof VariableExpression &&
+               expression.getOperation().getText().toString().equals("=") &&
+               expression.getRightExpression() instanceof ConstantExpression &&
+               ((ConstantExpression) expression.getRightExpression()).getValue() instanceof String)
+      {
+         VariableExpression leftExpression = (VariableExpression) expression.getLeftExpression();
+         ConstantExpression rightExpression = (ConstantExpression) expression.getRightExpression();
+         
+         String variable = leftExpression.getName();
+         String value = (String) rightExpression.getValue();
+         
+         int lineNumber = expression.getLineNumber();
+         int columnNumber = expression.getColumnNumber();
+         int lastLineNumber = expression.getLastLineNumber();
+         int lastColumnNumber = expression.getLastColumnNumber();
+         
+         VariableAssignment variableAssignment =
+                  new VariableAssignment(variable, value, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+         node.variableAssignmentList.add(variableAssignment);
+      }
    }
 }
