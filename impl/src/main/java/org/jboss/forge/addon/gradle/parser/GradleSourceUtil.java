@@ -28,14 +28,14 @@ public class GradleSourceUtil
    public static final String INCLUDE_FORGE_LIBRARY = "apply from: 'forge.gradle'\n";
    public static final String MANAGED_CONFIG = "managed";
    public static final String DIRECT_CONFIG = "direct";
-   
+
    public static final String ARCHIVE_NAME_METHOD = "archiveName";
-   
+
    public static String setArchiveName(String source, String archiveName)
    {
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       String archiveNameInvocationString = archiveNameString(archiveName);
-      
+
       for (InvocationWithString invocation : parser.getInvocationsWithString())
       {
          if (invocation.getMethodName().equals(ARCHIVE_NAME_METHOD))
@@ -46,17 +46,17 @@ public class GradleSourceUtil
             return source;
          }
       }
-      
-      source = SourceUtil.addNewLineAtEnd(source) + archiveNameInvocationString + "\n"; 
-      
+
+      source = SourceUtil.addNewLineAtEnd(source) + archiveNameInvocationString + "\n";
+
       return source;
    }
-   
+
    private static String archiveNameString(String archiveName)
    {
       return String.format("%s '%s'", ARCHIVE_NAME_METHOD, archiveName);
    }
-   
+
    public static String insertDependency(String source, String group, String name, String version, String configuration)
    {
       String depString = String.format("%s '%s:%s:%s'", configuration, group, name, version);
@@ -97,17 +97,35 @@ public class GradleSourceUtil
 
       throw new UnremovableElementException();
    }
-   
+
    public static String insertDirectDependency(String source, String group, String name)
    {
-      // TODO
+      String depString = String.format("%s handler: it, group: '%s', name: '%s'", DIRECT_CONFIG, group, name);
+      source = SourceUtil.insertIntoInvocationAtPath(source, depString, "dependencies");
       return source;
    }
-   
+
    public static String removeDirectDependency(String source, String group, String name)
+            throws UnremovableElementException
    {
-      // TODO 
-      return source;
+      Map<String, String> depMap = Maps.newHashMap();
+      depMap.put("group", group);
+      depMap.put("name", name);
+
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithClosure deps : parser.allInvocationsAtPath("dependencies"))
+      {
+         for (InvocationWithMap invocation : deps.getInvocationsWithMap())
+         {
+            if (invocation.getMethodName().equals(DIRECT_CONFIG) &&
+                     invocation.getParameters().equals(depMap))
+            {
+               return SourceUtil.removeSourceFragmentWithLine(source, invocation);
+            }
+         }
+      }
+
+      throw new UnremovableElementException();
    }
 
    public static String insertManagedDependency(String source, String group, String name, String version,
@@ -227,18 +245,18 @@ public class GradleSourceUtil
          if (assignment.getVariable().equals(key))
          {
             source = SourceUtil.removeSourceFragment(source, assignment);
-            source = SourceUtil.insertString(source, assignmentString, 
+            source = SourceUtil.insertString(source, assignmentString,
                      assignment.getLineNumber(), assignment.getColumnNumber());
             return source;
          }
       }
-      
+
       // If it was not defined anywhere
       source = SourceUtil.addNewLineAtEnd(source) + assignmentString + "\n";
-      
+
       return source;
    }
-   
+
    private static String variableAssignmentString(String variable, String value)
    {
       return String.format("%s = '%s'", variable, value);

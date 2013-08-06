@@ -126,7 +126,7 @@ public class GradleSourceUtilTest
    }
    
    @Test
-   public void testRemoveDirectDependency()
+   public void testRemoveDirectDependency() throws UnremovableElementException
    {
       String source = "" +
                "dependencies {\n" +
@@ -142,7 +142,7 @@ public class GradleSourceUtilTest
    }
    
    @Test(expected = UnremovableElementException.class)
-   public void testRemoveDirectDependencyForException()
+   public void testRemoveDirectDependencyForException() throws UnremovableElementException
    {
       String source = "" +
                "dependencies {\n" +
