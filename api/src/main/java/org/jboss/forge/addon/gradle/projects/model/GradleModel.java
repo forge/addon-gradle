@@ -20,6 +20,8 @@ public interface GradleModel
 {
    String getScript();
    
+   void setScript(String script);
+   
    String getGroup();
    
    String getName();
@@ -27,6 +29,8 @@ public interface GradleModel
    String getVersion();
    
    String getPackaging();
+   
+   String getArchiveName();
    
    String getArchivePath();
 

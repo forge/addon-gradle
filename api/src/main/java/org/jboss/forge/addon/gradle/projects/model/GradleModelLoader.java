@@ -16,6 +16,7 @@ public interface GradleModelLoader
 {
    /**
     * Parses XML source into Gradle model, setting given file resource as Gradle resource.
+    * It doesn't set GradleModel script so it must be set after loading.
     */
    public GradleModel loadFromXML(String source);
 }

@@ -28,24 +28,24 @@ public class GradleModelLoaderImpl implements GradleModelLoader
    public GradleModel loadFromXML(String source)
    {
       Node root = XMLParser.parse(source);
-      List<GradleProfile> profiles = profilesFromNode(source, root);
-      GradleModel projectModel = modelFromNode(source, root.getSingle("project"), profiles);
+      List<GradleProfile> profiles = profilesFromNode(root);
+      GradleModel projectModel = modelFromNode(root.getSingle("project"), profiles);
       return projectModel;
    }
 
-   private List<GradleProfile> profilesFromNode(String script, Node rootNode)
+   private List<GradleProfile> profilesFromNode(Node rootNode)
    {
       List<GradleProfile> profiles = new ArrayList<GradleProfile>();
       for (Node profileNode : rootNode.get("profile"))
       {
          String name = profileNode.getSingle("name").getText().trim();
-         GradleModel model = modelFromNode(script, profileNode.getSingle("project"), new ArrayList<GradleProfile>());
+         GradleModel model = modelFromNode(profileNode.getSingle("project"), new ArrayList<GradleProfile>());
          profiles.add(new GradleProfileImpl(name, model));
       }
       return profiles;
    }
 
-   private GradleModel modelFromNode(String script, Node projectNode, List<GradleProfile> profiles)
+   private GradleModel modelFromNode(Node projectNode, List<GradleProfile> profiles)
    {
       String group = groupFromNode(projectNode);
       String name = nameFromNode(projectNode);
@@ -60,7 +60,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       List<GradleSourceSet> sourceSets = sourceSetsFromNode(projectNode);
       Map<String, String> properties = propertiesFromNode(projectNode);
 
-      return new GradleModelImpl(script, group, name, version, packaging, archivePath, tasks, deps,
+      return new GradleModelImpl(group, name, version, packaging, archivePath, tasks, deps,
                managedDeps, profiles, plugins, repositories, sourceSets, properties);
    }
    

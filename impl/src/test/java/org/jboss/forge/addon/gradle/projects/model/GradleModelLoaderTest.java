@@ -30,8 +30,9 @@ public class GradleModelLoaderTest
       GradleModelLoader loader = new GradleModelLoaderImpl();
       String source = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
       model = loader.loadFromXML(source);
+      model.setScript(Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/build.gradle")));
    }
-   
+
    @Test
    public void getGroup()
    {
@@ -49,13 +50,26 @@ public class GradleModelLoaderTest
    {
       assertEquals("0.1-SNAPSHOT", model.getVersion());
    }
-   
+
    @Test
    public void testPackaging()
    {
       assertEquals("jar", model.getPackaging());
    }
-   
+
+   @Test
+   public void testArchiveName()
+   {
+      assertEquals("Gradle Test Project-0.1-SNAPSHOT", model.getArchiveName());
+   }
+
+   @Test
+   public void testSetArchiveName()
+   {
+      model.setArchiveName("NEWNAME");
+      assertEquals("build/libs/NEWNAME.jar", model.getArchivePath());
+   }
+
    @Test
    public void testArchivePath()
    {
@@ -220,12 +234,12 @@ public class GradleModelLoaderTest
       assertTrue("main source set not found", mainSetSet);
       assertTrue("test source set not found", testSetSet);
    }
-   
+
    @Test
    public void testProperties()
    {
       Map<String, String> props = model.getProperties();
-      
+
       assertEquals("testMe", props.get("someProperty"));
       assertEquals("xyz", props.get("otherProperty"));
    }

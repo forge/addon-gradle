@@ -57,13 +57,13 @@ public class GradleModelImpl implements GradleModel
       this.properties = Maps.newHashMap();
    }
 
-   public GradleModelImpl(String script, String group, String name, String version,
+   public GradleModelImpl(String group, String name, String version,
             String packaging, String archivePath, List<GradleTask> tasks,
             List<GradleDependency> dependencies, List<GradleDependency> managedDependencies,
             List<GradleProfile> profiles, List<GradlePlugin> plugins, List<GradleRepository> repositories,
             List<GradleSourceSet> sourceSets, Map<String, String> properties)
    {
-      this.script = script;
+      this.script = "";
       this.group = group;
       this.name = name;
       this.version = version;
@@ -106,11 +106,17 @@ public class GradleModelImpl implements GradleModel
       this.repositories = Lists.newArrayList(original.getRepositories());
       this.sourceSets = Lists.newArrayList(original.getSourceSets());
    }
-
+   
    @Override
    public String getScript()
    {
       return script;
+   }
+
+   @Override
+   public void setScript(String script)
+   {
+      this.script = script;
    }
 
    @Override
@@ -135,6 +141,12 @@ public class GradleModelImpl implements GradleModel
    public String getPackaging()
    {
       return packaging;
+   }
+
+   @Override
+   public String getArchiveName()
+   {
+      return archivePath.substring(archivePath.lastIndexOf("/") + 1, archivePath.lastIndexOf("."));
    }
 
    @Override
@@ -279,7 +291,7 @@ public class GradleModelImpl implements GradleModel
    public void setGroup(String group) throws UnremovableElementException
    {
       script = GradleSourceUtil.setProperty(script, "group", group);
-      // TODO Update model
+      this.group = group;
    }
 
    @Override
@@ -296,7 +308,7 @@ public class GradleModelImpl implements GradleModel
    public void setVersion(String version) throws UnremovableElementException
    {
       script = GradleSourceUtil.setProperty(script, "version", version);
-      // TODO Update model
+      this.version = version;
    }
 
    @Override
@@ -313,14 +325,15 @@ public class GradleModelImpl implements GradleModel
             return;
          }
       }
-      
+
       throw new IllegalArgumentException("There is no such packaging: " + packaging);
    }
 
    @Override
    public void setArchiveName(String archiveName)
    {
-      // TODO Set archive name by GradleSourceUtil
+      script = GradleSourceUtil.setArchiveName(script, archiveName);
+      this.archivePath = archivePath.substring(0, archivePath.lastIndexOf("/") + 1) + archiveName + "." + packaging;
    }
 
    @Override
