@@ -9,6 +9,8 @@ package org.jboss.forge.addon.gradle.projects.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.forge.furnace.util.Strings;
+
 /**
  * Common Gradle plugin types.
  * 
@@ -16,48 +18,67 @@ import java.util.Map;
  */
 public enum GradlePluginType
 {
-   // TODO short names for plugin types
-   JAVA("org.gradle.api.plugins.JavaPlugin"), GROOVY("org.gradle.api.plugins.GroovyPlugin"),
-   SCALA("org.gradle.api.plugins.scala.ScalaPlugin"), WAR("org.gradle.api.plugins.WarPlugin"),
-   EAR("org.gradle.plugins.EarPlugin"), JETTY("org.gradle.api.plugins.jetty.JettyPlugin"),
-   CHECKSTYLE("org.gradle.api.plugins.quality.CheckstylePlugin"),
-   CODENARC("org.gradle.api.plugins.quality.CodeNarcPlugin"),
-   FIND_BUGS("org.gradle.api.plugins.quality.FindBugsPlugin"),
-   JDEPEND("org.gradle.api.plugins.quality.JDependPlugin"),
-   PMD("org.gradle.api.plugins.quality.PmdPlugin"), JACOCO("org.gradle.testing.jacoco.plugins.JacocoPlugin"),
-   SONAR("org.gradle.api.plugins.sonar.SonarPlugin"), OSGI("org.gradle.api.plugins.osgi.OsgiPlugin"),
-   ECLIPSE("org.gradle.plugins.ide.eclipse.EclipsePlugin"), IDEA("org.gradle.plugins.ide.idea.IdeaPlugin"),
-   ANTLR("org.gradle.api.plugins.antlr.AntlrPlugin"), PROJECT_REPORTS("org.gradle.api.plugins.ProjectReportsPlugin"),
-   ANNOUNCE("org.gradle.api.plugins.announce.AnnouncePlugin"),
-   BUILD_ANNOUNCEMENTS("org.gradle.api.plugins.announce.BuildAnnouncementsPlugin"),
-   DISTRIBUTION("org.gradle.api.distribution.plugins.DistributionPlugin"),
-   APPLICATION("org.gradle.api.plugins.ApplicationPlugin"),
-   JAVA_LIBRARY_DISTRIBUTION("org.gradle.api.plugins.JavaLibraryDistributionPlugin"),
-   BUILD_DASHBOARD("org.gradle.api.reporting.plugins.BuildDashboardPlugin"),
-   MAVEN("org.gradle.api.plugins.MavenPlugin"), SIGNING("org.gradle.plugins.signing.SigningPlugin"),
-   IVY_PUBLISH("org.gradle.api.publish.ivy.plugins.IvyPublishPlugin"),
-   MAVEN_PUBLISH("org.gradle.api.publish.maven.plugins.MavenPublishPlugin"),
+   JAVA("org.gradle.api.plugins.JavaPlugin", "java", "jar"), 
+   GROOVY("org.gradle.api.plugins.GroovyPlugin", "groovy"),
+   SCALA("org.gradle.api.plugins.scala.ScalaPlugin", "scala"), 
+   WAR("org.gradle.api.plugins.WarPlugin", "war", "war"),
+   EAR("org.gradle.plugins.EarPlugin", "ear", "ear"), 
+   JETTY("org.gradle.api.plugins.jetty.JettyPlugin", "jetty"),
+   CHECKSTYLE("org.gradle.api.plugins.quality.CheckstylePlugin", "checkstyle"),
+   CODENARC("org.gradle.api.plugins.quality.CodeNarcPlugin", "codenarc"),
+   FIND_BUGS("org.gradle.api.plugins.quality.FindBugsPlugin", "findbugs"),
+   JDEPEND("org.gradle.api.plugins.quality.JDependPlugin", "jdepend"),
+   PMD("org.gradle.api.plugins.quality.PmdPlugin", "pmd"), 
+   JACOCO("org.gradle.testing.jacoco.plugins.JacocoPlugin", "jacoco"),
+   SONAR("org.gradle.api.plugins.sonar.SonarPlugin", "sonar"), 
+   OSGI("org.gradle.api.plugins.osgi.OsgiPlugin", "osgi"),
+   ECLIPSE("org.gradle.plugins.ide.eclipse.EclipsePlugin", "eclipse"), 
+   IDEA("org.gradle.plugins.ide.idea.IdeaPlugin", "idea"),
+   ANTLR("org.gradle.api.plugins.antlr.AntlrPlugin", "antlr"), 
+   PROJECT_REPORTS("org.gradle.api.plugins.ProjectReportsPlugin", "project-report"),
+   ANNOUNCE("org.gradle.api.plugins.announce.AnnouncePlugin", "announce"),
+   BUILD_ANNOUNCEMENTS("org.gradle.api.plugins.announce.BuildAnnouncementsPlugin", "build-announcements"),
+   DISTRIBUTION("org.gradle.api.distribution.plugins.DistributionPlugin", "distribution"),
+   APPLICATION("org.gradle.api.plugins.ApplicationPlugin", "application"),
+   JAVA_LIBRARY_DISTRIBUTION("org.gradle.api.plugins.JavaLibraryDistributionPlugin", "java-library-distribution"),
+   BUILD_DASHBOARD("org.gradle.api.reporting.plugins.BuildDashboardPlugin", "build-dashboard"),
+   MAVEN("org.gradle.api.plugins.MavenPlugin", "maven"), 
+   SIGNING("org.gradle.plugins.signing.SigningPlugin", "signing"),
+   IVY_PUBLISH("org.gradle.api.publish.ivy.plugins.IvyPublishPlugin", "ivy-publish"),
+   MAVEN_PUBLISH("org.gradle.api.publish.maven.plugins.MavenPublishPlugin", "maven-publish"),
 
    OTHER("");
 
    private static class TypeContainer
    {
-      private static final Map<String, GradlePluginType> TYPE_MAP = new HashMap<String, GradlePluginType>();
+      private static final Map<String, GradlePluginType> TYPE_BY_CLAZZ_MAP = new HashMap<String, GradlePluginType>();
+      private static final Map<String, GradlePluginType> TYPE_BY_PACKAGING_MAP = new HashMap<String, GradlePluginType>();
    }
 
    private final String clazz;
    private final String shortName;
+   private final String packaging;
 
    private GradlePluginType(String clazz)
    {
-      this(clazz, "");
+      this(clazz, "", "");
    }
    
    private GradlePluginType(String clazz, String shortName)
    {
+      this(clazz, shortName, "");
+   }
+   
+   private GradlePluginType(String clazz, String shortName, String packaging)
+   {
       this.clazz = clazz;
-      TypeContainer.TYPE_MAP.put(clazz, this);
+      TypeContainer.TYPE_BY_CLAZZ_MAP.put(clazz, this);
       this.shortName = shortName;
+      this.packaging = packaging;
+      if (!Strings.isNullOrEmpty(packaging))
+      {
+         TypeContainer.TYPE_BY_PACKAGING_MAP.put(packaging, this);
+      }
    }
 
    public String getClazz()
@@ -70,12 +91,22 @@ public enum GradlePluginType
       return shortName;
    }
    
+   public String getPackaging()
+   {
+      return packaging;
+   }
+   
    /**
     * @return Plugin type for given class. If there is no such type then it returns {@link #OTHER}.
     */
    public static GradlePluginType typeByClazz(String clazz)
    {
-      GradlePluginType type = TypeContainer.TYPE_MAP.get(clazz);
+      GradlePluginType type = TypeContainer.TYPE_BY_CLAZZ_MAP.get(clazz);
       return type != null ? type : OTHER;
+   }
+   
+   public static GradlePluginType typeByPackaging(String packaging)
+   {
+      return TypeContainer.TYPE_BY_PACKAGING_MAP.get(packaging);
    }
 }
