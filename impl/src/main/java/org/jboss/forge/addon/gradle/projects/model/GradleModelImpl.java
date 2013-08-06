@@ -263,7 +263,7 @@ public class GradleModelImpl implements GradleModel
       }
       return false;
    }
-   
+
    @Override
    public boolean hasProperty(String key)
    {
@@ -378,20 +378,33 @@ public class GradleModelImpl implements GradleModel
    {
       for (GradleProfile profile : profiles)
       {
-         if (profile.getName().equals(name)) 
+         if (profile.getName().equals(name))
          {
             profiles.remove(profile);
             return;
          }
       }
-      
+
       throw new RuntimeException("Can't remove profile non existing profile named " + name);
    }
 
    @Override
    public void removeAppliedPlugin(String name) throws UnremovableElementException
    {
-      script = GradleSourceUtil.removePlugin(script, name);
+      GradlePluginType type = GradlePluginType.typeByClazz(name);
+      if (type != GradlePluginType.OTHER)
+      {
+         try {
+            script = GradleSourceUtil.removePlugin(script, type.getClazz());
+         } catch (UnremovableElementException exception) {
+            // This could be a case when plugin was declared with it's short name
+            script = GradleSourceUtil.removePlugin(script, type.getShortName());
+         }
+      }
+      else
+      {
+         script = GradleSourceUtil.removePlugin(script, name);
+      }
       // TODO Update model
    }
 
