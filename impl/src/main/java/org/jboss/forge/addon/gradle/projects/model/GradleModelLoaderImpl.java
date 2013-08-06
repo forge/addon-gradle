@@ -55,8 +55,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       List<GradlePlugin> plugins = pluginsFromNode(projectNode);
       List<GradleRepository> repositories = reposFromNode(projectNode);
       List<GradleSourceSet> sourceSets = sourceSetsFromNode(projectNode);
-      // TODO Parse forgeOutput properties
-      Map<String, String> properties = Maps.newHashMap();
+      Map<String, String> properties = propertiesFromNode(projectNode);
 
       return new GradleModelImpl("", projectName, version, "", "", tasks, deps,
                managedDeps, profiles, plugins, repositories, sourceSets, properties);
@@ -193,5 +192,17 @@ public class GradleModelLoaderImpl implements GradleModelLoader
    {
       String path = directoryNode.getText().trim();
       return new GradleSourceDirectoryImpl(path);
+   }
+   
+   private Map<String, String> propertiesFromNode(Node projectNode)
+   {
+      Map<String, String> properties = Maps.newHashMap();
+      for (Node propertyNode : projectNode.getSingle("properties").get("property"))
+      {
+         String key = propertyNode.getSingle("key").getText().trim();
+         String value = propertyNode.getSingle("value").getText().trim();
+         properties.put(key, value);
+      }
+      return properties;
    }
 }
