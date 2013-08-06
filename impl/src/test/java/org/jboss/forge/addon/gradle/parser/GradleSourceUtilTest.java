@@ -108,6 +108,48 @@ public class GradleSourceUtilTest
                "}";
       GradleSourceUtil.removeDependency(source, "a", "b", "1.0", "compile");
    }
+   
+   @Test
+   public void testInsertDirectDependency()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}";
+      String expected = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "    direct handler: it, group: 'x', name: 'y'\n" +
+               "}";
+      String result = GradleSourceUtil.insertDirectDependency(source, "x", "y");
+      assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testRemoveDirectDependency()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "    direct handler: it, group: 'x', name: 'y'\n" +
+               "}";
+      String expected = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}";
+      String result = GradleSourceUtil.removeDirectDependency(source, "x", "y");
+      assertEquals(expected, result);
+   }
+   
+   @Test(expected = UnremovableElementException.class)
+   public void testRemoveDirectDependencyForException()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}";
+      GradleSourceUtil.removeDirectDependency(source, "x", "y");
+   }
 
    @Test
    public void testInsertManagedDependency()

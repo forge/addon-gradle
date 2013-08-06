@@ -97,6 +97,18 @@ public class GradleSourceUtil
 
       throw new UnremovableElementException();
    }
+   
+   public static String insertDirectDependency(String source, String group, String name)
+   {
+      // TODO
+      return source;
+   }
+   
+   public static String removeDirectDependency(String source, String group, String name)
+   {
+      // TODO 
+      return source;
+   }
 
    public static String insertManagedDependency(String source, String group, String name, String version,
             String configuration)
