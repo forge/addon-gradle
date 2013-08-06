@@ -18,6 +18,39 @@ import org.junit.Test;
 public class GradleSourceUtilTest
 {
    @Test
+   public void testSetArchiveName()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "}\n";
+      String expected = "" +
+               "dependencies {\n" +
+               "}\n" +
+               "archiveName 'XYZ'\n";
+      String result = GradleSourceUtil.setArchiveName(source, "XYZ");
+      assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testSetArchiveNameExisting()
+   {
+      String source = "" +
+               "dependencies {\n" + 
+               "}\n" +
+               "archiveName 'oldArchive'\n" +
+               "repositories {\n" +
+               "}\n";
+      String expected = "" +
+               "dependencies {\n" + 
+               "}\n" +
+               "archiveName 'newArchive'\n" +
+               "repositories {\n" +
+               "}\n";
+      String result = GradleSourceUtil.setArchiveName(source, "newArchive");
+      assertEquals(expected, result);
+   }
+   
+   @Test
    public void testInsertDependency()
    {
       String source = "" +
@@ -239,7 +272,7 @@ public class GradleSourceUtilTest
       String expected = "" +
                "dependencies {\n" +
                "}\n" +
-               "myProp = 'value'";
+               "myProp = 'value'\n";
       String result = GradleSourceUtil.setProperty(source, "myProp", "value");
       assertEquals(expected, result);
    }

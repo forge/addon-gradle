@@ -29,6 +29,34 @@ public class GradleSourceUtil
    public static final String MANAGED_CONFIG = "managed";
    public static final String DIRECT_CONFIG = "direct";
    
+   public static final String ARCHIVE_NAME_METHOD = "archiveName";
+   
+   public static String setArchiveName(String source, String archiveName)
+   {
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      String archiveNameInvocationString = archiveNameString(archiveName);
+      
+      for (InvocationWithString invocation : parser.getInvocationsWithString())
+      {
+         if (invocation.getMethodName().equals(ARCHIVE_NAME_METHOD))
+         {
+            source = SourceUtil.removeSourceFragment(source, invocation);
+            source = SourceUtil.insertString(source, archiveNameInvocationString,
+                     invocation.getLineNumber(), invocation.getColumnNumber());
+            return source;
+         }
+      }
+      
+      source = SourceUtil.addNewLineAtEnd(source) + archiveNameInvocationString + "\n"; 
+      
+      return source;
+   }
+   
+   private static String archiveNameString(String archiveName)
+   {
+      return String.format("%s '%s'", ARCHIVE_NAME_METHOD, archiveName);
+   }
+   
    public static String insertDependency(String source, String group, String name, String version, String configuration)
    {
       String depString = String.format("%s '%s:%s:%s'", configuration, group, name, version);
@@ -194,7 +222,7 @@ public class GradleSourceUtil
       }
       
       // If it was not defined anywhere
-      source = source + assignmentString;
+      source = SourceUtil.addNewLineAtEnd(source) + assignmentString + "\n";
       
       return source;
    }
