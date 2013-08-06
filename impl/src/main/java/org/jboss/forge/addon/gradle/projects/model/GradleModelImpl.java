@@ -106,7 +106,7 @@ public class GradleModelImpl implements GradleModel
       this.repositories = Lists.newArrayList(original.getRepositories());
       this.sourceSets = Lists.newArrayList(original.getSourceSets());
    }
-   
+
    @Override
    public String getScript()
    {
@@ -347,9 +347,28 @@ public class GradleModelImpl implements GradleModel
    @Override
    public void createDependency(GradleDependencyBuilder builder)
    {
-      script = GradleSourceUtil.insertDependency(script, builder.getGroup(), builder.getName(), builder.getVersion(),
-               builder.getConfiguration());
-      // TODO Update model
+      if (!Strings.isNullOrEmpty(builder.getVersion()) && !Strings.isNullOrEmpty(builder.getConfiguration()))
+      {
+         script = GradleSourceUtil.insertDependency(script, 
+                  builder.getGroup(), 
+                  builder.getName(),
+                  builder.getVersion(),
+                  builder.getConfiguration());
+         this.dependencies.add(new GradleDependencyImpl(
+                  builder.getGroup(), builder.getName(), builder.getVersion(),
+                  GradleDependencyConfiguration.DIRECT,
+                  GradleDependencyConfiguration.DIRECT.getName()));
+      }
+      else
+      {
+         script = GradleSourceUtil.insertDirectDependency(script,
+                  builder.getGroup(),
+                  builder.getName());
+         this.dependencies.add(new GradleDependencyImpl(
+                  builder.getGroup(), builder.getName(), builder.getVersion(), 
+                  GradleDependencyConfiguration.configByName(builder.getConfiguration()), 
+                  builder.getConfiguration()));
+      }
    }
 
    @Override

@@ -17,6 +17,11 @@ import java.util.Map;
 public enum GradleDependencyConfiguration
 {
    COMPILE("compile"), RUNTIME("runtime"), TEST_COMPILE("testCompile"), TEST_RUNTIME("testRuntime"),
+   
+   /**
+    * Direct dependency configuration (which doesn't have defined version and config).
+    */
+   DIRECT("direct"),
 
    /**
     * Dependency configuration not defined in {@link GradleDependencyConfiguration}.

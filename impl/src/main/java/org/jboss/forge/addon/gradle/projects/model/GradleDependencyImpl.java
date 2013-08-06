@@ -11,17 +11,17 @@ package org.jboss.forge.addon.gradle.projects.model;
  */
 public class GradleDependencyImpl implements GradleDependency
 {
-   private final String name;
    private final String group;
+   private final String name;
    private final String version;
    private final GradleDependencyConfiguration configuration;
    private final String configurationName;
 
-   public GradleDependencyImpl(String name, String group, String version, GradleDependencyConfiguration configuration,
+   public GradleDependencyImpl(String group, String name, String version, GradleDependencyConfiguration configuration,
             String configurationName)
    {
-      this.name = name;
       this.group = group;
+      this.name = name;
       this.version = version;
       this.configuration = configuration;
       this.configurationName = configurationName;

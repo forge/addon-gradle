@@ -13,6 +13,7 @@ import org.gradle.jarjar.com.google.common.base.Joiner;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
+import org.jboss.forge.addon.gradle.projects.model.GradleDependencyConfiguration;
 import org.jboss.forge.furnace.util.Strings;
 
 /**
@@ -27,7 +28,7 @@ public class GradleSourceUtil
 
    public static final String INCLUDE_FORGE_LIBRARY = "apply from: 'forge.gradle'\n";
    public static final String MANAGED_CONFIG = "managed";
-   public static final String DIRECT_CONFIG = "direct";
+   public static final String DIRECT_CONFIG = GradleDependencyConfiguration.DIRECT.getName();
 
    public static final String ARCHIVE_NAME_METHOD = "archiveName";
 
