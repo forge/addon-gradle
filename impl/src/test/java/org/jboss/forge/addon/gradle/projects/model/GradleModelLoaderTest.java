@@ -49,6 +49,18 @@ public class GradleModelLoaderTest
    {
       assertEquals("0.1-SNAPSHOT", model.getVersion());
    }
+   
+   @Test
+   public void testPackaging()
+   {
+      assertEquals("jar", model.getPackaging());
+   }
+   
+   @Test
+   public void testArchivePath()
+   {
+      assertEquals("build/libs/Gradle Test Project-0.1-SNAPSHOT.jar", model.getArchivePath());
+   }
 
    @Test
    public void testTasks()
