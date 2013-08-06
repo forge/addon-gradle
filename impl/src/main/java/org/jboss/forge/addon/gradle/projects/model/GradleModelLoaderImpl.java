@@ -47,7 +47,8 @@ public class GradleModelLoaderImpl implements GradleModelLoader
 
    private GradleModel modelFromNode(String script, Node projectNode, List<GradleProfile> profiles)
    {
-      String projectName = projectNameFromNode(projectNode);
+      String group = groupFromNode(projectNode);
+      String name = nameFromNode(projectNode);
       String version = versionFromNode(projectNode);
       List<GradleTask> tasks = tasksFromNode(projectNode);
       List<GradleDependency> deps = depsFromNode(projectNode);
@@ -57,11 +58,16 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       List<GradleSourceSet> sourceSets = sourceSetsFromNode(projectNode);
       Map<String, String> properties = propertiesFromNode(projectNode);
 
-      return new GradleModelImpl("", projectName, version, "", "", tasks, deps,
+      return new GradleModelImpl(script, group, name, version, "", "", tasks, deps,
                managedDeps, profiles, plugins, repositories, sourceSets, properties);
    }
+   
+   private String groupFromNode(Node projectNode)
+   {
+      return projectNode.getSingle("group").getText().trim();
+   }
 
-   private String projectNameFromNode(Node projectNode)
+   private String nameFromNode(Node projectNode)
    {
       return projectNode.getSingle("name").getText().trim();
    }

@@ -6,6 +6,7 @@ apply plugin: 'eclipse'
 apply from: '../../../main/resources/forge.gradle'
 
 sourceCompatibility = '1.7'
+group = 'groupgroup'
 version = '0.1-SNAPSHOT'
 
 def mainClass = 'org.test.MainClass'

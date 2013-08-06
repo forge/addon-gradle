@@ -1,7 +1,7 @@
 <forgeOutput>
    <project>
       <group>
-         
+         groupgroup
       </group>
       <name>
          Gradle Test Project
@@ -96,13 +96,13 @@
                   compileScala
                </task>
                <task>
+                  compileJava
+               </task>
+               <task>
                   compileGroovy
                </task>
                <task>
                   processResources
-               </task>
-               <task>
-                  compileJava
                </task>
             </dependsOn>
          </task>
@@ -122,10 +122,10 @@
                   cleanEclipseJdt
                </task>
                <task>
-                  cleanEclipseClasspath
+                  cleanEclipseProject
                </task>
                <task>
-                  cleanEclipseProject
+                  cleanEclipseClasspath
                </task>
             </dependsOn>
          </task>
@@ -219,13 +219,13 @@
             </name>
             <dependsOn>
                <task>
-                  eclipseJdt
+                  eclipseClasspath
                </task>
                <task>
                   eclipseProject
                </task>
                <task>
-                  eclipseClasspath
+                  eclipseJdt
                </task>
             </dependsOn>
          </task>
@@ -360,13 +360,13 @@
             </name>
             <dependsOn>
                <task>
+                  compileTestJava
+               </task>
+               <task>
                   compileTestScala
                </task>
                <task>
                   compileTestGroovy
-               </task>
-               <task>
-                  compileTestJava
                </task>
                <task>
                   processTestResources
@@ -845,7 +845,7 @@
       </name>
       <project>
          <group>
-            
+            groupgroup
          </group>
          <name>
             Gradle Test Project
@@ -974,7 +974,7 @@
       </name>
       <project>
          <group>
-            
+            groupgroup
          </group>
          <name>
             Gradle Test Project

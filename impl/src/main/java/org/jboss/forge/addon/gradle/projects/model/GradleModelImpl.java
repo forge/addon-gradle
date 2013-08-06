@@ -20,8 +20,8 @@ public class GradleModelImpl implements GradleModel
 {
    private String script;
 
-   private String name;
    private String group;
+   private String name;
    private String version;
    private String packaging;
    private String archivePath;
@@ -53,14 +53,15 @@ public class GradleModelImpl implements GradleModel
       this.sourceSets = Lists.newArrayList();
    }
 
-   public GradleModelImpl(String script, String projectName, String version,
+   public GradleModelImpl(String script, String group, String name, String version,
             String packaging, String archivePath, List<GradleTask> tasks,
             List<GradleDependency> dependencies, List<GradleDependency> managedDependencies,
             List<GradleProfile> profiles, List<GradlePlugin> plugins, List<GradleRepository> repositories,
             List<GradleSourceSet> sourceSets, Map<String, String> properties)
    {
       this.script = script;
-      this.name = projectName;
+      this.group = group;
+      this.name = name;
       this.version = version;
       this.packaging = packaging;
       this.archivePath = archivePath;

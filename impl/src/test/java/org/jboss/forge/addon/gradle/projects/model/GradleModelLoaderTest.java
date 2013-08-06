@@ -31,9 +31,15 @@ public class GradleModelLoaderTest
       String source = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
       model = loader.loadFromXML(source);
    }
+   
+   @Test
+   public void getGroup()
+   {
+      assertEquals("groupgroup", model.getGroup());
+   }
 
    @Test
-   public void testProjectName()
+   public void testName()
    {
       assertEquals("Gradle Test Project", model.getName());
    }
