@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
+import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
+import org.jboss.forge.furnace.util.Strings;
 
 /**
  * @author Adam Wyłuda
@@ -40,6 +42,7 @@ public class GradleModelImpl implements GradleModel
    public GradleModelImpl()
    {
       this.script = "";
+      this.group = "";
       this.name = "";
       this.version = "";
       this.packaging = "";
@@ -51,6 +54,7 @@ public class GradleModelImpl implements GradleModel
       this.plugins = Lists.newArrayList();
       this.repositories = Lists.newArrayList();
       this.sourceSets = Lists.newArrayList();
+      this.properties = Maps.newHashMap();
    }
 
    public GradleModelImpl(String script, String group, String name, String version,
@@ -81,6 +85,7 @@ public class GradleModelImpl implements GradleModel
    public GradleModelImpl(GradleModel original)
    {
       this.script = original.getScript();
+      this.group = original.getGroup();
       this.name = original.getName();
       this.version = original.getVersion();
       this.packaging = original.getPackaging();
@@ -297,7 +302,19 @@ public class GradleModelImpl implements GradleModel
    @Override
    public void setPackaging(String packaging)
    {
-      // TODO Add packaging info to GradlePluginType to figure out which plugin must be applied to set given packaging
+      for (GradlePluginType type : GradlePluginType.values())
+      {
+         if (type.getPackaging().equals(packaging))
+         {
+            applyPlugin(!Strings.isNullOrEmpty(type.getShortName())
+                     ? type.getShortName()
+                     : type.getClazz());
+            this.packaging = packaging;
+            return;
+         }
+      }
+      
+      throw new IllegalArgumentException("There is no such packaging: " + packaging);
    }
 
    @Override
@@ -394,9 +411,12 @@ public class GradleModelImpl implements GradleModel
       GradlePluginType type = GradlePluginType.typeByClazz(name);
       if (type != GradlePluginType.OTHER)
       {
-         try {
+         try
+         {
             script = GradleSourceUtil.removePlugin(script, type.getClazz());
-         } catch (UnremovableElementException exception) {
+         }
+         catch (UnremovableElementException exception)
+         {
             // This could be a case when plugin was declared with it's short name
             script = GradleSourceUtil.removePlugin(script, type.getShortName());
          }
