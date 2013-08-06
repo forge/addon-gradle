@@ -56,14 +56,14 @@ public interface GradleModel
    boolean hasTask(String name);
 
    /**
-    * Returns true if there exists dependency for which {@link GradleDependencyBuilder#equalsToDep(GradleDependency)}
+    * Returns true if there exists dependency for which {@link GradleDependencyBuilder#equalsToDependency(GradleDependency)}
     * return true.
     */
    boolean hasDependency(GradleDependencyBuilder builder);
 
    /**
     * Returns true if there exists managed dependency for which
-    * {@link GradleDependencyBuilder#equalsToDep(GradleDependency)} return true.
+    * {@link GradleDependencyBuilder#equalsToDependency(GradleDependency)} return true.
     */
    boolean hasManagedDependency(GradleDependencyBuilder builder);
 

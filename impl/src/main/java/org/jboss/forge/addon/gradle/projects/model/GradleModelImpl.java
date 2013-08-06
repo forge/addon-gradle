@@ -8,9 +8,11 @@ package org.jboss.forge.addon.gradle.projects.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.jarjar.com.google.common.collect.Maps;
+import org.gradle.jarjar.com.google.common.collect.Sets;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 import org.jboss.forge.furnace.util.Strings;
@@ -221,7 +223,7 @@ public class GradleModelImpl implements GradleModel
    {
       for (GradleDependency dep : dependencies)
       {
-         if (builder.equalsToDep(dep))
+         if (builder.equalsToDependency(dep))
          {
             return true;
          }
@@ -234,7 +236,7 @@ public class GradleModelImpl implements GradleModel
    {
       for (GradleDependency dep : managedDependencies)
       {
-         if (builder.equalsToDep(dep))
+         if (builder.equalsToDependency(dep))
          {
             return true;
          }
@@ -273,7 +275,7 @@ public class GradleModelImpl implements GradleModel
    {
       for (GradleRepository repo : repositories)
       {
-         if (repo.getURL().equals(url))
+         if (repo.getUrl().equals(url))
          {
             return true;
          }
@@ -341,7 +343,19 @@ public class GradleModelImpl implements GradleModel
    {
       script = GradleSourceUtil.insertTask(script,
                builder.getName(), builder.getDependsOn(), builder.getType(), builder.getCode());
-      // TODO Update model
+      Set<GradleTask> dependsOn = Sets.newHashSet();
+      for (String dependsOnString : builder.getDependsOn())
+      {
+         for (GradleTask task : tasks)
+         {
+            if (task.getName().equals(dependsOnString))
+            {
+               dependsOn.add(task);
+               break;
+            }
+         }
+      }
+      this.tasks.add(new GradleTaskImpl(builder.getName(), dependsOn));
    }
 
    @Override
@@ -349,8 +363,8 @@ public class GradleModelImpl implements GradleModel
    {
       if (!Strings.isNullOrEmpty(builder.getVersion()) && !Strings.isNullOrEmpty(builder.getConfiguration()))
       {
-         script = GradleSourceUtil.insertDependency(script, 
-                  builder.getGroup(), 
+         script = GradleSourceUtil.insertDependency(script,
+                  builder.getGroup(),
                   builder.getName(),
                   builder.getVersion(),
                   builder.getConfiguration());
@@ -365,8 +379,8 @@ public class GradleModelImpl implements GradleModel
                   builder.getGroup(),
                   builder.getName());
          this.dependencies.add(new GradleDependencyImpl(
-                  builder.getGroup(), builder.getName(), builder.getVersion(), 
-                  GradleDependencyConfiguration.configByName(builder.getConfiguration()), 
+                  builder.getGroup(), builder.getName(), builder.getVersion(),
+                  GradleDependencyConfiguration.configByName(builder.getConfiguration()),
                   builder.getConfiguration()));
       }
    }
@@ -376,7 +390,10 @@ public class GradleModelImpl implements GradleModel
    {
       script = GradleSourceUtil.insertManagedDependency(script,
                builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
-      // TODO Update model
+      this.managedDependencies.add(new GradleDependencyImpl(
+               builder.getGroup(), builder.getName(), builder.getVersion(),
+               GradleDependencyConfiguration.configByName(builder.getConfiguration()),
+               builder.getConfiguration()));
    }
 
    @Override
@@ -389,21 +406,22 @@ public class GradleModelImpl implements GradleModel
    public void applyPlugin(String name)
    {
       script = GradleSourceUtil.insertPlugin(script, name);
-      // TODO Update model
+      GradlePluginType type = GradlePluginType.typeByClazz(name);
+      this.plugins.add(new GradlePluginImpl(name, type));
    }
 
    @Override
    public void createRepository(GradleRepositoryBuilder builder)
    {
       script = GradleSourceUtil.insertRepository(script, builder.getName(), builder.getUrl());
-      // TODO Update model
+      this.repositories.add(new GradleRepositoryImpl(builder.getName(), builder.getUrl()));
    }
 
    @Override
    public void setProperty(String name, String value)
    {
       script = GradleSourceUtil.setProperty(script, "ext." + name, value);
-      // TODO Update model
+      this.properties.put(name, value);
    }
 
    @Override
@@ -411,7 +429,18 @@ public class GradleModelImpl implements GradleModel
    {
       script = GradleSourceUtil.removeDependency(script,
                builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
-      // TODO Update model
+
+      for (GradleDependency dep : this.dependencies)
+      {
+         if (builder.equalsToDependency(dep) ||
+                  (Strings.isNullOrEmpty(builder.getVersion()) &&
+                           Strings.isNullOrEmpty(builder.getConfiguration()) &&
+                  builder.equalsToDirectDependency(dep)))
+         {
+            this.dependencies.remove(dep);
+            return;
+         }
+      }
    }
 
    @Override
@@ -419,7 +448,15 @@ public class GradleModelImpl implements GradleModel
    {
       script = GradleSourceUtil.removeManagedDependency(script,
                builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
-      // TODO Update model
+
+      for (GradleDependency dep : this.managedDependencies)
+      {
+         if (builder.equalsToDependency(dep))
+         {
+            this.managedDependencies.remove(dep);
+            return;
+         }
+      }
    }
 
    @Override
@@ -457,20 +494,36 @@ public class GradleModelImpl implements GradleModel
       {
          script = GradleSourceUtil.removePlugin(script, name);
       }
-      // TODO Update model
+
+      for (GradlePlugin plugin : this.plugins)
+      {
+         if (plugin.getClazz().equals(name))
+         {
+            this.plugins.remove(plugin);
+            return;
+         }
+      }
    }
 
    @Override
    public void removeRepository(GradleRepositoryBuilder builder) throws UnremovableElementException
    {
       script = GradleSourceUtil.removeRepository(script, builder.getName(), builder.getUrl());
-      // TODO Update model
+
+      for (GradleRepository repo : this.repositories)
+      {
+         if (repo.getUrl().equals(builder.getUrl()))
+         {
+            this.repositories.remove(repo);
+            return;
+         }
+      }
    }
 
    @Override
    public void removeProperty(String name) throws UnremovableElementException
    {
       script = GradleSourceUtil.removeProperty(script, "ext." + name);
-      // TODO Update model
+      this.properties.remove(name);
    }
 }

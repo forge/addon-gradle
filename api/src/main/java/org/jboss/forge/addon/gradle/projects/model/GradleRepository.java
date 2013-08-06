@@ -13,5 +13,5 @@ public interface GradleRepository
 {
    String getName();
    
-   String getURL();
+   String getUrl();
 }

@@ -27,7 +27,7 @@ public class GradleRepositoryImpl implements GradleRepository
    }
 
    @Override
-   public String getURL()
+   public String getUrl()
    {
       return url;
    }

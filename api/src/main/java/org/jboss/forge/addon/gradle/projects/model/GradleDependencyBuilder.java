@@ -88,9 +88,20 @@ public class GradleDependencyBuilder
       return this;
    }
 
-   public boolean equalsToDep(GradleDependency dep)
+   /**
+    * Compares this builder to given {@link GradleDependency}.  
+    */
+   public boolean equalsToDependency(GradleDependency dep)
    {
       return group.equals(dep.getGroup()) && name.equals(dep.getName()) && version.equals(dep.getVersion())
                && configuration.equals(dep.getConfigurationName());
+   }
+
+   /**
+    * Does the same thing as {@link #equalsToDependency(GradleDependency)} but only compares group and name.
+    */
+   public boolean equalsToDirectDependency(GradleDependency dep)
+   {
+      return group.equals(dep.getGroup()) && name.equals(dep.getName());
    }
 }
