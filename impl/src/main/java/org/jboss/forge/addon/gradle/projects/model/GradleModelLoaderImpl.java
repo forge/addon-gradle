@@ -52,6 +52,8 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       String version = versionFromNode(projectNode);
       String packaging = packagingFromNode(projectNode);
       String archivePath = archivePathFromNode(projectNode);
+      String projectPath = projectPathFromNode(projectNode);
+      String rootProjectDirectory = rootProjectDirectoryFromNode(projectNode);
       List<GradleTask> tasks = tasksFromNode(projectNode);
       List<GradleDependency> deps = depsFromNode(projectNode);
       List<GradleDependency> managedDeps = managedDepsFromNode(projectNode);
@@ -60,7 +62,9 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       List<GradleSourceSet> sourceSets = sourceSetsFromNode(projectNode);
       Map<String, String> properties = propertiesFromNode(projectNode);
 
-      return new GradleModelImpl(group, name, version, packaging, archivePath, tasks, deps,
+      return new GradleModelImpl(group, name, version,
+               projectPath, rootProjectDirectory,
+               packaging, archivePath, tasks, deps,
                managedDeps, profiles, plugins, repositories, sourceSets, properties);
    }
    
@@ -77,6 +81,16 @@ public class GradleModelLoaderImpl implements GradleModelLoader
    private String versionFromNode(Node projectNode)
    {
       return projectNode.getSingle("version").getText().trim();
+   }
+   
+   private String projectPathFromNode(Node projectNode)
+   {
+      return projectNode.getSingle("projectPath").getText().trim();
+   }
+   
+   private String rootProjectDirectoryFromNode(Node projectNode)
+   {
+      return projectNode.getSingle("rootProjectDirectory").getText().trim();
    }
    
    private String packagingFromNode(Node projectNode)

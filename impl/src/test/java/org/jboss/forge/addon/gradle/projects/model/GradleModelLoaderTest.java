@@ -50,6 +50,19 @@ public class GradleModelLoaderTest
    {
       assertEquals("0.1-SNAPSHOT", model.getVersion());
    }
+   
+   @Test
+   public void testProjectPath()
+   {
+      assertEquals(":", model.getProjectPath());
+   }
+   
+   @Test
+   public void testRootProjectDirectory()
+   {
+      // No idea for a better test
+      assertTrue(model.getRootProjectDirectory().replace('\\', '/').endsWith("src/test/resources/loader"));
+   }
 
    @Test
    public void testPackaging()

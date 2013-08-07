@@ -28,6 +28,10 @@ public interface GradleModel
 
    String getVersion();
    
+   String getProjectPath();
+   
+   String getRootProjectDirectory();
+   
    String getPackaging();
    
    String getArchiveName();

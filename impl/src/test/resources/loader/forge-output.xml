@@ -9,6 +9,12 @@
       <version>
          0.1-SNAPSHOT
       </version>
+      <projectPath>
+         :
+      </projectPath>
+      <rootProjectDirectory>
+         C:\Users\Adam\git\gradle\impl\src\test\resources\loader
+      </rootProjectDirectory>
       <packaging>
          jar
       </packaging>
@@ -99,10 +105,10 @@
                   compileJava
                </task>
                <task>
-                  compileGroovy
+                  processResources
                </task>
                <task>
-                  processResources
+                  compileGroovy
                </task>
             </dependsOn>
          </task>
@@ -119,13 +125,13 @@
             </name>
             <dependsOn>
                <task>
+                  cleanEclipseClasspath
+               </task>
+               <task>
                   cleanEclipseJdt
                </task>
                <task>
                   cleanEclipseProject
-               </task>
-               <task>
-                  cleanEclipseClasspath
                </task>
             </dependsOn>
          </task>
@@ -206,10 +212,10 @@
             </name>
             <dependsOn>
                <task>
-                  compileTestJava
+                  classes
                </task>
                <task>
-                  classes
+                  compileTestJava
                </task>
             </dependsOn>
          </task>
@@ -219,13 +225,13 @@
             </name>
             <dependsOn>
                <task>
-                  eclipseClasspath
+                  eclipseJdt
                </task>
                <task>
                   eclipseProject
                </task>
                <task>
-                  eclipseJdt
+                  eclipseClasspath
                </task>
             </dependsOn>
          </task>
@@ -336,13 +342,6 @@
          </task>
          <task>
             <name>
-               setupBuild
-            </name>
-            <dependsOn>
-            </dependsOn>
-         </task>
-         <task>
-            <name>
                test
             </name>
             <dependsOn>
@@ -360,13 +359,13 @@
             </name>
             <dependsOn>
                <task>
-                  compileTestJava
-               </task>
-               <task>
                   compileTestScala
                </task>
                <task>
                   compileTestGroovy
+               </task>
+               <task>
+                  compileTestJava
                </task>
                <task>
                   processTestResources
@@ -734,6 +733,11 @@
       <plugins>
          <plugin>
             <class>
+               org.gradle.api.plugins.HelpTasksPlugin
+            </class>
+         </plugin>
+         <plugin>
+            <class>
                org.gradle.api.plugins.BasePlugin
             </class>
          </plugin>
@@ -792,16 +796,6 @@
                org.gradle.plugins.ide.eclipse.EclipsePlugin
             </class>
          </plugin>
-         <plugin>
-            <class>
-               org.gradle.api.plugins.HelpTasksPlugin
-            </class>
-         </plugin>
-         <plugin>
-            <class>
-               org.gradle.buildsetup.plugins.BuildSetupPlugin
-            </class>
-         </plugin>
       </plugins>
       <sourceSets>
          <sourceSet>
@@ -853,6 +847,12 @@
          <version>
             0.1-SNAPSHOT
          </version>
+         <projectPath>
+            :
+         </projectPath>
+         <rootProjectDirectory>
+            C:\Users\Adam\git\gradle\impl\src\test\resources\loader
+         </rootProjectDirectory>
          <packaging>
             
          </packaging>
@@ -982,6 +982,12 @@
          <version>
             0.1-SNAPSHOT
          </version>
+         <projectPath>
+            :
+         </projectPath>
+         <rootProjectDirectory>
+            C:\Users\Adam\git\gradle\impl\src\test\resources\loader
+         </rootProjectDirectory>
          <packaging>
             
          </packaging>

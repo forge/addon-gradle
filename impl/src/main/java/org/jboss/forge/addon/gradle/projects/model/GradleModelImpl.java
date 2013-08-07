@@ -27,6 +27,8 @@ public class GradleModelImpl implements GradleModel
    private String group;
    private String name;
    private String version;
+   private String projectPath;
+   private String rootProjectDirectory;
    private String packaging;
    private String archivePath;
    private List<GradleTask> tasks;
@@ -46,6 +48,8 @@ public class GradleModelImpl implements GradleModel
       this.script = "";
       this.group = "";
       this.name = "";
+      this.projectPath = "";
+      this.rootProjectDirectory = "";
       this.version = "";
       this.packaging = "";
       this.archivePath = "";
@@ -60,14 +64,22 @@ public class GradleModelImpl implements GradleModel
    }
 
    public GradleModelImpl(String group, String name, String version,
-            String packaging, String archivePath, List<GradleTask> tasks,
-            List<GradleDependency> dependencies, List<GradleDependency> managedDependencies,
-            List<GradleProfile> profiles, List<GradlePlugin> plugins, List<GradleRepository> repositories,
-            List<GradleSourceSet> sourceSets, Map<String, String> properties)
+            String projectPath, String rootProjectDirectory,
+            String packaging, String archivePath, 
+            List<GradleTask> tasks,
+            List<GradleDependency> dependencies, 
+            List<GradleDependency> managedDependencies,
+            List<GradleProfile> profiles, 
+            List<GradlePlugin> plugins,
+            List<GradleRepository> repositories,
+            List<GradleSourceSet> sourceSets,
+            Map<String, String> properties)
    {
       this.script = "";
       this.group = group;
       this.name = name;
+      this.projectPath = projectPath;
+      this.rootProjectDirectory = rootProjectDirectory;
       this.version = version;
       this.packaging = packaging;
       this.archivePath = archivePath;
@@ -89,6 +101,8 @@ public class GradleModelImpl implements GradleModel
       this.script = original.getScript();
       this.group = original.getGroup();
       this.name = original.getName();
+      this.projectPath = original.getProjectPath();
+      this.rootProjectDirectory = original.getRootProjectDirectory();
       this.version = original.getVersion();
       this.packaging = original.getPackaging();
       this.archivePath = original.getArchivePath();
@@ -137,6 +151,18 @@ public class GradleModelImpl implements GradleModel
    public String getVersion()
    {
       return version;
+   }
+
+   @Override
+   public String getProjectPath()
+   {
+      return projectPath;
+   }
+
+   @Override
+   public String getRootProjectDirectory()
+   {
+      return rootProjectDirectory;
    }
 
    @Override
