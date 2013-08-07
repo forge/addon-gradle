@@ -325,11 +325,9 @@ public class GradleModelImpl implements GradleModel
    @Override
    public void setName(String name) throws UnremovableElementException
    {
-      // TODO Set properties by GradleSourceUtil
-
-      // For this case we also need to add Gradle project path to forgeOutput
-      // and path to settings.gradle file
-      // (this is necessary to modify project name in Gradle)
+      // That's all. GradleFacet will check if name of the project has changed and then
+      // perform change in the settings.gradle file.
+      this.name = name;
    }
 
    @Override

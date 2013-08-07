@@ -33,7 +33,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    private GradleModelLoader modelLoader;
    @Inject
    private ResourceFactory resourceFactory;
-   
+
    private GradleModel model;
 
    @Override
@@ -74,7 +74,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
                   "build.gradle").getAbsolutePath();
          checkIfIsForgeLibraryInstalled(buildScriptPath);
          model = loadModel(buildScriptPath);
-         return model;
+         return new GradleModelImpl(model);
       }
       catch (IOException e)
       {
@@ -87,13 +87,22 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    public void setModel(GradleModel model)
    {
       // TODO Update script contents
+      // TODO Also check if new model name is different and if so, then modify settings.gradle
       // TODO Also update profile contents (and create if necessary)
    }
 
    @Override
-   public FileResource<?> getGradleResource()
+   public FileResource<?> getBuildScriptResource()
    {
       return (FileResource<?>) getFaceted().getProjectRoot().getChild("build.gradle");
+   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public FileResource<?> getSettingsScriptResource()
+   {
+      return (FileResource<?>) resourceFactory.create(FileResource.class, new File(
+               getModel().getRootProjectDirectory(), "settings.gradle"));
    }
 
    private GradleModel loadModel(String buildScriptPath) throws IOException

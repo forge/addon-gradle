@@ -38,5 +38,7 @@ public interface GradleFacet extends ProjectFacet
    
    void setModel(GradleModel model);
 
-   FileResource<?> getGradleResource();
+   FileResource<?> getBuildScriptResource();
+   
+   FileResource<?> getSettingsScriptResource();
 }
