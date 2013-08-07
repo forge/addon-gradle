@@ -79,6 +79,12 @@ allprojects {
                 outputInc '<version>'
                 output p.version
                 outputDec '</version>'
+                outputInc '<projectPath>'
+                output p.path
+                outputDec '</projectPath>'
+                outputInc '<rootProjectDirectory>'
+                output p.rootProject.projectDir
+                outputDec '</rootProjectDirectory>'
                 def _assembleArchiveTask
                 if (p.tasks.findByPath('assemble') != null) {
                     assemble.taskDependencies.getDependencies(assemble).each {
