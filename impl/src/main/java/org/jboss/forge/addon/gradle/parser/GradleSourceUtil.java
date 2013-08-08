@@ -27,6 +27,7 @@ public class GradleSourceUtil
    public static final String FORGE_LIBRARY_RESOURCE = "/forge.gradle";
    public static final String FORGE_OUTPUT_TASK = "forgeOutput";
    public static final String FORGE_OUTPUT_XML = "forge-output.xml";
+   public static final String PROFILE_SUFFIX = "-profile.gradle";
 
    public static final String INCLUDE_FORGE_LIBRARY = "apply from: 'forge.gradle'\n";
    public static final String MANAGED_CONFIG = "managed";

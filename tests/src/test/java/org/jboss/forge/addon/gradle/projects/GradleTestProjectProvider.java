@@ -27,6 +27,7 @@ public class GradleTestProjectProvider
 {
    static final String[] RESOURCES = new String[] {
             "build.gradle",
+            "forge.gradle",
             "test-profile.gradle",
             "settings.gradle",
             "src/main/interfaces/org/testproject/Service.java",

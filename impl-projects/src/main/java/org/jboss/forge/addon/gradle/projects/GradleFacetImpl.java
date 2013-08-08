@@ -7,8 +7,6 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 import javax.inject.Inject;
 
@@ -66,24 +64,13 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public GradleModel getModel()
    {
-      try
+      if (this.model != null)
       {
-         if (model != null)
-         {
-            // Returns a copy of model
-            return new GradleModelImpl(model);
-         }
-         String buildScriptPath = new File(new File(getFaceted().getProjectRoot().getFullyQualifiedName()),
-                  "build.gradle").getAbsolutePath();
-         checkIfIsForgeLibraryInstalled(buildScriptPath);
-         model = loadModel(buildScriptPath);
-         return new GradleModelImpl(model);
+         // Returns a copy of model
+         return new GradleModelImpl(this.model);
       }
-      catch (IOException e)
-      {
-         e.printStackTrace();
-         return null;
-      }
+      loadModel();
+      return new GradleModelImpl(this.model);
    }
 
    @Override
@@ -121,11 +108,10 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       // Remove profile scripts if they are not apparent on the list
       for (Resource<?> resource : getFaceted().getProjectRoot().listResources(new ResourceFilter()
       {
-
          @Override
          public boolean accept(Resource<?> resource)
          {
-            return resource.getName().endsWith("-profile.gradle");
+            return resource.getName().endsWith(GradleSourceUtil.PROFILE_SUFFIX);
          }
       }))
       {
@@ -162,14 +148,15 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
                getModel().getRootProjectDirectory(), "settings.gradle"));
    }
 
-   private GradleModel loadModel(String buildScriptPath) throws IOException
+   private void loadModel()
    {
-      String directory = new File(buildScriptPath).getParent();
+      checkIfIsForgeLibraryInstalled();
 
-      manager.runGradleBuild(directory, GradleSourceUtil.FORGE_OUTPUT_TASK, "");
+      manager.runGradleBuild(getFaceted().getProjectRoot().getFullyQualifiedName(),
+               GradleSourceUtil.FORGE_OUTPUT_TASK, "");
 
-      FileResource<?> forgeOutputfile = (FileResource<?>) resourceFactory.create(new File(directory,
-               GradleSourceUtil.FORGE_OUTPUT_XML));
+      FileResource<?> forgeOutputfile = (FileResource<?>) getFaceted().getProjectRoot().getChild(
+               GradleSourceUtil.FORGE_OUTPUT_XML);
       String forgeOutput = Streams.toString(forgeOutputfile.getResourceInputStream());
 
       forgeOutputfile.delete();
@@ -182,35 +169,24 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       {
          profile.setProfileScriptResource(
                   (FileResource<?>) getBuildScriptResource().getParent()
-                           .getChild(profile.getName() + "-profile.gradle"));
+                           .getChild(profile.getName() + GradleSourceUtil.PROFILE_SUFFIX));
          profile.getModel().setScript(profile.getProfileScriptResource().getContents());
       }
 
-      return loadedModel;
+      this.model = loadedModel;
    }
 
-   private void checkIfIsForgeLibraryInstalled(String buildScriptPath) throws IOException
+   private void checkIfIsForgeLibraryInstalled()
    {
-      File directory = new File(buildScriptPath).getParentFile();
-      File scriptFile = new File(buildScriptPath);
-      FileResource<?> scriptResource = (FileResource<?>) resourceFactory.create(scriptFile);
-
-      InputStream scriptInputStream = scriptResource.getResourceInputStream();
-      String script = Streams.toString(scriptInputStream);
-      Streams.closeQuietly(scriptInputStream);
+      String script = getBuildScriptResource().getContents();
       String newScript = GradleSourceUtil.checkForIncludeForgeLibraryAndInsert(script);
 
       // If Forge library is not included
       if (!script.equals(newScript))
       {
-         scriptResource.setContents(newScript);
-      }
+         getBuildScriptResource().setContents(newScript);
 
-      FileResource<?> forgeLib = (FileResource<?>) resourceFactory
-               .create(new File(directory, GradleSourceUtil.FORGE_LIBRARY));
-      // TODO check existing forge library version and replace with newer if necessary
-      if (!forgeLib.exists())
-      {
+         FileResource<?> forgeLib = getFaceted().getProjectRoot().getChildDirectory(GradleSourceUtil.FORGE_LIBRARY);
          forgeLib.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
       }
    }
