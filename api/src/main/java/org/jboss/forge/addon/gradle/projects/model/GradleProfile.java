@@ -22,5 +22,7 @@ public interface GradleProfile
    
    void setModel(GradleModel model);
 
-   FileResource<?> getProfileResource();
+   FileResource<?> getProfileScriptResource();
+   
+   void setProfileScriptResource(FileResource<?> profileResource);
 }

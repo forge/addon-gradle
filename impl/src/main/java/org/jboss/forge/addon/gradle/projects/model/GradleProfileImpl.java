@@ -42,12 +42,13 @@ public class GradleProfileImpl implements GradleProfile
    }
 
    @Override
-   public FileResource<?> getProfileResource()
+   public FileResource<?> getProfileScriptResource()
    {
       return profileResource;
    }
    
-   public void setProfileResource(FileResource<?> profileResource)
+   @Override
+   public void setProfileScriptResource(FileResource<?> profileResource)
    {
       this.profileResource = profileResource;
    }

@@ -17,9 +17,12 @@ import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelImpl;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelLoader;
+import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFactory;
+import org.jboss.forge.addon.resource.ResourceFilter;
 import org.jboss.forge.furnace.util.Streams;
 
 /**
@@ -84,11 +87,65 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    }
 
    @Override
-   public void setModel(GradleModel model)
+   public void setModel(GradleModel newModel)
    {
-      // TODO Update script contents
-      // TODO Also check if new model name is different and if so, then modify settings.gradle
-      // TODO Also update profile contents (and create if necessary)
+      getBuildScriptResource().setContents(newModel.getScript());
+
+      // If we need to change model name then it must be done in settings.gradle
+      if (!this.model.getName().equals(newModel.getName()))
+      {
+         String settingsScript = getSettingsScriptResource().getContents();
+         // Because setting project name in model also changes the project path
+         // we must take project path from old model
+         settingsScript = GradleSourceUtil.setProjectName(settingsScript, this.model.getProjectPath(),
+                  newModel.getName());
+         getSettingsScriptResource().setContents(settingsScript);
+      }
+
+      // Update profiles
+      for (GradleProfile profile : newModel.getProfiles())
+      {
+         // If profile doesn't exist we must create a file for it
+         if (!profile.getProfileScriptResource().exists())
+         {
+            profile.getProfileScriptResource().createNewFile();
+         }
+
+         // If there is a change in profile
+         if (!profile.getProfileScriptResource().getContents().equals(profile.getModel().getScript()))
+         {
+            profile.getProfileScriptResource().setContents(profile.getModel().getScript());
+         }
+      }
+
+      // Remove profile scripts if they are not apparent on the list
+      for (Resource<?> resource : getFaceted().getProjectRoot().listResources(new ResourceFilter()
+      {
+
+         @Override
+         public boolean accept(Resource<?> resource)
+         {
+            return resource.getName().endsWith("-profile.gradle");
+         }
+      }))
+      {
+         boolean hasProfile = false;
+         String profileName = resource.getName().substring(0, resource.getName().lastIndexOf("-"));
+         for (GradleProfile profile : newModel.getProfiles())
+         {
+            if (profile.getName().equals(profileName))
+            {
+               hasProfile = true;
+               break;
+            }
+         }
+         if (!hasProfile)
+         {
+            resource.delete();
+         }
+      }
+
+      this.model = newModel;
    }
 
    @Override
@@ -118,7 +175,17 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       forgeOutputfile.delete();
 
       GradleModel loadedModel = modelLoader.loadFromXML(forgeOutput);
-      // TODO Set resources for profiles
+      loadedModel.setScript(getBuildScriptResource().getContents());
+
+      // Set resources for profiles
+      for (GradleProfile profile : loadedModel.getProfiles())
+      {
+         profile.setProfileScriptResource(
+                  (FileResource<?>) getBuildScriptResource().getParent()
+                           .getChild(profile.getName() + "-profile.gradle"));
+         profile.getModel().setScript(profile.getProfileScriptResource().getContents());
+      }
+
       return loadedModel;
    }
 

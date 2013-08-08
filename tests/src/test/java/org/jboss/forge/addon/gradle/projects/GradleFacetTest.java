@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleTask;
 import org.jboss.forge.addon.gradle.projects.model.GradleTaskBuilder;
 import org.jboss.forge.addon.projects.Project;
@@ -93,13 +94,15 @@ public class GradleFacetTest
    @Test
    public void testCreateTask()
    {
-      facet.getModel().createTask(
+      GradleModel model = facet.getModel();
+      model.createTask(
                GradleTaskBuilder
                         .create()
                         .setName("myTask")
                         .setDependsOn("abc")
                         .setType("Copy")
                         .setCode("println 'myTask!'"));
+      facet.setModel(model);
 
       Project theSameProject = projectProvider.findProject();
       GradleFacet newGradleFacet = theSameProject.getFacet(GradleFacet.class);
@@ -117,7 +120,7 @@ public class GradleFacetTest
    }
 
    @Test
-   public void testGetModel()
+   public void testGetModelNotNull()
    {
       assertNotNull(facet.getModel());
    }

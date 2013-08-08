@@ -17,6 +17,8 @@ import org.jboss.forge.addon.gradle.projects.model.GradleDependencyConfiguration
 import org.jboss.forge.furnace.util.Strings;
 
 /**
+ * Set of pure functions manipulating Gradle build scripts.
+ * 
  * @author Adam Wyłuda
  */
 public class GradleSourceUtil
@@ -31,6 +33,22 @@ public class GradleSourceUtil
    public static final String DIRECT_CONFIG = GradleDependencyConfiguration.DIRECT.getName();
 
    public static final String ARCHIVE_NAME_METHOD = "archiveName";
+
+   /**
+    * Sets the project name in Gradle project settings script.
+    * 
+    * @param source Contents of settings.gradle from project root directory.
+    * @param projectPath Project path in format like :rootProject:subproject
+    * @param newName New name for the project.
+    * @returns Content of new settings.gradle which changes project name.
+    */
+   public static String setProjectName(String source, String projectPath, String newName)
+   {
+      source = SourceUtil.addNewLineAtEnd(source);
+      source += String.format("project('%s').name = '%s'\n", projectPath, newName);
+
+      return source;
+   }
 
    public static String setArchiveName(String source, String archiveName)
    {

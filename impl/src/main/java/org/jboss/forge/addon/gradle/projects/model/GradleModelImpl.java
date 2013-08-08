@@ -15,6 +15,7 @@ import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.gradle.jarjar.com.google.common.collect.Sets;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
+import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.furnace.util.Strings;
 
 /**
@@ -113,9 +114,9 @@ public class GradleModelImpl implements GradleModel
       // Performs a copy of profile list
       for (GradleProfile profile : original.getProfiles())
       {
-         GradleProfileImpl newProfile = new GradleProfileImpl(profile.getName(),
+         GradleProfile newProfile = new GradleProfileImpl(profile.getName(),
                   new GradleModelImpl(profile.getModel()));
-         newProfile.setProfileResource(profile.getProfileResource());
+         newProfile.setProfileScriptResource((FileResource<?>) profile.getProfileScriptResource());
          this.profiles.add(newProfile);
       }
       this.plugins = Lists.newArrayList(original.getPlugins());
