@@ -128,7 +128,7 @@ public class GradleResourceFacetTest
    @Test
    public void testGetTestResource()
    {
-      FileResource<?> res = facet.getResource("pom.xml");
+      FileResource<?> res = facet.getTestResource("pom.xml");
       assertTrue(res.exists());
       assertEquals("<project></project>", res.getContents());
    }

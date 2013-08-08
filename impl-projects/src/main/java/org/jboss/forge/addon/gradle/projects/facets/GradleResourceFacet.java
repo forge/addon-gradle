@@ -8,7 +8,13 @@ package org.jboss.forge.addon.gradle.projects.facets;
 
 import java.util.List;
 
+import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.facets.AbstractFacet;
+import org.jboss.forge.addon.facets.constraints.RequiresFacet;
+import org.jboss.forge.addon.gradle.projects.GradleFacet;
+import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleSourceDirectory;
+import org.jboss.forge.addon.gradle.projects.model.GradleSourceSet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
@@ -17,6 +23,7 @@ import org.jboss.forge.addon.resource.FileResource;
 /**
  * @author Adam Wyłuda
  */
+@RequiresFacet(value = { GradleFacet.class })
 public class GradleResourceFacet extends AbstractFacet<Project> implements ResourcesFacet
 {
    @Override
@@ -34,49 +41,120 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    @Override
    public List<DirectoryResource> getResourceFolders()
    {
-      // TODO Auto-generated method stub
-      return null;
+      List<DirectoryResource> resources = Lists.newArrayList();
+      GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
+      GradleModel model = gradleFacet.getModel();
+
+      for (GradleSourceSet sourceSet : model.getSourceSets())
+      {
+         for (GradleSourceDirectory sourceDir : sourceSet.getResourcesDirectories())
+         {
+            resources.add(directoryResourceFromRelativePath(sourceDir.getPath()));
+         }
+      }
+
+      return resources;
    }
 
    @Override
    public DirectoryResource getResourceFolder()
    {
-      // TODO Auto-generated method stub
-      return null;
+      GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
+      GradleSourceDirectory dir = findSourceSetNamed(model.getSourceSets(), "main").getResourcesDirectories().get(0);
+      return directoryResourceFromRelativePath(dir.getPath());
    }
 
    @Override
    public DirectoryResource getTestResourceFolder()
    {
-      // TODO Auto-generated method stub
-      return null;
+      GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
+      GradleSourceDirectory dir = findSourceSetNamed(model.getSourceSets(), "test").getResourcesDirectories().get(0);
+      return directoryResourceFromRelativePath(dir.getPath());
    }
 
    @Override
    public FileResource<?> createResource(char[] bytes, String relativeFilename)
    {
-      // TODO Auto-generated method stub
-      return null;
+      FileResource<?> resource = (FileResource<?>) getResourceFolder().getChild(relativeFilename);
+      resource.setContents(bytes);
+      return resource;
    }
 
    @Override
    public FileResource<?> createTestResource(char[] bytes, String relativeFilename)
    {
-      // TODO Auto-generated method stub
-      return null;
+      FileResource<?> resource = (FileResource<?>) getTestResourceFolder().getChild(relativeFilename);
+      resource.setContents(bytes);
+      return resource;
    }
 
    @Override
    public FileResource<?> getResource(String relativePath)
    {
-      // TODO Auto-generated method stub
-      return null;
+      return findFileResource(getMainResources(), relativePath);
    }
 
    @Override
    public FileResource<?> getTestResource(String relativePath)
    {
-      // TODO Auto-generated method stub
-      return null;
+      return findFileResource(getTestResources(), relativePath);
+   }
+   
+   private List<DirectoryResource> getMainResources()
+   {
+      return getResourcesFromSourceSet("main");
+   }
+   
+   private List<DirectoryResource> getTestResources()
+   {
+      return getResourcesFromSourceSet("test");
+   }
+
+   private List<DirectoryResource> getResourcesFromSourceSet(String sourceSetName)
+   {
+      List<DirectoryResource> resources = Lists.newArrayList();
+      GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
+      GradleModel model = gradleFacet.getModel();
+
+      for (GradleSourceDirectory sourceDir : findSourceSetNamed(model.getSourceSets(), sourceSetName)
+               .getResourcesDirectories())
+      {
+         resources.add(directoryResourceFromRelativePath(sourceDir.getPath()));
+      }
+
+      return resources;
+   }
+
+   private DirectoryResource directoryResourceFromRelativePath(String path)
+   {
+      return getFaceted().getFacet(GradleFacet.class).getBuildScriptResource().getParent()
+               .getChildDirectory(path);
+   }
+
+   private GradleSourceSet findSourceSetNamed(List<GradleSourceSet> sourceSets, String name)
+   {
+      for (GradleSourceSet sourceSet : sourceSets)
+      {
+         if (sourceSet.getName().equals(name))
+         {
+            return sourceSet;
+         }
+      }
+
+      throw new RuntimeException("Source set named " + name + " not found");
+   }
+
+   private FileResource<?> findFileResource(List<DirectoryResource> dirs, String path)
+   {
+      FileResource<?> foundFile = null;
+      for (DirectoryResource dir : dirs)
+      {
+         foundFile = (FileResource<?>) dir.getChild(path);
+         if (foundFile.exists())
+         {
+            break;
+         }
+      }
+      return foundFile;
    }
 }
