@@ -15,7 +15,7 @@ public class ProjectAssert
    {
       for (DirectoryResource dir : dirs)
       {
-         if (dir.getFullyQualifiedName().endsWith(name))
+         if (dir.getFullyQualifiedName().replace("\\", "/").endsWith(name))
          {
             return;
          }
@@ -27,7 +27,7 @@ public class ProjectAssert
    {
       for (String name : names)
       {
-         if (dir.getFullyQualifiedName().endsWith(name))
+         if (dir.getFullyQualifiedName().replace("\\", "/").endsWith(name))
          {
             return;
          }
