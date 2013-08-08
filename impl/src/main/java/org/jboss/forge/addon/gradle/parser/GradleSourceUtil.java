@@ -315,7 +315,7 @@ public class GradleSourceUtil
       {
          String dependsOnString = dependsOnString(dependsOn);
          String typeString = Strings.isNullOrEmpty(type) ? "" : ", type: " + type;
-         return String.format("(name: '%s'%s%s)", name, dependsOnString, typeString);
+         return String.format("('%s'%s%s)", name, dependsOnString, typeString);
       }
    }
 

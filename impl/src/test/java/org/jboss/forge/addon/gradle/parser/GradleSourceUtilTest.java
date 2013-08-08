@@ -399,7 +399,7 @@ public class GradleSourceUtilTest
                "    println 'ABCD!!'\n" +
                "}\n" +
                "\n" +
-               "task (name: 'efgh', dependsOn: ['x', 'y', 'z'], type: Copy) << {\n" +
+               "task ('efgh', dependsOn: ['x', 'y', 'z'], type: Copy) << {\n" +
                "    def variable = 10\n" +
                "    println variable\n" +
                "}\n";
@@ -422,7 +422,7 @@ public class GradleSourceUtilTest
                "    println 'ABCD!!'\n" +
                "}\n" +
                "\n" +
-               "task (name: 'efgh', dependsOn: 'x', type: Copy) << {\n" +
+               "task ('efgh', dependsOn: 'x', type: Copy) << {\n" +
                "    def variable = 10\n" +
                "    println variable\n" +
                "}\n";

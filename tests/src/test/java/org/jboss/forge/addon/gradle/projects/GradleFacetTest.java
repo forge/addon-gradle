@@ -130,7 +130,7 @@ public class GradleFacetTest
    {
       facet.executeTask("someOutput");
       String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot()
-               .getFullyQualifiedName() + File.separator + "output.txt"))).getContents();
+               .getFullyQualifiedName(), "output.txt"))).getContents();
       assertEquals("XYZ", output);
    }
 
@@ -139,7 +139,7 @@ public class GradleFacetTest
    {
       facet.executeTask("testProfileOutput", "test");
       String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot()
-               .getFullyQualifiedName() + File.separator + "testOutput.txt"))).getContents();
+               .getFullyQualifiedName(), "testOutput.txt"))).getContents();
       assertEquals("TEST", output);
    }
 }
