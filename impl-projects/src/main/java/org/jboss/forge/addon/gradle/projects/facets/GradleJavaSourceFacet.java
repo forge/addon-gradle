@@ -26,15 +26,13 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    @Override
    public boolean install()
    {
-      // TODO Auto-generated method stub
-      return false;
+      return true;
    }
 
    @Override
    public boolean isInstalled()
    {
-      // TODO Auto-generated method stub
-      return false;
+      return true;
    }
 
    @Override
@@ -68,7 +66,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    @Override
    public List<DirectoryResource> getSourceFolders()
    {
-      // TODO Auto-generated method stub
+      
       return null;
    }
 
