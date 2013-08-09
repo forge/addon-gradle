@@ -6,10 +6,12 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.gradle.jarjar.com.google.common.collect.ImmutableList;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.gradle.jarjar.com.google.common.collect.Sets;
@@ -187,49 +189,49 @@ public class GradleModelImpl implements GradleModel
    @Override
    public List<GradleTask> getTasks()
    {
-      return tasks;
+      return Collections.unmodifiableList(tasks);
    }
 
    @Override
    public List<GradleDependency> getDependencies()
    {
-      return dependencies;
+      return Collections.unmodifiableList(dependencies);
    }
 
    @Override
    public List<GradleDependency> getManagedDependencies()
    {
-      return managedDependencies;
+      return Collections.unmodifiableList(managedDependencies);
    }
 
    @Override
    public List<GradleProfile> getProfiles()
    {
-      return profiles;
+      return Collections.unmodifiableList(profiles);
    }
 
    @Override
    public List<GradlePlugin> getPlugins()
    {
-      return plugins;
+      return Collections.unmodifiableList(plugins);
    }
 
    @Override
    public List<GradleRepository> getRepositories()
    {
-      return repositories;
+      return Collections.unmodifiableList(repositories);
    }
 
    @Override
    public List<GradleSourceSet> getSourceSets()
    {
-      return sourceSets;
+      return Collections.unmodifiableList(sourceSets);
    }
 
    @Override
    public Map<String, String> getProperties()
    {
-      return properties;
+      return Collections.unmodifiableMap(properties);
    }
 
    @Override
