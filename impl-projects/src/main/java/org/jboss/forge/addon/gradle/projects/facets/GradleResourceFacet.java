@@ -9,13 +9,10 @@ package org.jboss.forge.addon.gradle.projects.facets;
 import java.util.List;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
-import org.jboss.forge.addon.facets.AbstractFacet;
-import org.jboss.forge.addon.facets.constraints.RequiresFacet;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceDirectory;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceSet;
-import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
@@ -23,8 +20,7 @@ import org.jboss.forge.addon.resource.FileResource;
 /**
  * @author Adam Wyłuda
  */
-@RequiresFacet(value = { GradleFacet.class })
-public class GradleResourceFacet extends AbstractFacet<Project> implements ResourcesFacet
+public class GradleResourceFacet extends AbstractGradleResourceFacet implements ResourcesFacet
 {
    @Override
    public boolean install()
@@ -98,63 +94,5 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    public FileResource<?> getTestResource(String relativePath)
    {
       return findFileResource(getTestResources(), relativePath);
-   }
-   
-   private List<DirectoryResource> getMainResources()
-   {
-      return getResourcesFromSourceSet("main");
-   }
-   
-   private List<DirectoryResource> getTestResources()
-   {
-      return getResourcesFromSourceSet("test");
-   }
-
-   private List<DirectoryResource> getResourcesFromSourceSet(String sourceSetName)
-   {
-      List<DirectoryResource> resources = Lists.newArrayList();
-      GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
-      GradleModel model = gradleFacet.getModel();
-
-      for (GradleSourceDirectory sourceDir : findSourceSetNamed(model.getSourceSets(), sourceSetName)
-               .getResourcesDirectories())
-      {
-         resources.add(directoryResourceFromRelativePath(sourceDir.getPath()));
-      }
-
-      return resources;
-   }
-
-   private DirectoryResource directoryResourceFromRelativePath(String path)
-   {
-      return getFaceted().getFacet(GradleFacet.class).getBuildScriptResource().getParent()
-               .getChildDirectory(path);
-   }
-
-   private GradleSourceSet findSourceSetNamed(List<GradleSourceSet> sourceSets, String name)
-   {
-      for (GradleSourceSet sourceSet : sourceSets)
-      {
-         if (sourceSet.getName().equals(name))
-         {
-            return sourceSet;
-         }
-      }
-
-      throw new RuntimeException("Source set named " + name + " not found");
-   }
-
-   private FileResource<?> findFileResource(List<DirectoryResource> dirs, String path)
-   {
-      FileResource<?> foundFile = null;
-      for (DirectoryResource dir : dirs)
-      {
-         foundFile = (FileResource<?>) dir.getChild(path);
-         if (foundFile.exists())
-         {
-            break;
-         }
-      }
-      return foundFile;
    }
 }
