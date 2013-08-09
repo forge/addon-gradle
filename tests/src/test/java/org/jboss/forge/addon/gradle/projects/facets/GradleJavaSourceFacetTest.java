@@ -155,7 +155,7 @@ public class GradleJavaSourceFacetTest
       source.setPackagePrivate();
       facet.saveTestJavaSource(source);
 
-      JavaResource res = facet.getTestJavaResource("org/testproject/impl/ServiceImplTest.java");
+      JavaResource res = facet.getTestJavaResource("org/testproject/impl/tests/ServiceImplTest.java");
       assertTrue(res.exists());
       assertEquals("ServiceImplTest", res.getJavaSource().getName());
       assertEquals("org.testproject.impl.tests", res.getJavaSource().getPackage());
@@ -215,14 +215,14 @@ public class GradleJavaSourceFacetTest
    }
 
    @Test
-   public void testVisitTestJavaSources()
+   public void testVisitJavaTestSources()
    {
       class Holder
       {
          boolean value = false;
       }
       final Holder holder = new Holder();
-      facet.visitJavaSources(new JavaResourceVisitor()
+      facet.visitJavaTestSources(new JavaResourceVisitor()
       {
 
          @Override

@@ -27,7 +27,7 @@ public class Packages
 
    public static String fromFileSyntax(String pkg)
    {
-      return pkg.replace("/", ".");
+      return pkg.replace("/", ".").replace("\\", ".");
    }
 
    public static String toValidPackageName(String pkg)

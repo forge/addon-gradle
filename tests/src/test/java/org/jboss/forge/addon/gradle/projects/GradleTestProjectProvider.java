@@ -13,6 +13,7 @@ import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.ResourceFactory;
+import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
@@ -35,7 +36,7 @@ public class GradleTestProjectProvider
             "src/test/mocks/org/testproject/TestMainClass.java",
             "src/test/templates/pom.xml"
    };
-
+   
    public static ForgeArchive getDeployment()
    {
       ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
