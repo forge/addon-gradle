@@ -45,8 +45,8 @@ public class GradleJavaSourceFacetTest
    @Dependencies({
             @AddonDependency(name = "org.jboss.forge.addon:resources", version = "2.0.0-SNAPSHOT"),
             @AddonDependency(name = "org.jboss.forge.addon:projects", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:gradle", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:parser-java", version = "2.0.0-SNAPSHOT")
+            @AddonDependency(name = "org.jboss.forge.addon:parser-java", version = "2.0.0-SNAPSHOT"),
+            @AddonDependency(name = "org.jboss.forge.addon:gradle", version = "2.0.0-SNAPSHOT")
    })
    public static ForgeArchive getDeployment()
    {
@@ -79,7 +79,7 @@ public class GradleJavaSourceFacetTest
    {
       JavaResource res = facet.getJavaResource("org/testproject/Service.java");
       String name = facet.calculateName(res);
-      assertEquals("org.testproject.Service", name);
+      assertEquals("Service", name);
    }
 
    @Test
@@ -110,21 +110,10 @@ public class GradleJavaSourceFacetTest
    {
       List<DirectoryResource> folders = facet.getSourceFolders();
       assertEquals(4, folders.size());
-
-      boolean javaSet = false, interfacesSet = false;
-      for (DirectoryResource dir : folders)
-      {
-         if (dir.getFullyQualifiedName().endsWith("src/main/java"))
-         {
-            javaSet = true;
-         }
-         if (dir.getFullyQualifiedName().endsWith("src/main/interfaces"))
-         {
-            interfacesSet = true;
-         }
-      }
-      assertTrue(javaSet);
-      assertTrue(interfacesSet);
+      ProjectAssert.assertContainsDirectoryNamed(folders, "src/main/java");
+      ProjectAssert.assertContainsDirectoryNamed(folders, "src/main/interfaces");
+      ProjectAssert.assertContainsDirectoryNamed(folders, "src/test/java");
+      ProjectAssert.assertContainsDirectoryNamed(folders, "src/test/mocks");
    }
 
    @Test

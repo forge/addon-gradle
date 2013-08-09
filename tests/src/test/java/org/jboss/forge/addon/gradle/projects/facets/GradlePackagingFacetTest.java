@@ -35,13 +35,14 @@ public class GradlePackagingFacetTest
    @Dependencies({
             @AddonDependency(name = "org.jboss.forge.addon:resources", version = "2.0.0-SNAPSHOT"),
             @AddonDependency(name = "org.jboss.forge.addon:projects", version = "2.0.0-SNAPSHOT"),
+            @AddonDependency(name = "org.jboss.forge.addon:parser-java", version = "2.0.0-SNAPSHOT"),
             @AddonDependency(name = "org.jboss.forge.addon:gradle", version = "2.0.0-SNAPSHOT")
    })
    public static ForgeArchive getDeployment()
    {
       return GradleTestProjectProvider.getDeployment();
    }
-   
+
    @Inject
    private GradleTestProjectProvider projectProvider;
    private Project project;
@@ -59,25 +60,25 @@ public class GradlePackagingFacetTest
    {
       projectProvider.clean();
    }
-   
+
    @Test
    public void testGetPackagingType()
    {
       String packagingType = facet.getPackagingType();
       assertEquals("war", packagingType);
    }
-   
+
    @Test
    public void testSetPackagingType()
    {
       facet.setPackagingType("ear");
-      
+
       Project sameProject = projectProvider.findProject();
       PackagingFacet sameFacet = sameProject.getFacet(PackagingFacet.class);
       String packagingType = sameFacet.getPackagingType();
       assertEquals("ear", packagingType);
    }
-   
+
    @Test
    public void testGetFinalArtifact()
    {
@@ -86,7 +87,7 @@ public class GradlePackagingFacetTest
       String name = res.getName();
       assertEquals("archiveX.war", name);
    }
-   
+
    @Test
    public void testCreateBuilder()
    {
@@ -94,7 +95,7 @@ public class GradlePackagingFacetTest
       assertEquals("archiveX.war", archive.getName());
       assertTrue(project.getProjectRoot().getChild("test.log").exists());
    }
-   
+
    @Test
    public void testCreateBuilderSkipTests()
    {
@@ -102,21 +103,21 @@ public class GradlePackagingFacetTest
       assertEquals("archiveX.war", archive.getName());
       assertFalse(project.getProjectRoot().getChild("test.log").exists());
    }
-   
+
    @Test
    public void testGetFinalName()
    {
       String finalName = facet.getFinalName();
       assertEquals("archiveX", finalName);
    }
-   
+
    public void testSetFinalName()
    {
       facet.setFinalName("NEW_ARCHIVE_NAME");
-      
+
       Project sameProject = projectProvider.findProject();
       PackagingFacet sameFacet = sameProject.getFacet(PackagingFacet.class);
-      
+
       String finalName = sameFacet.getFinalName();
       assertEquals("NEW_ARCHIVE_NAME", finalName);
    }

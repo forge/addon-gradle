@@ -47,6 +47,7 @@ public class GradleDependencyFacetTest
    @Dependencies({
             @AddonDependency(name = "org.jboss.forge.addon:resources", version = "2.0.0-SNAPSHOT"),
             @AddonDependency(name = "org.jboss.forge.addon:projects", version = "2.0.0-SNAPSHOT"),
+            @AddonDependency(name = "org.jboss.forge.addon:parser-java", version = "2.0.0-SNAPSHOT"),
             @AddonDependency(name = "org.jboss.forge.addon:gradle", version = "2.0.0-SNAPSHOT")
    })
    public static ForgeArchive getDeployment()
@@ -348,7 +349,7 @@ public class GradleDependencyFacetTest
 
       ProjectAssert.assertNotContainsDependency(managedDeps, "compile", "name", "org.group", "1.0-SNAPSHOT");
    }
-   
+
    @Test
    public void testRemoveRepository()
    {
@@ -398,9 +399,9 @@ public class GradleDependencyFacetTest
    public void testResolveProperties()
    {
       Dependency inputDep = DependencyBuilder.create("org.somedep:artifact:${ext.someVersion}");
-      
+
       Dependency outputDep = facet.resolveProperties(inputDep);
-      
+
       assertNotNull(outputDep);
       assertEquals("org.somedep", outputDep.getCoordinate().getGroupId());
       assertEquals("artifact", outputDep.getCoordinate().getArtifactId());

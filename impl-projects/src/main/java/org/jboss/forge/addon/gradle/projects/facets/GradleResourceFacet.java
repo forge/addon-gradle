@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.facets.AbstractFacet;
+import org.jboss.forge.addon.facets.constraints.RequiresFacet;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceDirectory;
@@ -22,6 +23,7 @@ import org.jboss.forge.addon.resource.FileResource;
 /**
  * @author Adam Wyłuda
  */
+@RequiresFacet(value = { GradleFacet.class })
 public class GradleResourceFacet extends AbstractFacet<Project> implements ResourcesFacet
 {
    @Override
@@ -58,7 +60,8 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    public DirectoryResource getResourceFolder()
    {
       GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
-      GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getSourceSets(), "main").getResourcesDirectories().get(0);
+      GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getSourceSets(), "main")
+               .getResourcesDirectories().get(0);
       return directoryResourceFromRelativePath(dir.getPath());
    }
 
@@ -66,7 +69,8 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    public DirectoryResource getTestResourceFolder()
    {
       GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
-      GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getSourceSets(), "test").getResourcesDirectories().get(0);
+      GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getSourceSets(), "test")
+               .getResourcesDirectories().get(0);
       return directoryResourceFromRelativePath(dir.getPath());
    }
 
@@ -97,12 +101,12 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    {
       return GradleResourceUtil.findFileResource(getTestResources(), relativePath);
    }
-   
+
    private List<DirectoryResource> getMainResources()
    {
       return getResourcesFromSourceSet("main");
    }
-   
+
    private List<DirectoryResource> getTestResources()
    {
       return getResourcesFromSourceSet("test");
@@ -114,7 +118,8 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
       GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
       GradleModel model = gradleFacet.getModel();
 
-      for (GradleSourceDirectory sourceDir : GradleResourceUtil.findSourceSetNamed(model.getSourceSets(), sourceSetName)
+      for (GradleSourceDirectory sourceDir : GradleResourceUtil
+               .findSourceSetNamed(model.getSourceSets(), sourceSetName)
                .getResourcesDirectories())
       {
          resources.add(directoryResourceFromRelativePath(sourceDir.getPath()));
@@ -122,8 +127,8 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
 
       return resources;
    }
-   
-   private  DirectoryResource directoryResourceFromRelativePath(String path)
+
+   private DirectoryResource directoryResourceFromRelativePath(String path)
    {
       return getFaceted().getFacet(GradleFacet.class).getBuildScriptResource().getParent()
                .getChildDirectory(path);
