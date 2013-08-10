@@ -68,6 +68,8 @@ public class SimpleGroovyParserTest
                "    apply plugin: 'java'\n" +
                "    \n" +
                "    abc = 'def'\n" +
+               "    a.b.c = 'd.e.f'\n" +
+               "    getX().y = 'xyz'\n" +
                "    \n" +
                "    dependencies {\n" +
                "        compile 'group:artifact:1.0.0'\n" +
@@ -81,7 +83,7 @@ public class SimpleGroovyParserTest
       assertEquals("subprojects", subprojects.getMethodName());
       assertEquals(2, subprojects.getInvocationsWithMap().size());
       assertEquals(1, subprojects.getInvocationsWithClosure().size());
-      assertEquals(1, subprojects.getVariableAssignments().size());
+      assertEquals(3, subprojects.getVariableAssignments().size());
 
       InvocationWithClosure dependencies = subprojects.getInvocationsWithClosure().get(0);
       assertEquals(1, dependencies.getInvocationsWithString().size());
@@ -93,6 +95,15 @@ public class SimpleGroovyParserTest
       VariableAssignment assignment = subprojects.getVariableAssignments().get(0);
       assertEquals("abc", assignment.getVariable());
       assertEquals("def", assignment.getValue());
+      
+      VariableAssignment assignment2 = subprojects.getVariableAssignments().get(1);
+      assertEquals("a.b.c", assignment2.getVariable());
+      assertEquals("d.e.f", assignment2.getValue());
+      
+      VariableAssignment assignment3 = subprojects.getVariableAssignments().get(2);
+      // Seems that Groovy core parser changes getX() to this.getX()
+      assertEquals("this.getX().y", assignment3.getVariable());
+      assertEquals("xyz", assignment3.getValue());
    }
    
    @Test

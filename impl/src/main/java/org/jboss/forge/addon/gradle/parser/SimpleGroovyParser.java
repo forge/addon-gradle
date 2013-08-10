@@ -21,6 +21,7 @@ import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.NamedArgumentListExpression;
+import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.TupleExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
@@ -287,22 +288,20 @@ public class SimpleGroovyParser
       // This condition must be true to be string variable assignment
       // but not new variable declaration
       if (!(expression instanceof DeclarationExpression) &&
-               expression.getLeftExpression() instanceof VariableExpression &&
+               (expression.getLeftExpression() instanceof VariableExpression ||
+               expression.getLeftExpression() instanceof PropertyExpression) &&
                expression.getOperation().getText().toString().equals("=") &&
                expression.getRightExpression() instanceof ConstantExpression &&
                ((ConstantExpression) expression.getRightExpression()).getValue() instanceof String)
       {
-         VariableExpression leftExpression = (VariableExpression) expression.getLeftExpression();
-         ConstantExpression rightExpression = (ConstantExpression) expression.getRightExpression();
-         
-         String variable = leftExpression.getName();
-         String value = (String) rightExpression.getValue();
-         
+         String variable = expression.getLeftExpression().getText();
+         String value = (String)((ConstantExpression) expression.getRightExpression()).getValue();
+
          int lineNumber = expression.getLineNumber();
          int columnNumber = expression.getColumnNumber();
          int lastLineNumber = expression.getLastLineNumber();
          int lastColumnNumber = expression.getLastColumnNumber();
-         
+
          VariableAssignment variableAssignment =
                   new VariableAssignment(variable, value, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
          node.variableAssignmentList.add(variableAssignment);
