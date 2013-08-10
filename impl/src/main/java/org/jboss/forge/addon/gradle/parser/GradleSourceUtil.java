@@ -34,6 +34,8 @@ public class GradleSourceUtil
    public static final String DIRECT_CONFIG = GradleDependencyConfiguration.DIRECT.getName();
 
    public static final String ARCHIVE_NAME_METHOD = "archiveName";
+   
+   public static final String PROJECT_PROPERTY_PREFIX = "ext.";
 
    /**
     * Sets the project name in Gradle project settings script.
@@ -364,5 +366,24 @@ public class GradleSourceUtil
 
       // If statement including forge library was not found then we add it
       return INCLUDE_FORGE_LIBRARY + source;
+   }
+
+   /**
+    * Returns a map of properties which are clearly declared in a given build script (i.e. they can be
+    * modified/removed). Also, they must be project properties, declared in project.ext namespace.
+    */
+   public static Map<String, String> getDirectProperties(String source)
+   {
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      Map<String, String> properties = Maps.newHashMap();
+      for (VariableAssignment assignment : parser.getVariableAssignments())
+      {
+         if (assignment.getVariable().startsWith(PROJECT_PROPERTY_PREFIX))
+         {
+            properties.put(assignment.getVariable().substring(PROJECT_PROPERTY_PREFIX.length()),
+                     assignment.getValue());
+         }
+      }
+      return properties;
    }
 }

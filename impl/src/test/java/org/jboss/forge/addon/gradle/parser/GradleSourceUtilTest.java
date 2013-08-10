@@ -8,6 +8,8 @@ package org.jboss.forge.addon.gradle.parser;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map;
+
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 import org.junit.Test;
@@ -30,18 +32,18 @@ public class GradleSourceUtilTest
       String result = GradleSourceUtil.setArchiveName(source, "XYZ");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testSetArchiveNameExisting()
    {
       String source = "" +
-               "dependencies {\n" + 
+               "dependencies {\n" +
                "}\n" +
                "archiveName 'oldArchive'\n" +
                "repositories {\n" +
                "}\n";
       String expected = "" +
-               "dependencies {\n" + 
+               "dependencies {\n" +
                "}\n" +
                "archiveName 'newArchive'\n" +
                "repositories {\n" +
@@ -49,7 +51,7 @@ public class GradleSourceUtilTest
       String result = GradleSourceUtil.setArchiveName(source, "newArchive");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testInsertDependency()
    {
@@ -108,7 +110,7 @@ public class GradleSourceUtilTest
                "}";
       GradleSourceUtil.removeDependency(source, "a", "b", "1.0", "compile");
    }
-   
+
    @Test
    public void testInsertDirectDependency()
    {
@@ -124,7 +126,7 @@ public class GradleSourceUtilTest
       String result = GradleSourceUtil.insertDirectDependency(source, "x", "y");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testRemoveDirectDependency() throws UnremovableElementException
    {
@@ -140,7 +142,7 @@ public class GradleSourceUtilTest
       String result = GradleSourceUtil.removeDirectDependency(source, "x", "y");
       assertEquals(expected, result);
    }
-   
+
    @Test(expected = UnremovableElementException.class)
    public void testRemoveDirectDependencyForException() throws UnremovableElementException
    {
@@ -463,5 +465,27 @@ public class GradleSourceUtilTest
                "}\n";
       String result = GradleSourceUtil.checkForIncludeForgeLibraryAndInsert(source);
       assertEquals(expected, result);
+   }
+
+   @Test
+   public void testGetDirectProperties()
+   {
+      // Assuming that direct properties are those which can be obtained by analyzing source
+      String source = "" +
+               "dependencies {\n" +
+               "    ext.dependencyProperty = 'xxxx'\n" +
+               "}\n" +
+               "badProperty = 'yyy'\n" +
+               "ext.goodProperty = 'zzz'\n" +
+               "def propertyMaker = {\n" +
+               "    project.ext.makerProperty = it\n" +
+               "}\n" +
+               "propertyMaker '7'\n" +
+               "task myTask << {}\n" +
+               "myTask.ext.taskProperty = 'majtaski'\n";
+      Map<String, String> result = GradleSourceUtil.getDirectProperties(source);
+      
+      assertEquals(1, result.size());
+      assertEquals("zzz", result.get("goodProperty"));
    }
 }
