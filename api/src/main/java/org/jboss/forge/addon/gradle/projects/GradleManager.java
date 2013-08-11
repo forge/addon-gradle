@@ -17,5 +17,5 @@ public interface GradleManager
    /**
     * @return True if build was successful, false otherwise.
     */
-   boolean runGradleBuild(String directory, String task, String profile);
+   boolean runGradleBuild(String directory, String task, String profile, String... arguments);
 }

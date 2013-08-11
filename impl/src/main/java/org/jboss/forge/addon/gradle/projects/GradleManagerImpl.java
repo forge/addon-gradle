@@ -28,7 +28,7 @@ public class GradleManagerImpl implements GradleManager
    }
 
    @Override
-   public boolean runGradleBuild(String directory, String task, String profile)
+   public boolean runGradleBuild(String directory, String task, String profile, String... arguments)
    {
       String gradleHome = System.getenv("GRADLE_HOME");
       Preconditions.checkArgument(!Strings.isNullOrEmpty(gradleHome), "GRADLE_HOME not set");
@@ -44,6 +44,8 @@ public class GradleManagerImpl implements GradleManager
       {
          launcher = launcher.withArguments("--project-prop", "profile=" + profile);
       }
+      
+      launcher = launcher.withArguments(arguments);
       
       final ResultHolder holder = new ResultHolder();
       final CountDownLatch latch = new CountDownLatch(1);

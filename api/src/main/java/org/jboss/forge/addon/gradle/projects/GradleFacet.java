@@ -32,7 +32,7 @@ public interface GradleFacet extends ProjectFacet
     * @see GradleFacet#executeTask(String)
     * @see GradleProfile
     */
-   void executeTask(String task, String profile);
+   void executeTask(String task, String profile, String... arguments);
 
    GradleModel getModel();
    
