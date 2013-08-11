@@ -9,7 +9,10 @@ package org.jboss.forge.addon.gradle.projects;
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.facets.FacetFactory;
+import org.jboss.forge.addon.gradle.projects.facets.GradleDependencyFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleJavaSourceFacet;
+import org.jboss.forge.addon.gradle.projects.facets.GradleMetadataFacet;
+import org.jboss.forge.addon.gradle.projects.facets.GradlePackagingFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleResourceFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectLocator;
@@ -31,9 +34,9 @@ public class GradleProjectLocator implements ProjectLocator
       try
       {
          facetFactory.install(project, GradleFacet.class);
-//         facetFactory.install(project, GradleMetadataFacet.class);
-//         facetFactory.install(project, GradlePackagingFacet.class);
-//         facetFactory.install(project, GradleDependencyFacet.class);
+         facetFactory.install(project, GradleMetadataFacet.class);
+         facetFactory.install(project, GradlePackagingFacet.class);
+         facetFactory.install(project, GradleDependencyFacet.class);
          facetFactory.install(project, GradleResourceFacet.class);
          facetFactory.install(project, GradleJavaSourceFacet.class);
       }

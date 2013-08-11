@@ -288,7 +288,7 @@ public class GradleDependencyFacetTest
    }
 
    @Test
-   public void testHassEffectiveManagedDependencyNot()
+   public void testHasEffectiveManagedDependencyNot()
    {
       assertFalse(facet.hasEffectiveManagedDependency(
                DependencyBuilder.create("org.non:existing:30")));
