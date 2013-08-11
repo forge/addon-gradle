@@ -13,7 +13,11 @@ archiveName 'archiveX'
 ext.githubRepo = 'https://github.com/forge/addon-gradle'
 ext.organization = 'JBoss'
 
-ext.someVersion = '.45'
+def dynamicProperty = {
+	project.ext.someVersion = '.45'
+}
+
+dynamicProperty()
 
 sourceSets {
 	main {

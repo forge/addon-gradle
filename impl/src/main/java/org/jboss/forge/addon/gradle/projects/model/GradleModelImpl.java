@@ -123,6 +123,7 @@ public class GradleModelImpl implements GradleModel
       this.plugins = Lists.newArrayList(original.getPlugins());
       this.repositories = Lists.newArrayList(original.getRepositories());
       this.sourceSets = Lists.newArrayList(original.getSourceSets());
+      this.properties = Maps.newHashMap(original.getProperties());
    }
 
    @Override

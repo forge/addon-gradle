@@ -9,7 +9,12 @@ package org.jboss.forge.addon.gradle.projects.facets;
 import java.util.Map;
 
 import org.jboss.forge.addon.dependencies.Dependency;
+import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
+import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
+import org.jboss.forge.addon.gradle.projects.GradleFacet;
+import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
+import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 
@@ -33,82 +38,110 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    @Override
    public String getProjectName()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return getGradleFacet().getModel().getName();
    }
 
    @Override
    public void setProjectName(String name)
    {
-      // TODO Auto-generated method stub
-      
+      try
+      {
+         GradleModel model = getGradleFacet().getModel();
+         model.setName(name);
+         getGradleFacet().setModel(model);
+      }
+      catch (UnremovableElementException e)
+      {
+         // TODO Handle Gradle exceptions
+         e.printStackTrace();
+      }
    }
 
    @Override
    public String getTopLevelPackage()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return getGradleFacet().getModel().getGroup();
    }
 
    @Override
    public void setTopLevelPackage(String groupId)
    {
-      // TODO Auto-generated method stub
+      try
+      {
+         GradleModel model = getGradleFacet().getModel();
+         model.setGroup(groupId);
+         getGradleFacet().setModel(model);
+      }
+      catch (UnremovableElementException e)
+      {
+         // TODO Handle Gradle exceptions
+         e.printStackTrace();
+      }
    }
 
    @Override
    public String getProjectVersion()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return getGradleFacet().getModel().getVersion();
    }
 
    @Override
    public void setProjectVersion(String version)
    {
-      // TODO Auto-generated method stub
+      try
+      {
+         GradleModel model = getGradleFacet().getModel();
+         model.setVersion(version);
+         getGradleFacet().setModel(model);
+      }
+      catch (UnremovableElementException e)
+      {
+         // TODO Handle Gradle exceptions
+         e.printStackTrace();
+      }
    }
 
    @Override
    public Dependency getOutputDependency()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return DependencyBuilder.create().setGroupId(getTopLevelPackage()).setArtifactId(getProjectName())
+               .setVersion(getProjectVersion());
    }
 
    @Override
    public Map<String, String> getEffectiveProperties()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return getGradleFacet().getModel().getProperties();
    }
 
    @Override
    public Map<String, String> getDirectProperties()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return GradleSourceUtil.getDirectProperties(getGradleFacet().getModel().getScript());
    }
 
    @Override
    public String getEffectiveProperty(String name)
    {
-      // TODO Auto-generated method stub
-      return null;
+      return getEffectiveProperties().get(name);
    }
 
    @Override
    public String getDirectProperty(String name)
    {
-      // TODO Auto-generated method stub
-      return null;
+      return getDirectProperties().get(name);
    }
 
    @Override
    public void setProperty(String name, String value)
    {
-      // TODO Auto-generated method stub
-
+      GradleModel model = getGradleFacet().getModel();
+      model.setProperty(name, value);
+      getGradleFacet().setModel(model);
+   }
+   
+   private GradleFacet getGradleFacet()
+   {
+      return getFaceted().getFacet(GradleFacet.class);
    }
 }

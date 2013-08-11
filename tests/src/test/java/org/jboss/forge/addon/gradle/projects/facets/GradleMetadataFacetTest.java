@@ -131,33 +131,55 @@ public class GradleMetadataFacetTest
    }
 
    @Test
-   public void testGetProperties()
+   public void testGetEffectiveProperties()
+   {
+      Map<String, String> props = facet.getEffectiveProperties();
+
+      assertEquals("https://github.com/forge/addon-gradle", props.get("githubRepo"));
+      assertEquals("JBoss", props.get("organization"));
+      assertEquals(".45", props.get("someVersion"));
+      assertNull(props.get("version"));
+   }
+   
+   @Test
+   public void testGetEffectiveProperty()
+   {
+      assertEquals("https://github.com/forge/addon-gradle", facet.getEffectiveProperty("githubRepo"));
+      assertEquals("JBoss", facet.getEffectiveProperty("organization"));
+      assertEquals(".45", facet.getEffectiveProperty("someVersion"));
+      assertNull(facet.getEffectiveProperty("group"));
+   }
+
+   @Test
+   public void testGetDirectProperties()
    {
       Map<String, String> props = facet.getDirectProperties();
 
       assertEquals("https://github.com/forge/addon-gradle", props.get("githubRepo"));
       assertEquals("JBoss", props.get("organization"));
+      assertNull(props.get("someVersion"));
       assertNull(props.get("version"));
    }
 
    @Test
-   public void testGetProperty()
+   public void testGetDirectProperty()
    {
       assertEquals("https://github.com/forge/addon-gradle", facet.getDirectProperty("githubRepo"));
       assertEquals("JBoss", facet.getDirectProperty("organization"));
+      assertNull(facet.getDirectProperty("someVersion"));
       assertNull(facet.getDirectProperty("group"));
    }
 
    @Test
    public void testSetProperty()
    {
-      assertEquals("JBoss", facet.getDirectProperty("organization"));
+      assertEquals("JBoss", facet.getEffectiveProperty("organization"));
 
       facet.setProperty("organization", "EJB-OSS");
 
       Project sameProject = projectProvider.findProject();
       MetadataFacet sameFacet = sameProject.getFacet(MetadataFacet.class);
 
-      assertEquals("EJB-OSS", sameFacet.getDirectProperty("organization"));
+      assertEquals("EJB-OSS", sameFacet.getEffectiveProperty("organization"));
    }
 }
