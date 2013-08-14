@@ -50,6 +50,11 @@ allprojects {
 	dependencies {
 		managed group: 'org.group', name: 'name', version: '1.0-SNAPSHOT', config: 'compile'
 		managed group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.6', config: 'runtime'
+		
+		def makeManaged = {
+			managed group: 'make.managed', name: 'x', version: '3.0', config: 'testCompile'
+		}
+		makeManaged()
 	} 
 }
 
@@ -62,6 +67,8 @@ dependencies {
     
     def nettyDep = 'org.jboss.netty:netty:3.2.9.Final'
     runtime nettyDep
+    
+	direct group: 'make.managed', name: 'x', handler: it
 }
 
 task abc << {

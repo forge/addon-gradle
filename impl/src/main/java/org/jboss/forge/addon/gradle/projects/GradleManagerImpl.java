@@ -7,9 +7,11 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.gradle.jarjar.com.google.common.base.Preconditions;
+import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnectionException;
 import org.gradle.tooling.GradleConnector;
@@ -40,12 +42,15 @@ public class GradleManagerImpl implements GradleManager
                .connect();
       
       BuildLauncher launcher = connection.newBuild().forTasks(task);
+      
+      List<String> argList = Lists.newArrayList(arguments);
+      
       if (!Strings.isNullOrEmpty(profile))
       {
-         launcher = launcher.withArguments("--project-prop", "profile=" + profile);
+         argList.add("-Pprofile=" + profile);
       }
       
-      launcher = launcher.withArguments(arguments);
+      launcher = launcher.withArguments(argList.toArray(new String[argList.size()]));
       
       final ResultHolder holder = new ResultHolder();
       final CountDownLatch latch = new CountDownLatch(1);

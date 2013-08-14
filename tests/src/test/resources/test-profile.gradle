@@ -1,4 +1,8 @@
+println 'Evaluating test profile'
+
 task testProfileOutput << {
+	println 'Running testProfileOutput'
+
     def output = new File("$projectDir.path/testOutput.txt").newPrintWriter()
     output.print 'TEST'
     output.close()

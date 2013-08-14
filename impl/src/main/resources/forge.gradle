@@ -5,7 +5,7 @@ allprojects {
         project.ext.set('forgeInstalled', true)
 
         afterEvaluate {
-            if (project.ext.has('profile')) {
+            if (project.hasProperty('profile')) {
                 def profileFile = "$projectDir.path/$profile-profile.gradle"
                 if (new File(profileFile).exists()) {
                     project.apply from: profileFile

@@ -23,7 +23,7 @@ public interface GradleFacet extends ProjectFacet
     * 
     * @param task Task to be executed.
     */
-   void executeTask(String task);
+   boolean executeTask(String task);
 
    /**
     * Runs Gradle applying given profile.
@@ -32,7 +32,7 @@ public interface GradleFacet extends ProjectFacet
     * @see GradleFacet#executeTask(String)
     * @see GradleProfile
     */
-   void executeTask(String task, String profile, String... arguments);
+   boolean executeTask(String task, String profile, String... arguments);
 
    GradleModel getModel();
    

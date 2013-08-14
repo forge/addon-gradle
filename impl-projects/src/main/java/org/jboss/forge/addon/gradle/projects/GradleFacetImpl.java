@@ -50,15 +50,15 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    }
 
    @Override
-   public void executeTask(String task)
+   public boolean executeTask(String task)
    {
-      executeTask(task, "");
+      return executeTask(task, "");
    }
 
    @Override
-   public void executeTask(String task, String profile, String... arguments)
+   public boolean executeTask(String task, String profile, String... arguments)
    {
-      manager.runGradleBuild(getFaceted().getProjectRoot().getFullyQualifiedName(), task, profile, arguments);
+      return manager.runGradleBuild(getFaceted().getProjectRoot().getFullyQualifiedName(), task, profile, arguments);
    }
 
    @Override
