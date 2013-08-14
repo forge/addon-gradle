@@ -52,7 +52,7 @@ allprojects {
 		managed group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.6', config: 'runtime'
 		
 		def makeManaged = {
-			managed group: 'make.managed', name: 'x', version: '3.0', config: 'testCompile'
+			managed group: 'make.managed', name: 'x', version: '3.0', config: 'testRuntime'
 		}
 		makeManaged()
 	} 

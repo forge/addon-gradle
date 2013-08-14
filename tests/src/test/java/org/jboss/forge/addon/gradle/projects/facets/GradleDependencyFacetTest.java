@@ -147,6 +147,10 @@ public class GradleDependencyFacetTest
       ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
       ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
+      
+      // These dependencies can't be there
+      ProjectAssert.assertNotContainsDependency(deps, "runtime", "netty", "org.jboss.netty", "3.2.9.Final");
+      ProjectAssert.assertNotContainsDependency(deps, "testRuntime", "x", "make.managed", "3.0");
    }
 
    @Test
@@ -190,42 +194,42 @@ public class GradleDependencyFacetTest
       ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
       ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
-
-      // Transitive dependencies
-      ProjectAssert.assertContainsDependency(deps, "test", "hamcrest-core", "org.hamcrest", "1.3");
-      ProjectAssert.assertContainsDependency(deps, "runtime", "protobuf-java", "com.google.protobuf", "2.4.1");
+      
+      ProjectAssert.assertContainsDependency(deps, "runtime", "netty", "org.jboss.netty", "3.2.9.Final");
+      ProjectAssert.assertContainsDependency(deps, "testRuntime", "x", "make.managed", "3.0");
    }
 
    @Test
    public void testGetEffectiveDependenciesInScopes()
    {
-      List<Dependency> deps = facet.getEffectiveDependenciesInScopes("test");
+      List<Dependency> deps = facet.getEffectiveDependenciesInScopes("test", "runtime");
 
       // Proof that direct dependencies are there
       ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
       ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
       ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
-
-      // Transitive dependencies
-      ProjectAssert.assertContainsDependency(deps, "test", "hamcrest-core", "org.hamcrest", "1.3");
-      ProjectAssert.assertNotContainsDependency(deps, "runtime", "protobuf-java", "com.google.protobuf", "2.4.1");
+      
+      ProjectAssert.assertNotContainsDependency(deps, "runtime", "netty", "org.jboss.netty", "3.2.9.Final");
+      ProjectAssert.assertNotContainsDependency(deps, "testRuntime", "x", "make.managed", "3.0");
    }
 
    @Test
    public void testGetEffectiveDependency()
    {
       Dependency dep = facet
-               .getEffectiveDependency(DependencyBuilder.create("com.google.protobuf:protobuf-java:2.4.1"));
+               .getEffectiveDependency(DependencyBuilder.create("org.jboss.netty:netty:3.2.9.Final"));
 
+      assertNotNull(dep);
       assertEquals("runtime", dep.getScopeType());
    }
 
    @Test
    public void testGetEffectiveManagedDependency()
    {
-      Dependency dep = facet.getEffectiveManagedDependency(DependencyBuilder.create("antlr:antlr:2.7.7"));
+      Dependency dep = facet.getEffectiveManagedDependency(DependencyBuilder.create("make.managed:x:3.0"));
 
+      assertNotNull(dep);
       assertEquals("runtime", dep.getScopeType());
    }
 
@@ -235,6 +239,8 @@ public class GradleDependencyFacetTest
       List<Dependency> deps = facet.getManagedDependencies();
 
       ProjectAssert.assertContainsDependency(deps, "compile", "name", "org.group", "1.0-SNAPSHOT");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "groovy", "org.codehaus.groovy", "2.1.6");
+      ProjectAssert.assertContainsDependency(deps, "testCompile", "x", "make.managed", "3.0");
    }
 
    @Test
@@ -270,7 +276,7 @@ public class GradleDependencyFacetTest
    public void testHasEffectiveDependency()
    {
       assertTrue(facet.hasEffectiveDependency(
-               DependencyBuilder.create("com.google.protobuf:protobuf-java:2.4.1")));
+               DependencyBuilder.create("make.managed:x:3.0")));
    }
 
    @Test
@@ -284,7 +290,7 @@ public class GradleDependencyFacetTest
    public void testHasEffectiveManagedDependency()
    {
       assertTrue(facet.hasEffectiveManagedDependency(
-               DependencyBuilder.create("antlr:antlr:2.7.7")));
+               DependencyBuilder.create("make.managed:x:3.0")));
    }
 
    @Test
