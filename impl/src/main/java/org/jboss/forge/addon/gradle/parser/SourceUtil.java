@@ -73,7 +73,7 @@ public class SourceUtil
       int position = precedingCharactersCount + columnNumber;
       return position;
    }
-   
+
    public static String removeSourceFragment(String source, SourceCodeElement element)
    {
       return removeSourceFragment(source, element.getLineNumber(), element.getColumnNumber(),
@@ -94,7 +94,7 @@ public class SourceUtil
    }
 
    /**
-    * {@link #removeSourceFragmentWithLine(String, int, int)} 
+    * {@link #removeSourceFragmentWithLine(String, int, int)}
     */
    public static String removeSourceFragmentWithLine(String source, SourceCodeElement element)
    {

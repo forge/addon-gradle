@@ -7,11 +7,14 @@
 package org.jboss.forge.addon.gradle.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.Map;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
+import org.jboss.forge.addon.gradle.projects.model.GradleDependencyBuilder;
 import org.junit.Test;
 
 /**
@@ -112,6 +115,26 @@ public class GradleSourceUtilTest
    }
 
    @Test
+   public void testGetDependencies()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "    compile name: 'b', version: '1.0', group: 'a'\n" +
+               "    direct handler: it, group: 'ggg', name: 'nnn'\n" +
+               "    println 'Hello'\n" +
+               "}";
+
+      List<GradleDependencyBuilder> deps = GradleSourceUtil.getDependencies(source);
+
+      assertEquals(2, deps.size());
+      assertContainsDependency(deps, GradleDependencyBuilder.create()
+               .setConfiguration("testRuntime").setGroup("x").setName("z").setVersion("4.0"));
+      assertContainsDependency(deps, GradleDependencyBuilder.create()
+               .setConfiguration("compile").setGroup("a").setName("b").setVersion("1.0"));
+   }
+
+   @Test
    public void testInsertDirectDependency()
    {
       String source = "" +
@@ -151,6 +174,22 @@ public class GradleSourceUtilTest
                "    compile 'a:b:1.0'\n" +
                "}";
       GradleSourceUtil.removeDirectDependency(source, "x", "y");
+   }
+   
+   @Test
+   public void testGetDirectDependencies()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "    compile name: 'b', version: '1.0', group: 'a'\n" +
+               "    direct handler: it, group: 'ggg', name: 'nnn'\n" +
+               "}";
+
+      List<GradleDependencyBuilder> deps = GradleSourceUtil.getDirectDependencies(source);
+
+      assertEquals(1, deps.size());
+      assertContainsDirectDependency(deps, GradleDependencyBuilder.create().setGroup("ggg").setName("nnn"));
    }
 
    @Test
@@ -199,6 +238,26 @@ public class GradleSourceUtilTest
                "}\n";
       String result = GradleSourceUtil.removeManagedDependency(source, "xx", "yy", "vv", "compile");
       assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testGetManagedDependencies()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "        managed config: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
+               "    }\n" +
+               "}\n";
+      
+      List<GradleDependencyBuilder> deps = GradleSourceUtil.getManagedDependencies(source);
+      
+      assertEquals(1, deps.size());
+      assertContainsDependency(deps, GradleDependencyBuilder.create()
+               .setConfiguration("compile").setGroup("xx").setName("yy").setVersion("vv"));
    }
 
    @Test
@@ -484,8 +543,32 @@ public class GradleSourceUtilTest
                "task myTask << {}\n" +
                "myTask.ext.taskProperty = 'majtaski'\n";
       Map<String, String> result = GradleSourceUtil.getDirectProperties(source);
-      
+
       assertEquals(1, result.size());
       assertEquals("zzz", result.get("goodProperty"));
+   }
+
+   private static void assertContainsDependency(List<GradleDependencyBuilder> list, GradleDependencyBuilder dep)
+   {
+      for (GradleDependencyBuilder listDep : list)
+      {
+         if (listDep.equalsToDependencyBuilder(dep))
+         {
+            return;
+         }
+      }
+      fail("List doesn't contain dependency " + dep.toString());
+   }
+
+   private static void assertContainsDirectDependency(List<GradleDependencyBuilder> list, GradleDependencyBuilder dep)
+   {
+      for (GradleDependencyBuilder listDep : list)
+      {
+         if (listDep.equalsToDirectDependencyBuilder(dep))
+         {
+            return;
+         }
+      }
+      fail("List doesn't contain direct dependency " + dep.toString());
    }
 }

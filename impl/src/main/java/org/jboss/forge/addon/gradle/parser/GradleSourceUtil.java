@@ -13,6 +13,7 @@ import org.gradle.jarjar.com.google.common.base.Joiner;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
+import org.jboss.forge.addon.gradle.projects.model.GradleDependencyBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyConfiguration;
 import org.jboss.forge.furnace.util.Strings;
 
@@ -34,7 +35,7 @@ public class GradleSourceUtil
    public static final String DIRECT_CONFIG = GradleDependencyConfiguration.DIRECT.getName();
 
    public static final String ARCHIVE_NAME_METHOD = "archiveName";
-   
+
    public static final String PROJECT_PROPERTY_PREFIX = "ext.";
 
    /**
@@ -120,6 +121,45 @@ public class GradleSourceUtil
       throw new UnremovableElementException();
    }
 
+   /**
+    * Returns a list of dependencies which are declared in given source.
+    */
+   public static List<GradleDependencyBuilder> getDependencies(String source)
+   {
+      List<GradleDependencyBuilder> deps = Lists.newArrayList();
+
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithClosure invocation : parser.allInvocationsAtPath("dependencies"))
+      {
+         for (InvocationWithString stringInvocation : invocation.getInvocationsWithString())
+         {
+            if (isGradleString(stringInvocation.getString()))
+            {
+               GradleDependencyBuilder dep =
+                        GradleDependencyBuilder.fromGradleString(stringInvocation.getMethodName(),
+                                 stringInvocation.getString());
+               deps.add(dep);
+            }
+         }
+
+         for (InvocationWithMap mapInvocation : invocation.getInvocationsWithMap())
+         {
+            Map<String, String> params = mapInvocation.getParameters();
+            if (params.containsKey("group") && params.containsKey("name") && params.containsKey("version"))
+            {
+               GradleDependencyBuilder dep = GradleDependencyBuilder.create()
+                        .setConfiguration(mapInvocation.getMethodName())
+                        .setGroup(params.get("group"))
+                        .setName(params.get("name"))
+                        .setVersion(params.get("version"));
+               deps.add(dep);
+            }
+         }
+      }
+
+      return deps;
+   }
+
    public static String insertDirectDependency(String source, String group, String name)
    {
       String depString = String.format("%s handler: it, group: '%s', name: '%s'", DIRECT_CONFIG, group, name);
@@ -148,6 +188,32 @@ public class GradleSourceUtil
       }
 
       throw new UnremovableElementException();
+   }
+
+   /**
+    * Returns a list of direct (defined using <i>direct</i> closure) dependencies declared in given source.
+    */
+   public static List<GradleDependencyBuilder> getDirectDependencies(String source)
+   {
+      List<GradleDependencyBuilder> deps = Lists.newArrayList();
+
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithClosure invocation : parser.allInvocationsAtPath("dependencies"))
+      {
+         for (InvocationWithMap mapInvocation : invocation.getInvocationsWithMap())
+         {
+            if (mapInvocation.getMethodName().equals(DIRECT_CONFIG))
+            {
+               Map<String, String> params = mapInvocation.getParameters();
+               GradleDependencyBuilder dep = GradleDependencyBuilder.create()
+                        .setGroup(params.get("group"))
+                        .setName(params.get("name"));
+               deps.add(dep);
+            }
+         }
+      }
+
+      return deps;
    }
 
    public static String insertManagedDependency(String source, String group, String name, String version,
@@ -180,6 +246,34 @@ public class GradleSourceUtil
       }
 
       throw new UnremovableElementException();
+   }
+
+   /**
+    * Returns a list of managed dependencies (declared using <i>managed</i> closure) in given source.
+    */
+   public static List<GradleDependencyBuilder> getManagedDependencies(String source)
+   {
+      List<GradleDependencyBuilder> deps = Lists.newArrayList();
+
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithClosure invocation : parser.allInvocationsAtPath("allprojects", "dependencies"))
+      {
+         for (InvocationWithMap mapInvocation : invocation.getInvocationsWithMap())
+         {
+            if (mapInvocation.getMethodName().equals(MANAGED_CONFIG))
+            {
+               Map<String, String> params = mapInvocation.getParameters();
+               GradleDependencyBuilder dep = GradleDependencyBuilder.create()
+                        .setConfiguration(params.get("config"))
+                        .setGroup(params.get("group"))
+                        .setName(params.get("name"))
+                        .setVersion(params.get("version"));
+               deps.add(dep);
+            }
+         }
+      }
+
+      return deps;
    }
 
    /**
@@ -385,5 +479,10 @@ public class GradleSourceUtil
          }
       }
       return properties;
+   }
+
+   private static boolean isGradleString(String string)
+   {
+      return string.split(":").length == 3;
    }
 }

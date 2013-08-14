@@ -104,4 +104,21 @@ public class GradleDependencyBuilder
    {
       return group.equals(dep.getGroup()) && name.equals(dep.getName());
    }
+   
+   public boolean equalsToDependencyBuilder(GradleDependencyBuilder dep)
+   {
+      return group.equals(dep.getGroup()) && name.equals(dep.getName()) && version.equals(dep.getVersion())
+               && configuration.equals(dep.getConfiguration());
+   }
+   
+   public boolean equalsToDirectDependencyBuilder(GradleDependencyBuilder dep)
+   {
+      return group.equals(dep.getGroup()) && name.equals(dep.getName());
+   }
+   
+   @Override
+   public String toString()
+   {
+      return String.format("%s '%s:%s:%s'", configuration, group, name, version);
+   }
 }
