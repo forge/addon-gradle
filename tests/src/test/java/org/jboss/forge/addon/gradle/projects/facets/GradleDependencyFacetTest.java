@@ -150,7 +150,7 @@ public class GradleDependencyFacetTest
       
       // These dependencies can't be there
       ProjectAssert.assertNotContainsDependency(deps, "runtime", "netty", "org.jboss.netty", "3.2.9.Final");
-      ProjectAssert.assertNotContainsDependency(deps, "testRuntime", "x", "make.managed", "3.0");
+      ProjectAssert.assertNotContainsDependency(deps, "testRuntime", "mockito-all", "org.mockito", "1.9.5");
    }
 
    @Test
@@ -196,7 +196,7 @@ public class GradleDependencyFacetTest
       ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
       
       ProjectAssert.assertContainsDependency(deps, "runtime", "netty", "org.jboss.netty", "3.2.9.Final");
-      ProjectAssert.assertContainsDependency(deps, "testRuntime", "x", "make.managed", "3.0");
+      ProjectAssert.assertContainsDependency(deps, "testRuntime", "mockito-all", "org.mockito", "1.9.5");
    }
 
    @Test
@@ -211,7 +211,7 @@ public class GradleDependencyFacetTest
       ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
       
       ProjectAssert.assertNotContainsDependency(deps, "runtime", "netty", "org.jboss.netty", "3.2.9.Final");
-      ProjectAssert.assertNotContainsDependency(deps, "testRuntime", "x", "make.managed", "3.0");
+      ProjectAssert.assertNotContainsDependency(deps, "testRuntime", "mockito-all", "org.mockito", "1.9.5");
    }
 
    @Test
@@ -227,7 +227,7 @@ public class GradleDependencyFacetTest
    @Test
    public void testGetEffectiveManagedDependency()
    {
-      Dependency dep = facet.getEffectiveManagedDependency(DependencyBuilder.create("make.managed:x:3.0"));
+      Dependency dep = facet.getEffectiveManagedDependency(DependencyBuilder.create("org.mockito:mockito-all:1.9.5"));
 
       assertNotNull(dep);
       assertEquals("runtime", dep.getScopeType());
@@ -240,7 +240,7 @@ public class GradleDependencyFacetTest
 
       ProjectAssert.assertContainsDependency(deps, "compile", "name", "org.group", "1.0-SNAPSHOT");
       ProjectAssert.assertContainsDependency(deps, "runtime", "groovy", "org.codehaus.groovy", "2.1.6");
-      ProjectAssert.assertContainsDependency(deps, "testCompile", "x", "make.managed", "3.0");
+      ProjectAssert.assertContainsDependency(deps, "testCompile", "mockito-all", "org.mockito", "1.9.5");
    }
 
    @Test
@@ -276,7 +276,7 @@ public class GradleDependencyFacetTest
    public void testHasEffectiveDependency()
    {
       assertTrue(facet.hasEffectiveDependency(
-               DependencyBuilder.create("make.managed:x:3.0")));
+               DependencyBuilder.create("org.mockito:mockito-all:1.9.5")));
    }
 
    @Test
