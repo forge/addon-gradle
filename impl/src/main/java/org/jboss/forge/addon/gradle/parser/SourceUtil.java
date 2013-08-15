@@ -152,6 +152,11 @@ public class SourceUtil
       }
       invocationIndentation = indent.toString();
 
+      /*
+       * TODO Fix a bug of not calculating last column properly. For example when there is a space after invocation
+       * closure it inserts line after it's closing bracket, not one character before.
+       */
+
       return insertString(source, addNewLineAtEnd(INDENT + codeToBeInserted) + invocationIndentation,
                invocation.getLastLineNumber(),
                invocation.getLastColumnNumber() - 1);

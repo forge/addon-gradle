@@ -14,48 +14,48 @@ ext.githubRepo = 'https://github.com/forge/addon-gradle'
 ext.organization = 'JBoss'
 
 def dynamicProperty = {
-	project.ext.someVersion = '.45'
+    project.ext.someVersion = '.45'
 }
 
 dynamicProperty()
 
 sourceSets {
-	main {
-		java {
-			srcDir 'src/main/interfaces'
-		}
-		resources {
-			srcDir 'src/main/images'
-		}
-	}
-	test {
-		java {
-			srcDir 'src/test/mocks'
-		}
-		resources {
-			srcDir 'src/test/templates'
-		}
-	}
+    main {
+        java {
+            srcDir 'src/main/interfaces'
+        }
+        resources {
+            srcDir 'src/main/images'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/mocks'
+        }
+        resources {
+            srcDir 'src/test/templates'
+        }
+    }
 }
 
 repositories {
     mavenCentral()
     
     maven {
-    	url 'http://maven-repo.com/'
+        url 'http://maven-repo.com/'
     }
 }
 
 allprojects {
-	dependencies {
-		managed group: 'org.group', name: 'name', version: '1.0-SNAPSHOT', config: 'compile'
-		managed group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.6', config: 'runtime'
-		
-		def makeManaged = {
-			managed group: 'org.mockito', name: 'mockito-all', version: '1.9.5', config: 'testRuntime'
-		}
-		makeManaged()
-	} 
+    dependencies {
+        managed group: 'org.group', name: 'name', version: '1.0-SNAPSHOT', config: 'compile'
+        managed group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.6', config: 'runtime'
+        
+        def makeManaged = {
+            managed group: 'org.mockito', name: 'mockito-all', version: '1.9.5', config: 'testRuntime'
+        }
+        makeManaged()
+    }
 }
 
 dependencies {
@@ -68,7 +68,7 @@ dependencies {
     def nettyDep = 'org.jboss.netty:netty:3.2.9.Final'
     runtime nettyDep
     
-	direct group: 'org.mockito', name: 'mockito-all', handler: it
+    direct group: 'org.mockito', name: 'mockito-all', handler: it
 }
 
 task abc << {
@@ -90,8 +90,8 @@ task someOutput << {
 }
 
 test << {
-	// This is used to determine whether tests has been run or not
-	new File(projectDir, 'test.log').createNewFile()
+    // This is used to determine whether tests has been run or not
+    new File(projectDir, 'test.log').createNewFile()
 }
 
 if (project.hasProperty('profile')) {
