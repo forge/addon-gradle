@@ -35,7 +35,7 @@ public class ProjectAssert
       fail(String.format("Directory [%s] is not one of %s", dir.getFullyQualifiedName(), names));
    }
 
-   public static void assertContainsDependency(List<Dependency> deps, String scope, String artifact, String group,
+   public static void assertContainsDependency(List<Dependency> deps, String scope, String group, String artifact,
             String version)
    {
       for (Dependency dep : deps)
@@ -50,8 +50,21 @@ public class ProjectAssert
       }
       fail(String.format("Deps doesn't contain dependency %s '%s:%s:%s'", scope, group, artifact, version));
    }
+   
+   public static void assertContainsDirectDependency(List<Dependency> deps, String group, String artifact)
+   {
+      for (Dependency dep : deps)
+      {
+         if (dep.getCoordinate().getArtifactId().equals(artifact) &&
+                  dep.getCoordinate().getGroupId().equals(group))
+         {
+            return;
+         }
+      }
+      fail(String.format("Deps doesn't contain dependency %s:%s", group, artifact));
+   }
 
-   public static void assertNotContainsDependency(List<Dependency> deps, String scope, String artifact, String group,
+   public static void assertNotContainsDependency(List<Dependency> deps, String scope, String group, String artifact,
             String version)
    {
       for (Dependency dep : deps)
@@ -100,7 +113,7 @@ public class ProjectAssert
       }
       fail(String.format("Coordinates doesn't contain coordinate %s", coord));
    }
-   
+
    public static void assertNotContainsCoordinate(List<Coordinate> coords, Coordinate coord)
    {
       for (Coordinate listCoord : coords)
@@ -111,7 +124,7 @@ public class ProjectAssert
          }
       }
    }
-   
+
    private static boolean coordsEquals(Coordinate coord1, Coordinate coord2)
    {
       return coord1.getArtifactId().equals(coord2.getArtifactId()) &&

@@ -88,7 +88,7 @@ public class GradleDependencyFacetTest
       DependencyFacet theNewFacet = theSameProject.getFacet(DependencyFacet.class);
 
       ProjectAssert.assertContainsDependency(theNewFacet.getDependencies(),
-               "runtime", "mydep", "mygroup", "myversion");
+               "runtime", "mygroup", "mydep", "myversion");
    }
 
    @Test
@@ -106,7 +106,7 @@ public class GradleDependencyFacetTest
       DependencyFacet theNewFacet = theSameProject.getFacet(DependencyFacet.class);
 
       ProjectAssert.assertContainsDependency(theNewFacet.getManagedDependencies(),
-               "runtime", "mydep", "mygroup", "myversion");
+               "runtime", "mygroup", "mydep", "myversion");
    }
 
    @Test
@@ -124,7 +124,7 @@ public class GradleDependencyFacetTest
       DependencyFacet theNewFacet = theSameProject.getFacet(DependencyFacet.class);
 
       ProjectAssert.assertContainsDependency(theNewFacet.getManagedDependencies(),
-               "runtime", "mydep", "mygroup", "myversion");
+               "runtime", "mygroup", "mydep", "myversion");
    }
 
    @Test
@@ -143,14 +143,13 @@ public class GradleDependencyFacetTest
    {
       List<Dependency> deps = facet.getDependencies();
 
-      ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
-      ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
+      ProjectAssert.assertContainsDependency(deps, "compile", "org.slf4j", "slf4j-api", "1.7.5");
+      ProjectAssert.assertContainsDependency(deps, "compile", "org.slf4j", "slf4j-simple", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
-      ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "com.google.code.guice", "guice", "1.0");
       
-      // These dependencies can't be there
-      ProjectAssert.assertNotContainsDependency(deps, "runtime", "netty", "org.jboss.netty", "3.2.9.Final");
-      ProjectAssert.assertNotContainsDependency(deps, "testRuntime", "mockito-all", "org.mockito", "1.9.5");
+      ProjectAssert.assertNotContainsDependency(deps, "runtime", "org.jboss.netty", "netty", "3.2.9.Final");
+      ProjectAssert.assertContainsDirectDependency(deps, "org.mockito", "mockito-all");
    }
 
    @Test
@@ -158,10 +157,10 @@ public class GradleDependencyFacetTest
    {
       List<Dependency> deps = facet.getDependenciesInScopes("test", "runtime");
 
-      ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
-      ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
+      ProjectAssert.assertNotContainsDependency(deps, "compile", "org.slf4j", "slf4j-api", "1.7.5");
+      ProjectAssert.assertNotContainsDependency(deps, "compile", "org.slf4j", "slf4j-simple", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
-      ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "com.google.code.guice", "guice", "1.0");
    }
 
    @Test
@@ -185,18 +184,26 @@ public class GradleDependencyFacetTest
    }
 
    @Test
-   public void testGetEffectiveDependencies()
+   public void testGetEffectiveDependenciesNonTransitive()
    {
       List<Dependency> deps = facet.getEffectiveDependencies();
 
-      // Proof that direct dependencies are there
-      ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
-      ProjectAssert.assertContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
+      ProjectAssert.assertContainsDependency(deps, "compile", "org.slf4j", "slf4j-api", "1.7.5");
+      ProjectAssert.assertContainsDependency(deps, "compile", "org.slf4j", "slf4j-simple", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
-      ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
-      
-      ProjectAssert.assertContainsDependency(deps, "runtime", "netty", "org.jboss.netty", "3.2.9.Final");
-      ProjectAssert.assertContainsDependency(deps, "testRuntime", "mockito-all", "org.mockito", "1.9.5");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "com.google.code.guice", "guice", "1.0");
+
+      // Non direct dependencies
+      ProjectAssert.assertContainsDependency(deps, "runtime", "org.jboss.netty", "netty", "3.2.9.Final");
+      ProjectAssert.assertContainsDependency(deps, "test", "org.mockito", "mockito-all", "1.9.5");
+   }
+   
+   @Test
+   public void testGetEffectiveDependenciesTransitive()
+   {
+      List<Dependency> deps = facet.getEffectiveDependencies();
+
+      ProjectAssert.assertContainsDependency(deps, "test", "org.hamcrest", "hamcrest-core", "1.3");
    }
 
    @Test
@@ -204,14 +211,13 @@ public class GradleDependencyFacetTest
    {
       List<Dependency> deps = facet.getEffectiveDependenciesInScopes("test", "runtime");
 
-      // Proof that direct dependencies are there
-      ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
-      ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-simple", "org.slf4j", "1.7.5");
+      ProjectAssert.assertNotContainsDependency(deps, "compile", "org.slf4j", "slf4j-api", "1.7.5");
+      ProjectAssert.assertNotContainsDependency(deps, "compile", "org.slf4j", "slf4j-simple", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
-      ProjectAssert.assertContainsDependency(deps, "runtime", "guice", "com.google.code.guice", "1.0");
-      
-      ProjectAssert.assertNotContainsDependency(deps, "runtime", "netty", "org.jboss.netty", "3.2.9.Final");
-      ProjectAssert.assertNotContainsDependency(deps, "testRuntime", "mockito-all", "org.mockito", "1.9.5");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "com.google.code.guice", "guice", "1.0");
+
+      ProjectAssert.assertNotContainsDependency(deps, "runtime", "org.jboss.netty", "netty", "3.2.9.Final");
+      ProjectAssert.assertNotContainsDependency(deps, "test", "org.mockito", "mockito-all", "1.9.5");
    }
 
    @Test
@@ -238,9 +244,9 @@ public class GradleDependencyFacetTest
    {
       List<Dependency> deps = facet.getManagedDependencies();
 
-      ProjectAssert.assertContainsDependency(deps, "compile", "name", "org.group", "1.0-SNAPSHOT");
-      ProjectAssert.assertContainsDependency(deps, "runtime", "groovy", "org.codehaus.groovy", "2.1.6");
-      ProjectAssert.assertContainsDependency(deps, "testCompile", "mockito-all", "org.mockito", "1.9.5");
+      ProjectAssert.assertContainsDependency(deps, "compile", "org.group", "name", "1.0-SNAPSHOT");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "org.codehaus.groovy", "groovy", "2.1.6");
+      ProjectAssert.assertNotContainsDependency(deps, "testCompile", "org.mockito", "mockito-all", "1.9.5");
    }
 
    @Test
@@ -338,7 +344,7 @@ public class GradleDependencyFacetTest
       DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
       List<Dependency> deps = sameFacet.getDependencies();
 
-      ProjectAssert.assertNotContainsDependency(deps, "compile", "slf4j-api", "org.slf4j", "1.7.5");
+      ProjectAssert.assertNotContainsDependency(deps, "compile", "org.slf4j", "slf4j-api", "1.7.5");
    }
 
    @Test
@@ -353,7 +359,7 @@ public class GradleDependencyFacetTest
       DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
       List<Dependency> managedDeps = sameFacet.getManagedDependencies();
 
-      ProjectAssert.assertNotContainsDependency(managedDeps, "compile", "name", "org.group", "1.0-SNAPSHOT");
+      ProjectAssert.assertNotContainsDependency(managedDeps, "compile", "org.group", "name", "1.0-SNAPSHOT");
    }
 
    @Test

@@ -48,7 +48,6 @@ repositories {
 
 allprojects {
     dependencies {
-        managed group: 'org.group', name: 'name', version: '1.0-SNAPSHOT', config: 'compile'
         managed group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.6', config: 'runtime'
         
         def makeManaged = {
@@ -69,6 +68,12 @@ dependencies {
     runtime nettyDep
     
     direct group: 'org.mockito', name: 'mockito-all', handler: it
+}
+
+allprojects {
+	dependencies {
+        managed group: 'org.group', name: 'name', version: '1.0-SNAPSHOT', config: 'compile'
+	}
 }
 
 task abc << {
