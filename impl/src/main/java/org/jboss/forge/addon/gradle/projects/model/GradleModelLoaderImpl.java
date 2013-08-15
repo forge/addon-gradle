@@ -163,7 +163,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       String name = depNode.getSingle("name").getText().trim();
       String version = depNode.getSingle("version").getText().trim();
       String config = depNode.getSingle("configuration").getText().trim();
-      return new GradleDependencyImpl(group, name, version, GradleDependencyConfiguration.configByName(config), config);
+      return new GradleDependencyImpl(group, name, version, GradleDependencyConfiguration.fromName(config), config);
    }
 
    private List<GradlePlugin> pluginsFromNode(Node projectNode)

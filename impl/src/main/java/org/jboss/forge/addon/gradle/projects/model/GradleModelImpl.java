@@ -407,7 +407,7 @@ public class GradleModelImpl implements GradleModel
                   builder.getName());
          this.dependencies.add(new GradleDependencyImpl(
                   builder.getGroup(), builder.getName(), builder.getVersion(),
-                  GradleDependencyConfiguration.configByName(builder.getConfiguration()),
+                  GradleDependencyConfiguration.fromName(builder.getConfiguration()),
                   builder.getConfiguration()));
       }
    }
@@ -419,7 +419,7 @@ public class GradleModelImpl implements GradleModel
                builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
       this.managedDependencies.add(new GradleDependencyImpl(
                builder.getGroup(), builder.getName(), builder.getVersion(),
-               GradleDependencyConfiguration.configByName(builder.getConfiguration()),
+               GradleDependencyConfiguration.fromName(builder.getConfiguration()),
                builder.getConfiguration()));
    }
 

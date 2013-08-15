@@ -16,34 +16,56 @@ import java.util.Map;
  */
 public enum GradleDependencyConfiguration
 {
-   COMPILE("compile"), RUNTIME("runtime"), TEST_COMPILE("testCompile"), TEST_RUNTIME("testRuntime"),
-   
+   COMPILE("compile", "compile"),
+   RUNTIME("runtime", "runtime"),
+   TEST_COMPILE("testCompile", "test"),
+   TEST_RUNTIME("testRuntime", "test"),
+
    /**
     * Direct dependency configuration (which doesn't have defined version and config).
     */
-   DIRECT("direct"),
+   DIRECT("direct", null),
 
    /**
     * Dependency configuration not defined in {@link GradleDependencyConfiguration}.
     */
-   OTHER("");
+   OTHER("", "compile");
 
    private static class ConfigContainer
    {
-      private static final Map<String, GradleDependencyConfiguration> CONFIG_MAP = new HashMap<String, GradleDependencyConfiguration>();
+      private static final Map<String, GradleDependencyConfiguration> BY_NAME_MAP =
+               new HashMap<String, GradleDependencyConfiguration>();
+      private static final Map<String, GradleDependencyConfiguration> BY_MAVEN_SCOPE_MAP = 
+               new HashMap<String, GradleDependencyConfiguration>();
+   }
+   
+   static {
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("compile", COMPILE);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("provided", COMPILE);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("runtime", RUNTIME);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("test", TEST_COMPILE);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("system", COMPILE);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("import", COMPILE);
    }
 
    private final String name;
+   private final String mavenScope;
 
-   private GradleDependencyConfiguration(String name)
+   private GradleDependencyConfiguration(String name, String mavenScope)
    {
       this.name = name;
-      ConfigContainer.CONFIG_MAP.put(name, this);
+      this.mavenScope = mavenScope;
+      ConfigContainer.BY_NAME_MAP.put(name, this);
    }
 
    public String getName()
    {
       return name;
+   }
+
+   public String toMavenScope()
+   {
+      return mavenScope;
    }
 
    /**
@@ -52,9 +74,17 @@ public enum GradleDependencyConfiguration
     * @param name Name of the configuration.
     * @return Configuration with specified name, if it doesn't exist, returns {@link #OTHER}.
     */
-   public static GradleDependencyConfiguration configByName(String name)
+   public static GradleDependencyConfiguration fromName(String name)
    {
-      GradleDependencyConfiguration config = ConfigContainer.CONFIG_MAP.get(name); 
+      GradleDependencyConfiguration config = ConfigContainer.BY_NAME_MAP.get(name);
       return config != null ? config : OTHER;
+   }
+
+   /**
+    * Returns Gradle config corresponding to given maven scope.
+    */
+   public static GradleDependencyConfiguration fromMavenScope(String mavenScope)
+   {
+      return ConfigContainer.BY_MAVEN_SCOPE_MAP.get(mavenScope);
    }
 }
