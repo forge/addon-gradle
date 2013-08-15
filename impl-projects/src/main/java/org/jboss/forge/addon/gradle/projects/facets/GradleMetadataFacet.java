@@ -133,11 +133,30 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    }
 
    @Override
-   public void setProperty(String name, String value)
+   public void setDirectProperty(String name, String value)
    {
       GradleModel model = getGradleFacet().getModel();
       model.setProperty(name, value);
       getGradleFacet().setModel(model);
+   }
+
+   @Override
+   public String removeDirectProperty(String name)
+   {
+      String property = null;
+      try
+      {
+         GradleModel model = getGradleFacet().getModel();
+         property = model.getProperties().get(name);
+         getGradleFacet().getModel().removeProperty(name);
+         getGradleFacet().setModel(model);
+      }
+      catch (UnremovableElementException e)
+      {
+         // TODO Handle Gradle exceptions
+         e.printStackTrace();
+      }
+      return property;
    }
    
    private GradleFacet getGradleFacet()

@@ -7,6 +7,7 @@
 package org.jboss.forge.addon.gradle.projects.facets;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Map;
@@ -140,7 +141,7 @@ public class GradleMetadataFacetTest
       assertEquals(".45", props.get("someVersion"));
       assertNull(props.get("version"));
    }
-   
+
    @Test
    public void testGetEffectiveProperty()
    {
@@ -171,15 +172,28 @@ public class GradleMetadataFacetTest
    }
 
    @Test
-   public void testSetProperty()
+   public void testSetDirectProperty()
    {
       assertEquals("JBoss", facet.getEffectiveProperty("organization"));
 
-      facet.setProperty("organization", "EJB-OSS");
+      facet.setDirectProperty("organization", "EJB-OSS");
 
       Project sameProject = projectProvider.findProject();
       MetadataFacet sameFacet = sameProject.getFacet(MetadataFacet.class);
 
       assertEquals("EJB-OSS", sameFacet.getEffectiveProperty("organization"));
+   }
+
+   @Test
+   public void testRemoveDirectProperty()
+   {
+      assertNotNull(facet.getDirectProperty("githubRepo"));
+
+      facet.removeDirectProperty("githubRepo");
+
+      Project sameProject = projectProvider.findProject();
+      MetadataFacet sameFacet = sameProject.getFacet(MetadataFacet.class);
+
+      assertNull(sameFacet.getDirectProperty("githubRepo"));
    }
 }
