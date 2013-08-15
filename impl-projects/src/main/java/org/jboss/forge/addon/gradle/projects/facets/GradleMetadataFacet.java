@@ -148,7 +148,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
       {
          GradleModel model = getGradleFacet().getModel();
          property = model.getProperties().get(name);
-         getGradleFacet().getModel().removeProperty(name);
+         model.removeProperty(name);
          getGradleFacet().setModel(model);
       }
       catch (UnremovableElementException e)
