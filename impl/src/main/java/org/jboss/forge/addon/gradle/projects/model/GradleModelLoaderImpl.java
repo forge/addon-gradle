@@ -67,7 +67,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
                packaging, archivePath, tasks, deps,
                managedDeps, profiles, plugins, repositories, sourceSets, properties);
    }
-   
+
    private String groupFromNode(Node projectNode)
    {
       return projectNode.getSingle("group").getText().trim();
@@ -82,22 +82,22 @@ public class GradleModelLoaderImpl implements GradleModelLoader
    {
       return projectNode.getSingle("version").getText().trim();
    }
-   
+
    private String projectPathFromNode(Node projectNode)
    {
       return projectNode.getSingle("projectPath").getText().trim();
    }
-   
+
    private String rootProjectDirectoryFromNode(Node projectNode)
    {
       return projectNode.getSingle("rootProjectDirectory").getText().trim();
    }
-   
+
    private String packagingFromNode(Node projectNode)
    {
       return projectNode.getSingle("packaging").getText().trim();
    }
-   
+
    private String archivePathFromNode(Node projectNode)
    {
       return projectNode.getSingle("archivePath").getText().trim();
@@ -139,11 +139,31 @@ public class GradleModelLoaderImpl implements GradleModelLoader
 
    private List<GradleDependency> depsFromNode(Node projectNode)
    {
-      List<GradleDependency> deps = new ArrayList<GradleDependency>();
+      // Gradle string -> Best dependency 
+      // (one which has the biggest priority, determined by overrides relationship)
+      Map<String, GradleDependency> depByString = new HashMap<String, GradleDependency>();
+      
       for (Node depNode : projectNode.getSingle("dependencies").get("dependency"))
       {
-         deps.add(depFromNode(depNode));
+         GradleDependency gradleDep = depFromNode(depNode);
+         String gradleString = gradleDep.toGradleString();
+         if (!depByString.containsKey(gradleString))
+         {
+            depByString.put(gradleString, gradleDep);
+         }
+         else
+         {
+            GradleDependency olderDep = depByString.get(gradleString);
+            if (gradleDep.getConfiguration().overrides(olderDep.getConfiguration()))
+            {
+               depByString.put(gradleString, gradleDep);
+            }
+         }
       }
+
+
+      List<GradleDependency> deps = new ArrayList<GradleDependency>();
+      deps.addAll(depByString.values());
       return deps;
    }
 
@@ -225,7 +245,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       String path = directoryNode.getText().trim();
       return new GradleSourceDirectoryImpl(path);
    }
-   
+
    private Map<String, String> propertiesFromNode(Node projectNode)
    {
       Map<String, String> properties = Maps.newHashMap();

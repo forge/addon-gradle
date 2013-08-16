@@ -34,7 +34,7 @@ public class GradleModelLoaderTest
    }
 
    @Test
-   public void getGroup()
+   public void testGroup()
    {
       assertEquals("groupgroup", model.getGroup());
    }
@@ -122,26 +122,34 @@ public class GradleModelLoaderTest
    @Test
    public void testDependencies()
    {
-      boolean gradleToolingSet = false, junitSet = false;
+      boolean gradleToolingSet = false, junitSet = false, xSet = false;
       for (GradleDependency dep : model.getDependencies())
       {
-         if (dep.getName().equals("gradle-tooling-api")
-                  && dep.getConfiguration().equals(GradleDependencyConfiguration.COMPILE))
+         if (dep.getName().equals("gradle-tooling-api"))
          {
             gradleToolingSet = true;
+            assertEquals(GradleDependencyConfiguration.COMPILE, dep.getConfiguration());
             assertEquals("org.gradle", dep.getGroup());
             assertEquals("1.6", dep.getVersion());
          }
-         else if (dep.getName().equals("junit")
-                  && dep.getConfiguration().equals(GradleDependencyConfiguration.TEST_COMPILE))
+         else if (dep.getName().equals("junit"))
          {
             junitSet = true;
+            assertEquals(GradleDependencyConfiguration.TEST_COMPILE, dep.getConfiguration());
             assertEquals("junit", dep.getGroup());
             assertEquals("4.11", dep.getVersion());
+         }
+         else if (dep.getName().equals("y"))
+         {
+            xSet = true;
+            assertEquals(GradleDependencyConfiguration.TEST_RUNTIME, dep.getConfiguration());
+            assertEquals("x", dep.getGroup());
+            assertEquals("z", dep.getVersion());
          }
       }
       assertTrue("gradle-tooling-api dependency not found", gradleToolingSet);
       assertTrue("junit dependency not found", junitSet);
+      assertTrue("x:y:z dependency not found", xSet);
    }
 
    @Test
@@ -153,6 +161,7 @@ public class GradleModelLoaderTest
       assertEquals("guava", dep.getName());
       assertEquals("14.0.1", dep.getVersion());
       assertEquals("compile", dep.getConfigurationName());
+      assertEquals(GradleDependencyConfiguration.COMPILE, dep.getConfiguration());
    }
 
    @Test

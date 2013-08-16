@@ -12,15 +12,22 @@ package org.jboss.forge.addon.gradle.projects.model;
 public interface GradleDependency
 {
    String getName();
-   
+
    String getGroup();
-   
+
    String getVersion();
-   
+
    GradleDependencyConfiguration getConfiguration();
 
    /**
-    * Returns real configuration name, if {@link #getConfiguration()} is set to {@link GradleDependencyConfiguration#OTHER}. 
+    * Returns real configuration name, if {@link #getConfiguration()} is set to
+    * {@link GradleDependencyConfiguration#OTHER}.
     */
    String getConfigurationName();
+
+   /**
+    * Returns Gradle string in format: <br/>
+    * <i>group:name:version</i>
+    */
+   String toGradleString();
 }

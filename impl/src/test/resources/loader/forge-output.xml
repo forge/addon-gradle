@@ -102,13 +102,13 @@
                   compileScala
                </task>
                <task>
+                  compileGroovy
+               </task>
+               <task>
                   compileJava
                </task>
                <task>
                   processResources
-               </task>
-               <task>
-                  compileGroovy
                </task>
             </dependsOn>
          </task>
@@ -125,13 +125,13 @@
             </name>
             <dependsOn>
                <task>
-                  cleanEclipseClasspath
+                  cleanEclipseProject
                </task>
                <task>
                   cleanEclipseJdt
                </task>
                <task>
-                  cleanEclipseProject
+                  cleanEclipseClasspath
                </task>
             </dependsOn>
          </task>
@@ -225,13 +225,13 @@
             </name>
             <dependsOn>
                <task>
-                  eclipseJdt
+                  eclipseClasspath
                </task>
                <task>
                   eclipseProject
                </task>
                <task>
-                  eclipseClasspath
+                  eclipseJdt
                </task>
             </dependsOn>
          </task>
@@ -359,16 +359,16 @@
             </name>
             <dependsOn>
                <task>
-                  compileTestScala
-               </task>
-               <task>
-                  compileTestGroovy
+                  processTestResources
                </task>
                <task>
                   compileTestJava
                </task>
                <task>
-                  processTestResources
+                  compileTestScala
+               </task>
+               <task>
+                  compileTestGroovy
                </task>
             </dependsOn>
          </task>
@@ -623,6 +623,20 @@
             </version>
             <configuration>
                testCompile
+            </configuration>
+         </dependency>
+         <dependency>
+            <name>
+               y
+            </name>
+            <group>
+               x
+            </group>
+            <version>
+               z
+            </version>
+            <configuration>
+               testRuntime
             </configuration>
          </dependency>
          <dependency>

@@ -57,4 +57,10 @@ public class GradleDependencyImpl implements GradleDependency
       return configurationName;
    }
 
+   @Override
+   public String toGradleString()
+   {
+      return String.format("%s:%s:%s", group, name, version);
+   }
+
 }

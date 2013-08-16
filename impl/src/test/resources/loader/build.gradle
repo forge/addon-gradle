@@ -47,6 +47,8 @@ dependencies {
     compile 'org.slf4j:slf4j-simple:1.7.5'
 
     testCompile 'junit:junit:4.11'
+    
+    testRuntime 'x:y:z'
 }
 
 task zxyz(dependsOn: [build, test]) << {
