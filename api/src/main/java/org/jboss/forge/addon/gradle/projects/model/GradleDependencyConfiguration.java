@@ -6,7 +6,10 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +22,7 @@ public enum GradleDependencyConfiguration
    COMPILE("compile", "compile"),
    RUNTIME("runtime", "runtime"),
    TEST_COMPILE("testCompile", "test"),
-   TEST_RUNTIME("testRuntime", "test"),
+   TEST_RUNTIME("testRuntime", "runtime"),
 
    /**
     * Direct dependency configuration (which doesn't have defined version and config).
@@ -29,27 +32,25 @@ public enum GradleDependencyConfiguration
    /**
     * Dependency configuration not defined in {@link GradleDependencyConfiguration}.
     */
-   OTHER("", "compile");
+   OTHER("", null);
 
    private static class ConfigContainer
    {
       private static final Map<String, GradleDependencyConfiguration> BY_NAME_MAP =
                new HashMap<String, GradleDependencyConfiguration>();
-      private static final Map<String, GradleDependencyConfiguration> BY_MAVEN_SCOPE_MAP = 
+      private static final Map<String, GradleDependencyConfiguration> BY_MAVEN_SCOPE_MAP =
                new HashMap<String, GradleDependencyConfiguration>();
    }
-   
-   static {
-      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("compile", COMPILE);
-      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("provided", COMPILE);
-      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("runtime", RUNTIME);
-      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("test", TEST_COMPILE);
-      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("system", COMPILE);
-      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("import", COMPILE);
+
+   static
+   {
+      fillMavenScopeMap();
+      configureExtends();
    }
 
    private final String name;
    private final String mavenScope;
+   private final List<GradleDependencyConfiguration> extendsList = new ArrayList<GradleDependencyConfiguration>();
 
    private GradleDependencyConfiguration(String name, String mavenScope)
    {
@@ -69,6 +70,25 @@ public enum GradleDependencyConfiguration
    }
 
    /**
+    * Defines partial ordering (in a mathematical sense) relation for configurations.
+    */
+   public boolean overrides(GradleDependencyConfiguration config)
+   {
+      if (config == this)
+      {
+         return true;
+      }
+      for (GradleDependencyConfiguration extendsConfig : extendsList)
+      {
+         if (extendsConfig.overrides(config))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   /**
     * Searches map for config with specified name.
     * 
     * @param name Name of the configuration.
@@ -85,6 +105,25 @@ public enum GradleDependencyConfiguration
     */
    public static GradleDependencyConfiguration fromMavenScope(String mavenScope)
    {
-      return ConfigContainer.BY_MAVEN_SCOPE_MAP.get(mavenScope);
+      GradleDependencyConfiguration config = ConfigContainer.BY_MAVEN_SCOPE_MAP.get(mavenScope);
+      return config != null ? config : OTHER;
+   }
+
+   private static void fillMavenScopeMap()
+   {
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("compile", COMPILE);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("provided", COMPILE);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("runtime", RUNTIME);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("test", TEST_COMPILE);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("system", COMPILE);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("import", COMPILE);
+   }
+
+   private static void configureExtends()
+   {
+      // http://www.gradle.org/docs/current/userguide/userguide_single.html#tab:configurations
+      Collections.addAll(RUNTIME.extendsList, COMPILE);
+      Collections.addAll(TEST_COMPILE.extendsList, COMPILE);
+      Collections.addAll(TEST_RUNTIME.extendsList, RUNTIME, TEST_COMPILE);
    }
 }
