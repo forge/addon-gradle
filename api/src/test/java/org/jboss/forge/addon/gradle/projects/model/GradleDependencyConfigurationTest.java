@@ -32,25 +32,25 @@ public class GradleDependencyConfigurationTest
    @Test
    public void testCompileOverrides()
    {
-      assertOverridesOnly(COMPILE, COMPILE);
+      assertOverridesOnly(COMPILE, COMPILE, RUNTIME, TEST_COMPILE, TEST_RUNTIME, OTHER);
    }
    
    @Test
    public void testRuntimeOverrides()
    {
-      assertOverridesOnly(RUNTIME, RUNTIME, COMPILE);
+      assertOverridesOnly(RUNTIME, RUNTIME, TEST_RUNTIME, OTHER);
    }
 
    @Test
    public void testTestCompileOverrides()
    {
-      assertOverridesOnly(TEST_COMPILE, TEST_COMPILE, COMPILE);
+      assertOverridesOnly(TEST_COMPILE, TEST_COMPILE, TEST_RUNTIME, OTHER);
    }
    
    @Test
    public void testTestRuntimeOverrides()
    {
-      assertOverridesOnly(TEST_RUNTIME, TEST_RUNTIME, TEST_COMPILE, RUNTIME, COMPILE);
+      assertOverridesOnly(TEST_RUNTIME, TEST_RUNTIME, OTHER);
    }
    
    @Test

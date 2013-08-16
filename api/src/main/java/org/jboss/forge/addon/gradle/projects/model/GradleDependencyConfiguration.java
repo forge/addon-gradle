@@ -50,7 +50,7 @@ public enum GradleDependencyConfiguration
 
    private final String name;
    private final String mavenScope;
-   private final List<GradleDependencyConfiguration> extendsList = new ArrayList<GradleDependencyConfiguration>();
+   private final List<GradleDependencyConfiguration> extendedBy = new ArrayList<GradleDependencyConfiguration>();
 
    private GradleDependencyConfiguration(String name, String mavenScope)
    {
@@ -78,7 +78,7 @@ public enum GradleDependencyConfiguration
       {
          return true;
       }
-      for (GradleDependencyConfiguration extendsConfig : extendsList)
+      for (GradleDependencyConfiguration extendsConfig : extendedBy)
       {
          if (extendsConfig.overrides(config))
          {
@@ -122,8 +122,9 @@ public enum GradleDependencyConfiguration
    private static void configureExtends()
    {
       // http://www.gradle.org/docs/current/userguide/userguide_single.html#tab:configurations
-      Collections.addAll(RUNTIME.extendsList, COMPILE);
-      Collections.addAll(TEST_COMPILE.extendsList, COMPILE);
-      Collections.addAll(TEST_RUNTIME.extendsList, RUNTIME, TEST_COMPILE);
+      Collections.addAll(COMPILE.extendedBy, RUNTIME, TEST_COMPILE);
+      Collections.addAll(RUNTIME.extendedBy, OTHER, TEST_RUNTIME);
+      Collections.addAll(TEST_COMPILE.extendedBy, OTHER, TEST_RUNTIME);
+      Collections.addAll(TEST_RUNTIME.extendedBy, OTHER);
    }
 }
