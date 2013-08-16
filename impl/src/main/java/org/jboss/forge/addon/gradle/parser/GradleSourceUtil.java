@@ -237,8 +237,7 @@ public class GradleSourceUtil
             if (invocation.getMethodName().equals(MANAGED_CONFIG) &&
                      params.get("group").equals(group) &&
                      params.get("name").equals(name) &&
-                     params.get("version").equals(version) &&
-                     params.get("config").equals(configuration))
+                     params.get("version").equals(version))
             {
                return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
