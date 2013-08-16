@@ -72,7 +72,7 @@ dependencies {
 
 allprojects {
 	dependencies {
-        managed group: 'org.group', name: 'name', version: '1.0-SNAPSHOT', config: 'compile'
+        managed group: 'org.apache.commons', name: 'commons-exec', version: '1.1', config: 'compile'
 	}
 }
 

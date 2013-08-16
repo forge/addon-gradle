@@ -172,13 +172,13 @@ public class GradleDependencyFacetTest
       assertEquals("junit", dep.getCoordinate().getGroupId());
       assertEquals("junit", dep.getCoordinate().getArtifactId());
       assertEquals("4.11", dep.getCoordinate().getVersion());
-      assertEquals("testCompile", dep.getScopeType());
+      assertEquals("test", dep.getScopeType());
    }
 
    @Test
    public void testGetDirectDependencyOnManaged()
    {
-      Dependency dep = facet.getDirectDependency(DependencyBuilder.create("org.group:name:1.0-SNAPSHOT"));
+      Dependency dep = facet.getDirectDependency(DependencyBuilder.create("org.apache.commons:commons-exec:1.1"));
 
       assertNull(dep);
    }
@@ -207,7 +207,7 @@ public class GradleDependencyFacetTest
    }
 
    @Test
-   public void testGetEffectiveDependenciesInScopes()
+   public void testGetEffectiveDependenciesInScopesNonTransitive()
    {
       List<Dependency> deps = facet.getEffectiveDependenciesInScopes("test", "runtime");
 
@@ -215,9 +215,8 @@ public class GradleDependencyFacetTest
       ProjectAssert.assertNotContainsDependency(deps, "compile", "org.slf4j", "slf4j-simple", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
       ProjectAssert.assertContainsDependency(deps, "runtime", "com.google.code.guice", "guice", "1.0");
-
-      ProjectAssert.assertNotContainsDependency(deps, "runtime", "org.jboss.netty", "netty", "3.2.9.Final");
-      ProjectAssert.assertNotContainsDependency(deps, "test", "org.mockito", "mockito-all", "1.9.5");
+      ProjectAssert.assertContainsDependency(deps, "runtime", "org.jboss.netty", "netty", "3.2.9.Final");
+      ProjectAssert.assertContainsDependency(deps, "test", "org.mockito", "mockito-all", "1.9.5");
    }
 
    @Test
@@ -236,7 +235,7 @@ public class GradleDependencyFacetTest
       Dependency dep = facet.getEffectiveManagedDependency(DependencyBuilder.create("org.mockito:mockito-all:1.9.5"));
 
       assertNotNull(dep);
-      assertEquals("runtime", dep.getScopeType());
+      assertEquals("test", dep.getScopeType());
    }
 
    @Test
@@ -244,7 +243,7 @@ public class GradleDependencyFacetTest
    {
       List<Dependency> deps = facet.getManagedDependencies();
 
-      ProjectAssert.assertContainsDependency(deps, "compile", "org.group", "name", "1.0-SNAPSHOT");
+      ProjectAssert.assertContainsDependency(deps, "compile", "org.apache.commons", "commons-exec", "1.1");
       ProjectAssert.assertContainsDependency(deps, "runtime", "org.codehaus.groovy", "groovy", "2.1.6");
       ProjectAssert.assertNotContainsDependency(deps, "testCompile", "org.mockito", "mockito-all", "1.9.5");
    }
@@ -296,7 +295,7 @@ public class GradleDependencyFacetTest
    public void testHasEffectiveManagedDependency()
    {
       assertTrue(facet.hasEffectiveManagedDependency(
-               DependencyBuilder.create("make.managed:x:3.0")));
+               DependencyBuilder.create("org.mockito:mockito-all:1.9.5")));
    }
 
    @Test
@@ -350,7 +349,7 @@ public class GradleDependencyFacetTest
    @Test
    public void testRemoveManagedDependency()
    {
-      Dependency dep = DependencyBuilder.create("org.group:name:1.0-SNAPSHOT");
+      Dependency dep = DependencyBuilder.create("org.apache.commons:commons-exec:1.1");
       assertTrue(facet.hasDirectManagedDependency(dep));
 
       facet.removeManagedDependency(dep);
@@ -359,7 +358,8 @@ public class GradleDependencyFacetTest
       DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
       List<Dependency> managedDeps = sameFacet.getManagedDependencies();
 
-      ProjectAssert.assertNotContainsDependency(managedDeps, "compile", "org.group", "name", "1.0-SNAPSHOT");
+      ProjectAssert.assertNotContainsDependency(managedDeps, "compile", 
+               "org.apache.commons", "commons-exec", "1.1");
    }
 
    @Test
