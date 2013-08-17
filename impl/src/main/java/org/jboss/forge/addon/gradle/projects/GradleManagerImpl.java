@@ -10,13 +10,13 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import org.gradle.jarjar.com.google.common.base.Preconditions;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnectionException;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.ResultHandler;
+import org.jboss.forge.furnace.util.OperatingSystemUtils;
 import org.jboss.forge.furnace.util.Strings;
 
 /**
@@ -33,29 +33,36 @@ public class GradleManagerImpl implements GradleManager
    public boolean runGradleBuild(String directory, String task, String profile, String... arguments)
    {
       String gradleHome = System.getenv("GRADLE_HOME");
-      
+      File gradleHomeDir = null;
+      if (gradleHome == null || gradleHome.trim().isEmpty())
+         gradleHomeDir = OperatingSystemUtils.createTempDir();
+      else
+         gradleHomeDir = new File(gradleHome);
+
       GradleConnector connector = GradleConnector.newConnector()
-               .forProjectDirectory(new File(directory));
+               .forProjectDirectory(new File(directory))
+               .useGradleUserHomeDir(gradleHomeDir);
+
       if (!Strings.isNullOrEmpty(gradleHome))
       {
          connector = connector.useGradleUserHomeDir(new File(gradleHome));
       }
       ProjectConnection connection = connector.connect();
-      
+
       BuildLauncher launcher = connection.newBuild().forTasks(task);
-      
+
       List<String> argList = Lists.newArrayList(arguments);
-      
+
       if (!Strings.isNullOrEmpty(profile))
       {
          argList.add("-Pprofile=" + profile);
       }
-      
+
       launcher = launcher.withArguments(argList.toArray(new String[argList.size()]));
-      
+
       final ResultHolder holder = new ResultHolder();
       final CountDownLatch latch = new CountDownLatch(1);
-      
+
       launcher.run(new ResultHandler<Object>()
       {
          @Override
@@ -72,7 +79,7 @@ public class GradleManagerImpl implements GradleManager
             latch.countDown();
          }
       });
-      
+
       try
       {
          latch.await();
@@ -81,7 +88,7 @@ public class GradleManagerImpl implements GradleManager
       {
          e.printStackTrace();
       }
-      
+
       return holder.result;
    }
 }
