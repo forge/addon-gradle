@@ -40,13 +40,24 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public boolean install()
    {
-      return true;
+      if (!this.isInstalled())
+      {
+         if (!getBuildScriptResource().exists())
+         {
+            getBuildScriptResource().createNewFile();
+         }
+         if (!getSettingsScriptResource().exists())
+         {
+            getSettingsScriptResource().createNewFile();
+         }
+      }
+      return isInstalled();
    }
 
    @Override
    public boolean isInstalled()
    {
-      return true;
+      return getBuildScriptResource().exists() && getSettingsScriptResource().exists();
    }
 
    @Override
