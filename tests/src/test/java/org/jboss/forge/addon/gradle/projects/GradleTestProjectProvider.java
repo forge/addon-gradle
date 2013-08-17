@@ -47,8 +47,7 @@ public class GradleTestProjectProvider
                         AddonDependencyEntry.create("org.jboss.forge.addon:resources", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:gradle", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:projects", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:parser-java", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:maven", "2.0.0-SNAPSHOT")
+                        AddonDependencyEntry.create("org.jboss.forge.addon:parser-java", "2.0.0-SNAPSHOT")
                );
       for (String resource : RESOURCES)
       {
@@ -60,7 +59,7 @@ public class GradleTestProjectProvider
    @Inject
    private Furnace furnace;
    @Inject
-   private GradleProjectLocator locator;
+   private ProjectFactory projectFactory;
    @Inject
    private ResourceFactory resourceFactory;
 
@@ -79,7 +78,7 @@ public class GradleTestProjectProvider
 
    public Project findProject()
    {
-      return locator.createProject(projectDir);
+      return projectFactory.findProject(projectDir);
    }
 
    public void clean()
