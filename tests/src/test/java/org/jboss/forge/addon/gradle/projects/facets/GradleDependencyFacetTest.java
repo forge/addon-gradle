@@ -204,7 +204,7 @@ public class GradleDependencyFacetTest
    {
       List<Dependency> deps = facet.getEffectiveDependencies();
 
-      ProjectAssert.assertContainsDependency(deps, "test", "org.hamcrest", "hamcrest-core", "1.3");
+      ProjectAssert.assertContainsDependency(deps, "org.hamcrest", "hamcrest-core", "1.3");
    }
 
    @Test

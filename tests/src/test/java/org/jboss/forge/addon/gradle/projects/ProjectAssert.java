@@ -50,6 +50,21 @@ public class ProjectAssert
       }
       fail(String.format("Deps doesn't contain dependency %s '%s:%s:%s'", scope, group, artifact, version));
    }
+
+   public static void assertContainsDependency(List<Dependency> deps, String group, String artifact,
+            String version)
+   {
+      for (Dependency dep : deps)
+      {
+         if (dep.getCoordinate().getArtifactId().equals(artifact) &&
+                  dep.getCoordinate().getGroupId().equals(group) &&
+                  dep.getCoordinate().getVersion().equals(version))
+         {
+            return;
+         }
+      }
+      fail(String.format("Deps doesn't contain dependency '%s:%s:%s'", group, artifact, version));
+   }
    
    public static void assertContainsDirectDependency(List<Dependency> deps, String group, String artifact)
    {
