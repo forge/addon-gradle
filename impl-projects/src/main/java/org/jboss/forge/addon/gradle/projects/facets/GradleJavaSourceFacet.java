@@ -14,6 +14,7 @@ import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.RequiresFacet;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradlePluginType;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceDirectory;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceSet;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
@@ -42,6 +43,13 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
          for (DirectoryResource folder : this.getSourceFolders())
          {
             folder.mkdirs();
+         }
+         
+         GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
+         if (!model.hasPlugin(GradlePluginType.JAVA.getClazz()))
+         {
+            model.applyPlugin(GradlePluginType.JAVA.getShortName());
+            getFaceted().getFacet(GradleFacet.class).setModel(model);
          }
       }
       return isInstalled();
