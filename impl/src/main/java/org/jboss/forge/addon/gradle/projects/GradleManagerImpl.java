@@ -35,8 +35,7 @@ public class GradleManagerImpl implements GradleManager
       String gradleHome = System.getenv("GRADLE_HOME");
       
       GradleConnector connector = GradleConnector.newConnector()
-               .forProjectDirectory(new File(directory))
-               .useGradleUserHomeDir(new File(gradleHome));
+               .forProjectDirectory(new File(directory));
       if (!Strings.isNullOrEmpty(gradleHome))
       {
          connector = connector.useGradleUserHomeDir(new File(gradleHome));
