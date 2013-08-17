@@ -22,7 +22,7 @@ public enum GradleDependencyConfiguration
    COMPILE("compile", "compile"),
    RUNTIME("runtime", "runtime"),
    TEST_COMPILE("testCompile", "test"),
-   TEST_RUNTIME("testRuntime", "runtime"),
+   TEST_RUNTIME("testRuntime", "test"),
 
    /**
     * Direct dependency configuration (which doesn't have defined version and config).

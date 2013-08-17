@@ -13,7 +13,6 @@ import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.ResourceFactory;
-import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
@@ -48,7 +47,8 @@ public class GradleTestProjectProvider
                         AddonDependencyEntry.create("org.jboss.forge.addon:resources", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:gradle", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:projects", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:parser-java", "2.0.0-SNAPSHOT")
+                        AddonDependencyEntry.create("org.jboss.forge.addon:parser-java", "2.0.0-SNAPSHOT"),
+                        AddonDependencyEntry.create("org.jboss.forge.addon:maven", "2.0.0-SNAPSHOT")
                );
       for (String resource : RESOURCES)
       {
@@ -60,7 +60,7 @@ public class GradleTestProjectProvider
    @Inject
    private Furnace furnace;
    @Inject
-   private ProjectFactory projectFactory;
+   private GradleProjectLocator locator;
    @Inject
    private ResourceFactory resourceFactory;
 
@@ -79,7 +79,7 @@ public class GradleTestProjectProvider
 
    public Project findProject()
    {
-      return projectFactory.findProject(projectDir);
+      return locator.createProject(projectDir);
    }
 
    public void clean()
