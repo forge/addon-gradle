@@ -33,20 +33,14 @@ public class GradleManagerImpl implements GradleManager
    public boolean runGradleBuild(String directory, String task, String profile, String... arguments)
    {
       String gradleHome = System.getenv("GRADLE_HOME");
-      File gradleHomeDir = null;
-      if (gradleHome == null || gradleHome.trim().isEmpty())
-         gradleHomeDir = OperatingSystemUtils.createTempDir();
-      else
-         gradleHomeDir = new File(gradleHome);
 
       GradleConnector connector = GradleConnector.newConnector()
-               .forProjectDirectory(new File(directory))
-               .useGradleUserHomeDir(gradleHomeDir);
-
+               .forProjectDirectory(new File(directory));
       if (!Strings.isNullOrEmpty(gradleHome))
       {
          connector = connector.useGradleUserHomeDir(new File(gradleHome));
       }
+      
       ProjectConnection connection = connector.connect();
 
       BuildLauncher launcher = connection.newBuild().forTasks(task);
