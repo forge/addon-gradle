@@ -45,6 +45,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          if (!getBuildScriptResource().exists())
          {
             getBuildScriptResource().createNewFile();
+            getBuildScriptResource().setContents("apply plugin: 'java'\n");
          }
          if (!getSettingsScriptResource().exists())
          {
@@ -197,7 +198,8 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       {
          getBuildScriptResource().setContents(newScript);
 
-         FileResource<?> forgeLib = getFaceted().getProjectRoot().getChildDirectory(GradleSourceUtil.FORGE_LIBRARY);
+         FileResource<?> forgeLib = (FileResource<?>)
+                  getFaceted().getProjectRoot().getChild(GradleSourceUtil.FORGE_LIBRARY);
          forgeLib.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
       }
    }

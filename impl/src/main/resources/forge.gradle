@@ -191,27 +191,29 @@ allprojects {
                 }
                 outputDec '</plugins>'
                 outputInc '<sourceSets>'
-                p.sourceSets.each { set ->
-                    outputInc '<sourceSet>'
-                    outputInc '<name>'
-                    output set.name
-                    outputDec '</name>'
-                    outputInc '<java>'
-                    set.java.srcDirs.each {
-                        outputInc '<directory>'
-                        outputRelative(it, project.projectDir)
-                        outputDec '</directory>'
-                    }
-                    outputDec '</java>'
-                    outputInc '<resources>'
-                    set.resources.srcDirs.each {
-                        outputInc '<directory>'
-                        outputRelative(it, project.projectDir)
-                        outputDec '</directory>'
-                    }
-                    outputDec '</resources>'
-                    outputDec '</sourceSet>'
-                }
+                if (p.hasProperty('sourceSets')) {
+	                p.sourceSets.each { set ->
+	                    outputInc '<sourceSet>'
+	                    outputInc '<name>'
+	                    output set.name
+	                    outputDec '</name>'
+	                    outputInc '<java>'
+	                    set.java.srcDirs.each {
+	                        outputInc '<directory>'
+	                        outputRelative(it, project.projectDir)
+	                        outputDec '</directory>'
+	                    }
+	                    outputDec '</java>'
+	                    outputInc '<resources>'
+	                    set.resources.srcDirs.each {
+	                        outputInc '<directory>'
+	                        outputRelative(it, project.projectDir)
+	                        outputDec '</directory>'
+	                    }
+	                    outputDec '</resources>'
+	                    outputDec '</sourceSet>'
+	                }
+	            }
                 outputDec '</sourceSets>'
                 outputDec '</project>'
             }
