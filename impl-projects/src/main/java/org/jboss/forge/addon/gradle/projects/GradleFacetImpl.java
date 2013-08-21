@@ -28,6 +28,12 @@ import org.jboss.forge.furnace.util.Streams;
  */
 public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFacet
 {
+   public static final String INITIAL_BUILD_FILE_CONTENTS = "" +
+            "apply plugin: 'java'\n" +
+            "repositories {\n" +
+            "    mavenCentral()\n" +
+            "}\n";
+   
    @Inject
    private GradleManager manager;
    @Inject
@@ -45,7 +51,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          if (!getBuildScriptResource().exists())
          {
             getBuildScriptResource().createNewFile();
-            getBuildScriptResource().setContents("apply plugin: 'java'\n");
+            getBuildScriptResource().setContents(INITIAL_BUILD_FILE_CONTENTS);
          }
          if (!getSettingsScriptResource().exists())
          {
