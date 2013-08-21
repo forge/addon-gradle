@@ -149,7 +149,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          }
       }
 
-      this.model = newModel;
+      this.model = null;
    }
 
    @Override
