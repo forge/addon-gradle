@@ -40,9 +40,11 @@ allprojects {
                     group: it.group,
                     name: it.name
             ]
-            it.handler.add(project.ext._managedDependencies[_groupName].config,
-                    _groupName.group + ':' + _groupName.name + ':'
-                            + project.ext._managedDependencies[_groupName].version)
+            project.afterEvaluate {
+                project.dependencies.add(project.ext._managedDependencies[_groupName].config,
+                        _groupName.group + ':' + _groupName.name + ':'
+                                + project.ext._managedDependencies[_groupName].version)
+            }
         })
 
         task forgeOutput << {

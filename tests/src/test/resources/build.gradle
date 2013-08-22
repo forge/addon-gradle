@@ -46,6 +46,10 @@ repositories {
     }
 }
 
+dependencies {
+    direct group: 'org.mockito', name: 'mockito-all'
+}
+
 allprojects {
     dependencies {
         managed group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.6', config: 'runtime'
@@ -66,8 +70,6 @@ dependencies {
     
     def nettyDep = 'org.jboss.netty:netty:3.2.9.Final'
     runtime nettyDep
-    
-    direct group: 'org.mockito', name: 'mockito-all', handler: it
 }
 
 allprojects {
