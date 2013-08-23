@@ -12,121 +12,123 @@ import java.util.Map;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 
 /**
- * Contains information about Gradle build script.
- * 
  * @author Adam Wyłuda
  */
 public interface GradleModel
 {
+   // ---------- Script
+
    String getScript();
-   
+
    void setScript(String script);
-   
-   String getGroup();
-   
-   String getName();
 
-   String getVersion();
-   
+   // ---------- Project paths
+
    String getProjectPath();
-   
+
    String getRootProjectPath();
-   
-   String getPackaging();
-   
-   String getArchiveName();
-   
-   String getArchivePath();
 
-   List<GradleTask> getTasks();
+   // ---------- Group
 
-   List<GradleDependency> getDependencies();
+   String getGroup();
 
-   List<GradleDependency> getManagedDependencies();
-
-   List<GradleProfile> getProfiles();
-
-   List<GradlePlugin> getPlugins();
-
-   List<GradleRepository> getRepositories();
-   
-   List<GradleSourceSet> getSourceSets();
-   
-   Map<String, String> getProperties();
-
-   /**
-    * Returns true if exists task with given name.
-    */
-   boolean hasTask(String name);
-
-   /**
-    * Returns true if there exists dependency for which {@link GradleDependencyBuilder#equalsToDependency(GradleDependency)}
-    * return true.
-    */
-   boolean hasDependency(GradleDependencyBuilder builder);
-
-   /**
-    * Returns true if there exists managed dependency for which
-    * {@link GradleDependencyBuilder#equalsToDependency(GradleDependency)} return true.
-    */
-   boolean hasManagedDependency(GradleDependencyBuilder builder);
-
-   /**
-    * Returns true if there is profile with given name. 
-    */
-   boolean hasProfile(String name);
-
-   /**
-    * Returns true if project has applied plugin with given name. 
-    */
-   boolean hasPlugin(String clazz);
-
-   /**
-    * Returns true if project defined repository with given name. 
-    */
-   boolean hasRepository(String url);
-   
-   boolean hasProperty(String key);
-   
    void setGroup(String group) throws UnremovableElementException;
+
+   // ---------- Name
+
+   String getName();
 
    void setName(String name) throws UnremovableElementException;
 
+   // ---------- Version
+
+   String getVersion();
+
    void setVersion(String version) throws UnremovableElementException;
+   
+   // ---------- Packaging
+
+   String getPackaging();
 
    void setPackaging(String packaging);
    
+   // ---------- Archive path/name
+
+   String getArchivePath();
+
+   String getArchiveName();
+
    void setArchiveName(String archiveName);
 
-   void createTask(GradleTaskBuilder builder);
+   // ---------- Tasks
+   
+   List<GradleTask> getTasks();
 
-   void createDependency(GradleDependencyBuilder builder);
+   boolean hasTask(String name);
 
-   void createManagedDependency(GradleDependencyBuilder builder);
+   void addTask(GradleTaskBuilder builder);
+   
+   // ---------- Dependencies
 
-   /**
-    * @see GradleProfile
-    */
-   void createProfile(String name);
+   List<GradleDependency> getEffectiveDependencies();
 
-   /**
-    * Applies plugin with given name or class.
-    */
-   void applyPlugin(String name);
+   boolean hasEffectiveDependency(GradleDependencyBuilder builder);
 
-   void createRepository(String url);
+   void addDependency(GradleDependencyBuilder builder);
 
    void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
+   
+   // ---------- Managed dependencies
+
+   List<GradleDependency> getEffectiveManagedDependencies();
+
+   boolean hasEffectiveManagedDependency(GradleDependencyBuilder builder);
+
+   void addManagedDependency(GradleDependencyBuilder builder);
 
    void removeManagedDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
+   
+   // ---------- Profiles
+
+   List<GradleProfile> getProfiles();
+
+   boolean hasProfile(String name);
+
+   void addProfile(String name);
 
    void removeProfile(String name);
+   
+   // ---------- Plugins
 
-   void removeAppliedPlugin(String name) throws UnremovableElementException;
+   List<GradlePlugin> getPlugins();
+
+   boolean hasPlugin(String clazz);
+
+   void addPlugin(String name);
+
+   void removePlugin(String name) throws UnremovableElementException;
+   
+   // ---------- Repositories
+
+   List<GradleRepository> getRepositories();
+
+   boolean hasRepository(String url);
+
+   void addRepository(String url);
 
    void removeRepository(String url) throws UnremovableElementException;
    
-   void setProperty(String name, String value);
+   // --------- Source sets
+
+   List<GradleSourceSet> getSourceSets();
+
+   // ---------- Properties
    
+   Map<String, String> getProperties();
+
+   boolean hasProperty(String key);
+
+   void setProperty(String name, String value);
+
    void removeProperty(String name) throws UnremovableElementException;
 }

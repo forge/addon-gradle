@@ -48,7 +48,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
          GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
          if (!model.hasPlugin(GradlePluginType.JAVA.getClazz()))
          {
-            model.applyPlugin(GradlePluginType.JAVA.getShortName());
+            model.addPlugin(GradlePluginType.JAVA.getShortName());
             getFaceted().getFacet(GradleFacet.class).setModel(model);
          }
       }

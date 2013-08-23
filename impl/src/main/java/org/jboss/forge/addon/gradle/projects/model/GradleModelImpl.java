@@ -107,8 +107,8 @@ public class GradleModelImpl implements GradleModel
       this.packaging = original.getPackaging();
       this.archivePath = original.getArchivePath();
       this.tasks = Lists.newArrayList(original.getTasks());
-      this.dependencies = Lists.newArrayList(original.getDependencies());
-      this.managedDependencies = Lists.newArrayList(original.getManagedDependencies());
+      this.dependencies = Lists.newArrayList(original.getEffectiveDependencies());
+      this.managedDependencies = Lists.newArrayList(original.getEffectiveManagedDependencies());
       this.profiles = Lists.newArrayList();
       // Performs a copy of profile list
       for (GradleProfile profile : original.getProfiles())
@@ -191,13 +191,13 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public List<GradleDependency> getDependencies()
+   public List<GradleDependency> getEffectiveDependencies()
    {
       return Collections.unmodifiableList(dependencies);
    }
 
    @Override
-   public List<GradleDependency> getManagedDependencies()
+   public List<GradleDependency> getEffectiveManagedDependencies()
    {
       return Collections.unmodifiableList(managedDependencies);
    }
@@ -246,7 +246,7 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public boolean hasDependency(GradleDependencyBuilder builder)
+   public boolean hasEffectiveDependency(GradleDependencyBuilder builder)
    {
       for (GradleDependency dep : dependencies)
       {
@@ -259,7 +259,7 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public boolean hasManagedDependency(GradleDependencyBuilder builder)
+   public boolean hasEffectiveManagedDependency(GradleDependencyBuilder builder)
    {
       for (GradleDependency dep : managedDependencies)
       {
@@ -345,7 +345,7 @@ public class GradleModelImpl implements GradleModel
       {
          if (type.getPackaging().equals(packaging))
          {
-            applyPlugin(!Strings.isNullOrEmpty(type.getShortName())
+            addPlugin(!Strings.isNullOrEmpty(type.getShortName())
                      ? type.getShortName()
                      : type.getClazz());
             this.packaging = packaging;
@@ -364,7 +364,7 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public void createTask(GradleTaskBuilder builder)
+   public void addTask(GradleTaskBuilder builder)
    {
       script = GradleSourceUtil.insertTask(script,
                builder.getName(), builder.getDependsOn(), builder.getType(), builder.getCode());
@@ -384,7 +384,7 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public void createDependency(GradleDependencyBuilder builder)
+   public void addDependency(GradleDependencyBuilder builder)
    {
       if (!Strings.isNullOrEmpty(builder.getVersion()) && !Strings.isNullOrEmpty(builder.getConfiguration()))
       {
@@ -411,7 +411,7 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public void createManagedDependency(GradleDependencyBuilder builder)
+   public void addManagedDependency(GradleDependencyBuilder builder)
    {
       script = GradleSourceUtil.insertManagedDependency(script,
                builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
@@ -422,13 +422,13 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public void createProfile(String name)
+   public void addProfile(String name)
    {
       profiles.add(new GradleProfileImpl(name, new GradleModelImpl()));
    }
 
    @Override
-   public void applyPlugin(String name)
+   public void addPlugin(String name)
    {
       script = GradleSourceUtil.insertPlugin(script, name);
       GradlePluginType type = GradlePluginType.typeByClazz(name);
@@ -436,7 +436,7 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public void createRepository(String url)
+   public void addRepository(String url)
    {
       script = GradleSourceUtil.insertRepository(script, url);
       this.repositories.add(new GradleRepositoryImpl("MavenRepo", url));
@@ -500,7 +500,7 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public void removeAppliedPlugin(String name) throws UnremovableElementException
+   public void removePlugin(String name) throws UnremovableElementException
    {
       GradlePluginType type = GradlePluginType.typeByClazz(name);
       if (type != GradlePluginType.OTHER)

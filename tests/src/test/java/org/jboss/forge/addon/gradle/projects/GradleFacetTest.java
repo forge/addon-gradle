@@ -97,7 +97,7 @@ public class GradleFacetTest
    public void testCreateTask()
    {
       GradleModel model = facet.getModel();
-      model.createTask(
+      model.addTask(
                GradleTaskBuilder
                         .create()
                         .setName("myTask")

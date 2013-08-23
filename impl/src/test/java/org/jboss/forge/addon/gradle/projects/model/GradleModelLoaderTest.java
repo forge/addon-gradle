@@ -122,7 +122,7 @@ public class GradleModelLoaderTest
    public void testDependencies()
    {
       boolean gradleToolingSet = false, junitSet = false, xSet = false;
-      for (GradleDependency dep : model.getDependencies())
+      for (GradleDependency dep : model.getEffectiveDependencies())
       {
          if (dep.getName().equals("gradle-tooling-api"))
          {
@@ -154,8 +154,8 @@ public class GradleModelLoaderTest
    @Test
    public void testManagedDependencies()
    {
-      assertEquals(1, model.getManagedDependencies().size());
-      GradleDependency dep = model.getManagedDependencies().get(0);
+      assertEquals(1, model.getEffectiveManagedDependencies().size());
+      GradleDependency dep = model.getEffectiveManagedDependencies().get(0);
       assertEquals("com.google.guava", dep.getGroup());
       assertEquals("guava", dep.getName());
       assertEquals("14.0.1", dep.getVersion());
@@ -177,7 +177,7 @@ public class GradleModelLoaderTest
                      profile.getModel().hasTask("runApplicationServer"));
             assertTrue(
                      "Glassfish profile doesn't contain specified dependency",
-                     profile.getModel().hasDependency(
+                     profile.getModel().hasEffectiveDependency(
                               GradleDependencyBuilder.fromGradleString("compile", "javax.annotation:jsr250-api:1.0")));
          }
          else if (profile.getName().equals("wildfly"))
@@ -187,7 +187,7 @@ public class GradleModelLoaderTest
                      profile.getModel().hasTask("runApplicationServer"));
             assertTrue(
                      "Wildfly profile doesn't contain specified dependency",
-                     profile.getModel().hasDependency(
+                     profile.getModel().hasEffectiveDependency(
                               GradleDependencyBuilder.fromGradleString("compile", "log4j:log4j:1.2.17")));
          }
       }
