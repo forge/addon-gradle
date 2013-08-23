@@ -114,9 +114,7 @@ public interface GradleModel
     */
    void applyPlugin(String name);
 
-   void createRepository(GradleRepositoryBuilder builder);
-   
-   void setProperty(String name, String value);
+   void createRepository(String url);
 
    void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
 
@@ -126,7 +124,9 @@ public interface GradleModel
 
    void removeAppliedPlugin(String name) throws UnremovableElementException;
 
-   void removeRepository(GradleRepositoryBuilder builder) throws UnremovableElementException;
+   void removeRepository(String url) throws UnremovableElementException;
+   
+   void setProperty(String name, String value);
    
    void removeProperty(String name) throws UnremovableElementException;
 }

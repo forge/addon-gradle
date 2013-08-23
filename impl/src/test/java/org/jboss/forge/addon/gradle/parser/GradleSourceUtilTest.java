@@ -335,7 +335,7 @@ public class GradleSourceUtilTest
                "        url 'http://repo.com'\n" +
                "    }\n" +
                "}";
-      String result = GradleSourceUtil.insertRepository(source, "", "http://repo.com");
+      String result = GradleSourceUtil.insertRepository(source, "http://repo.com");
       assertEquals(expected, result);
    }
 
@@ -353,7 +353,7 @@ public class GradleSourceUtilTest
                "    maven {\n" +
                "    }\n" +
                "}";
-      String result = GradleSourceUtil.removeRepository(source, "", "http://repo.com");
+      String result = GradleSourceUtil.removeRepository(source, "http://repo.com");
       assertEquals(expected, result);
    }
 
@@ -363,7 +363,7 @@ public class GradleSourceUtilTest
       String source = "" +
                "repositories {\n" +
                "}";
-      GradleSourceUtil.removeRepository(source, "", "http://repo.com");
+      GradleSourceUtil.removeRepository(source, "http://repo.com");
    }
 
    @Test

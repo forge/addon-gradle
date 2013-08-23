@@ -315,7 +315,7 @@ public class GradleSourceUtil
       throw new UnremovableElementException();
    }
 
-   public static String insertRepository(String source, String name, String url)
+   public static String insertRepository(String source, String url)
    {
       // TODO Repository name?
       String repoString = String.format("url '%s'", url);
@@ -323,7 +323,7 @@ public class GradleSourceUtil
       return source;
    }
 
-   public static String removeRepository(String source, String name, String url)
+   public static String removeRepository(String source, String url)
             throws UnremovableElementException
    {
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);

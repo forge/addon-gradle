@@ -438,10 +438,10 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public void createRepository(GradleRepositoryBuilder builder)
+   public void createRepository(String url)
    {
-      script = GradleSourceUtil.insertRepository(script, builder.getName(), builder.getUrl());
-      this.repositories.add(new GradleRepositoryImpl(builder.getName(), builder.getUrl()));
+      script = GradleSourceUtil.insertRepository(script, url);
+      this.repositories.add(new GradleRepositoryImpl("MavenRepo", url));
    }
 
    @Override
@@ -533,13 +533,13 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public void removeRepository(GradleRepositoryBuilder builder) throws UnremovableElementException
+   public void removeRepository(String url) throws UnremovableElementException
    {
-      script = GradleSourceUtil.removeRepository(script, builder.getName(), builder.getUrl());
+      script = GradleSourceUtil.removeRepository(script, url);
 
       for (GradleRepository repo : this.repositories)
       {
-         if (repo.getUrl().equals(builder.getUrl()))
+         if (repo.getUrl().equals(url))
          {
             this.repositories.remove(repo);
             return;

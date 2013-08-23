@@ -34,7 +34,6 @@ import org.jboss.forge.addon.gradle.projects.model.GradleDependencyBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyConfiguration;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleRepository;
-import org.jboss.forge.addon.gradle.projects.model.GradleRepositoryBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 
@@ -88,9 +87,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    public void addRepository(String name, String url)
    {
       GradleModel model = getGradleFacet().getModel();
-      model.createRepository(GradleRepositoryBuilder.create()
-               .setName(name)
-               .setUrl(url));
+      model.createRepository(url);
       getGradleFacet().setModel(model);
    }
 
@@ -245,7 +242,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       {
          GradleModel model = getGradleFacet().getModel();
          repo = findRepositoryByUrl(getRepositories(), url);
-         model.removeRepository(GradleRepositoryBuilder.create().setUrl(url));
+         model.removeRepository(url);
          getGradleFacet().setModel(model);
       }
       catch (UnremovableElementException e)
