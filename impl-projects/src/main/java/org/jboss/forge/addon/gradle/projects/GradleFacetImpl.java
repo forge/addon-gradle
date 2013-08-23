@@ -37,8 +37,6 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Inject
    private GradleManager manager;
    @Inject
-   private GradleModelLoader modelLoader;
-   @Inject
    private ResourceFactory resourceFactory;
 
    private GradleModel model;
@@ -179,7 +177,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 
       forgeOutputfile.delete();
 
-      GradleModel loadedModel = modelLoader.loadFromXML(forgeOutput);
+      GradleModel loadedModel = GradleModelLoader.fromXML(forgeOutput);
       loadedModel.setScript(getBuildScriptResource().getContents());
 
       // Set resources for profiles

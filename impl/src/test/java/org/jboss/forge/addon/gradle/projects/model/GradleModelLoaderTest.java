@@ -27,9 +27,8 @@ public class GradleModelLoaderTest
    @BeforeClass
    public static void init() throws IOException
    {
-      GradleModelLoader loader = new GradleModelLoaderImpl();
       String source = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
-      model = loader.loadFromXML(source);
+      model = GradleModelLoader.fromXML(source);
       model.setScript(Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/build.gradle")));
    }
 

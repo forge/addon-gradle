@@ -19,13 +19,16 @@ import org.jboss.forge.parser.xml.XMLParser;
 /**
  * @author Adam Wyłuda
  */
-public class GradleModelLoaderImpl implements GradleModelLoader
+public class GradleModelLoader
 {
+   private GradleModelLoader()
+   {
+   }
+   
    /**
     * Parses XML source into Gradle model, setting given file resource as Gradle resource.
     */
-   @Override
-   public GradleModel loadFromXML(String source)
+   public static GradleModel fromXML(String source)
    {
       Node root = XMLParser.parse(source);
       List<GradleProfile> profiles = profilesFromNode(root);
@@ -33,7 +36,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return projectModel;
    }
 
-   private List<GradleProfile> profilesFromNode(Node rootNode)
+   private static List<GradleProfile> profilesFromNode(Node rootNode)
    {
       List<GradleProfile> profiles = new ArrayList<GradleProfile>();
       for (Node profileNode : rootNode.get("profile"))
@@ -45,7 +48,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return profiles;
    }
 
-   private GradleModel modelFromNode(Node projectNode, List<GradleProfile> profiles)
+   private static GradleModel modelFromNode(Node projectNode, List<GradleProfile> profiles)
    {
       String group = groupFromNode(projectNode);
       String name = nameFromNode(projectNode);
@@ -68,42 +71,42 @@ public class GradleModelLoaderImpl implements GradleModelLoader
                managedDeps, profiles, plugins, repositories, sourceSets, properties);
    }
 
-   private String groupFromNode(Node projectNode)
+   private static String groupFromNode(Node projectNode)
    {
       return projectNode.getSingle("group").getText().trim();
    }
 
-   private String nameFromNode(Node projectNode)
+   private static String nameFromNode(Node projectNode)
    {
       return projectNode.getSingle("name").getText().trim();
    }
 
-   private String versionFromNode(Node projectNode)
+   private static String versionFromNode(Node projectNode)
    {
       return projectNode.getSingle("version").getText().trim();
    }
 
-   private String projectPathFromNode(Node projectNode)
+   private static String projectPathFromNode(Node projectNode)
    {
       return projectNode.getSingle("projectPath").getText().trim();
    }
 
-   private String rootProjectDirectoryFromNode(Node projectNode)
+   private static String rootProjectDirectoryFromNode(Node projectNode)
    {
       return projectNode.getSingle("rootProjectDirectory").getText().trim();
    }
 
-   private String packagingFromNode(Node projectNode)
+   private static String packagingFromNode(Node projectNode)
    {
       return projectNode.getSingle("packaging").getText().trim();
    }
 
-   private String archivePathFromNode(Node projectNode)
+   private static String archivePathFromNode(Node projectNode)
    {
       return projectNode.getSingle("archivePath").getText().trim();
    }
 
-   private List<GradleTask> tasksFromNode(Node projectNode)
+   private static List<GradleTask> tasksFromNode(Node projectNode)
    {
       List<GradleTask> tasks = new ArrayList<GradleTask>();
       Map<GradleTask, List<String>> taskDepsMap = new HashMap<GradleTask, List<String>>();
@@ -137,7 +140,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return tasks;
    }
 
-   private List<GradleDependency> depsFromNode(Node projectNode)
+   private static List<GradleDependency> depsFromNode(Node projectNode)
    {
       // Gradle string -> Best dependency 
       // (one which has the biggest priority, determined by overrides relationship)
@@ -167,7 +170,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return deps;
    }
 
-   private List<GradleDependency> managedDepsFromNode(Node projectNode)
+   private static List<GradleDependency> managedDepsFromNode(Node projectNode)
    {
       List<GradleDependency> deps = new ArrayList<GradleDependency>();
       for (Node depNode : projectNode.getSingle("managedDependencies").get("dependency"))
@@ -177,7 +180,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return deps;
    }
 
-   private GradleDependency depFromNode(Node depNode)
+   private static GradleDependency depFromNode(Node depNode)
    {
       String group = depNode.getSingle("group").getText().trim();
       String name = depNode.getSingle("name").getText().trim();
@@ -186,7 +189,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return new GradleDependencyImpl(group, name, version, GradleDependencyConfiguration.fromName(config), config);
    }
 
-   private List<GradlePlugin> pluginsFromNode(Node projectNode)
+   private static List<GradlePlugin> pluginsFromNode(Node projectNode)
    {
       List<GradlePlugin> plugins = new ArrayList<GradlePlugin>();
       for (Node pluginNode : projectNode.getSingle("plugins").get("plugin"))
@@ -196,13 +199,13 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return plugins;
    }
 
-   private GradlePlugin pluginFromNode(Node pluginNode)
+   private static GradlePlugin pluginFromNode(Node pluginNode)
    {
       String clazz = pluginNode.getSingle("class").getText().trim();
       return new GradlePluginImpl(clazz, GradlePluginType.typeByClazz(clazz));
    }
 
-   private List<GradleRepository> reposFromNode(Node projectNode)
+   private static List<GradleRepository> reposFromNode(Node projectNode)
    {
       List<GradleRepository> repos = new ArrayList<GradleRepository>();
       for (Node repoNode : projectNode.getSingle("repositories").get("repository"))
@@ -214,7 +217,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return repos;
    }
 
-   private List<GradleSourceSet> sourceSetsFromNode(Node projectNode)
+   private static List<GradleSourceSet> sourceSetsFromNode(Node projectNode)
    {
       List<GradleSourceSet> sourceSets = new ArrayList<GradleSourceSet>();
       for (Node sourceSetNode : projectNode.getSingle("sourceSets").get("sourceSet"))
@@ -224,7 +227,7 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return sourceSets;
    }
 
-   private GradleSourceSet sourceSetFromNode(Node sourceSetNode)
+   private static GradleSourceSet sourceSetFromNode(Node sourceSetNode)
    {
       String name = sourceSetNode.getSingle("name").getText().trim();
       List<GradleSourceDirectory> javaSourceDirs = new ArrayList<GradleSourceDirectory>();
@@ -240,13 +243,13 @@ public class GradleModelLoaderImpl implements GradleModelLoader
       return new GradleSourceSetImpl(name, javaSourceDirs, resourceSourceDirs);
    }
 
-   private GradleSourceDirectory sourceDirectoryFromNode(Node directoryNode)
+   private static GradleSourceDirectory sourceDirectoryFromNode(Node directoryNode)
    {
       String path = directoryNode.getText().trim();
       return new GradleSourceDirectoryImpl(path);
    }
 
-   private Map<String, String> propertiesFromNode(Node projectNode)
+   private static Map<String, String> propertiesFromNode(Node projectNode)
    {
       Map<String, String> properties = Maps.newHashMap();
       for (Node propertyNode : projectNode.getSingle("properties").get("property"))
