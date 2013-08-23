@@ -9,11 +9,9 @@ package org.jboss.forge.addon.gradle.projects.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.jarjar.com.google.common.collect.Maps;
-import org.gradle.jarjar.com.google.common.collect.Sets;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 import org.jboss.forge.addon.resource.FileResource;
@@ -370,7 +368,7 @@ public class GradleModelImpl implements GradleModel
    {
       script = GradleSourceUtil.insertTask(script,
                builder.getName(), builder.getDependsOn(), builder.getType(), builder.getCode());
-      Set<GradleTask> dependsOn = Sets.newHashSet();
+      List<GradleTask> dependsOn = Lists.newArrayList();
       for (String dependsOnString : builder.getDependsOn())
       {
          for (GradleTask task : tasks)

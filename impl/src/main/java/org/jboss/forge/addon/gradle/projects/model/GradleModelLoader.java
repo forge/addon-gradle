@@ -8,10 +8,10 @@ package org.jboss.forge.addon.gradle.projects.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
@@ -121,7 +121,7 @@ public class GradleModelLoader
             String text = dependsOnNode.getText().trim();
             taskDeps.add(text);
          }
-         GradleTask task = new GradleTaskImpl(name, new HashSet<GradleTask>());
+         GradleTask task = new GradleTaskImpl(name, Lists.<GradleTask> newArrayList());
          tasks.add(task);
          taskDepsMap.put(task, taskDeps);
          taskByNameMap.put(task.getName(), task);

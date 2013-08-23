@@ -6,7 +6,7 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author Adam Wyłuda
@@ -14,9 +14,9 @@ import java.util.Set;
 public class GradleTaskImpl implements GradleTask
 {
    private final String name;
-   private final Set<GradleTask> dependsOn;
+   private final List<GradleTask> dependsOn;
 
-   public GradleTaskImpl(String name, Set<GradleTask> dependsOn)
+   public GradleTaskImpl(String name, List<GradleTask> dependsOn)
    {
       this.name = name;
       this.dependsOn = dependsOn;
@@ -29,7 +29,7 @@ public class GradleTaskImpl implements GradleTask
    }
 
    @Override
-   public Set<GradleTask> getDependsOn()
+   public List<GradleTask> getDependsOn()
    {
       return dependsOn;
    }

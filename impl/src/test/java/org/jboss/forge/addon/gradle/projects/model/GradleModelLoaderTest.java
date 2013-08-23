@@ -10,8 +10,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jboss.forge.furnace.util.Streams;
 import org.junit.BeforeClass;
@@ -97,7 +97,7 @@ public class GradleModelLoaderTest
          if (task.getName().equals("zxyz"))
          {
             zxyzSet = true;
-            Set<GradleTask> dependsOnSet = task.getDependsOn();
+            List<GradleTask> dependsOnSet = task.getDependsOn();
 
             boolean buildSet = false, testSet = false;
             for (GradleTask dependsOn : dependsOnSet)
