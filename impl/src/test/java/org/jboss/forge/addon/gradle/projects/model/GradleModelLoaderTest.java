@@ -58,10 +58,10 @@ public class GradleModelLoaderTest
    }
    
    @Test
-   public void testRootProjectDirectory()
+   public void testRootProjectPath()
    {
       // No idea for a better test
-      assertTrue(model.getRootProjectDirectory().replace('\\', '/').endsWith("src/test/resources/loader"));
+      assertTrue(model.getRootProjectPath().replace('\\', '/').endsWith("src/test/resources/loader"));
    }
 
    @Test

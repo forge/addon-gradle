@@ -30,7 +30,7 @@ public class GradleModelImpl implements GradleModel
    private String name;
    private String version;
    private String projectPath;
-   private String rootProjectDirectory;
+   private String rootProjectPath;
    private String packaging;
    private String archivePath;
    private List<GradleTask> tasks;
@@ -51,7 +51,7 @@ public class GradleModelImpl implements GradleModel
       this.group = "";
       this.name = "";
       this.projectPath = "";
-      this.rootProjectDirectory = "";
+      this.rootProjectPath = "";
       this.version = "";
       this.packaging = "";
       this.archivePath = "";
@@ -81,7 +81,7 @@ public class GradleModelImpl implements GradleModel
       this.group = group;
       this.name = name;
       this.projectPath = projectPath;
-      this.rootProjectDirectory = rootProjectDirectory;
+      this.rootProjectPath = rootProjectDirectory;
       this.version = version;
       this.packaging = packaging;
       this.archivePath = archivePath;
@@ -104,7 +104,7 @@ public class GradleModelImpl implements GradleModel
       this.group = original.getGroup();
       this.name = original.getName();
       this.projectPath = original.getProjectPath();
-      this.rootProjectDirectory = original.getRootProjectDirectory();
+      this.rootProjectPath = original.getRootProjectPath();
       this.version = original.getVersion();
       this.packaging = original.getPackaging();
       this.archivePath = original.getArchivePath();
@@ -163,9 +163,9 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public String getRootProjectDirectory()
+   public String getRootProjectPath()
    {
-      return rootProjectDirectory;
+      return rootProjectPath;
    }
 
    @Override

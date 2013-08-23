@@ -163,7 +163,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    public FileResource<?> getSettingsScriptResource()
    {
       return (FileResource<?>) resourceFactory.create(FileResource.class, new File(
-               getModel().getRootProjectDirectory(), "settings.gradle"));
+               getModel().getRootProjectPath(), "settings.gradle"));
    }
 
    private void loadModel()

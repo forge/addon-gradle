@@ -30,7 +30,7 @@ public interface GradleModel
    
    String getProjectPath();
    
-   String getRootProjectDirectory();
+   String getRootProjectPath();
    
    String getPackaging();
    
