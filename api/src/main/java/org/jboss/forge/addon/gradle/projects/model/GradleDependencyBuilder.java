@@ -6,8 +6,6 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
-import org.jboss.forge.addon.gradle.projects.util.Preconditions;
-
 /**
  * @author Adam Wyłuda
  */
@@ -33,7 +31,10 @@ public class GradleDependencyBuilder
    public static GradleDependencyBuilder fromGradleString(String configuration, String gradleString)
    {
       String[] split = gradleString.split(":");
-      Preconditions.checkArgument(split.length == 3, "Invalid gradle string format");
+      if (split.length != 3)
+      {
+         throw new IllegalArgumentException("Invalid gradle string format");
+      }
       String group = split[0];
       String name = split[1];
       String version = split[2];
@@ -89,7 +90,7 @@ public class GradleDependencyBuilder
    }
 
    /**
-    * Compares this builder to given {@link GradleDependency}.  
+    * Compares this builder to given {@link GradleDependency}.
     */
    public boolean equalsToDependency(GradleDependency dep)
    {
@@ -104,18 +105,18 @@ public class GradleDependencyBuilder
    {
       return group.equals(dep.getGroup()) && name.equals(dep.getName());
    }
-   
+
    public boolean equalsToDependencyBuilder(GradleDependencyBuilder dep)
    {
       return group.equals(dep.getGroup()) && name.equals(dep.getName()) && version.equals(dep.getVersion())
                && configuration.equals(dep.getConfiguration());
    }
-   
+
    public boolean equalsToDirectDependencyBuilder(GradleDependencyBuilder dep)
    {
       return group.equals(dep.getGroup()) && name.equals(dep.getName());
    }
-   
+
    @Override
    public String toString()
    {

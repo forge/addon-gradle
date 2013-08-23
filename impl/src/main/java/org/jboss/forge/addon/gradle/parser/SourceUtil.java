@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.gradle.jarjar.com.google.common.base.Optional;
-import org.jboss.forge.addon.gradle.projects.util.Preconditions;
+import org.gradle.jarjar.com.google.common.base.Preconditions;
 
 /**
  * @author Adam Wyłuda
