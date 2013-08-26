@@ -43,10 +43,10 @@ public class SimpleGroovyParser
    private static class PreInvocationWithClosure
    {
       public String methodName;
-      public int lineNumber;
-      public int columnNumber;
-      public int lastLineNumber;
-      public int lastColumnNumber;
+      public int lineNumber = 1;
+      public int columnNumber = 1;
+      public int lastLineNumber = 1;
+      public int lastColumnNumber = 1;
       public List<InvocationWithClosure> invocationWithClosureList = Lists.newArrayList();
       public List<InvocationWithMap> invocationWithMapList = Lists.newArrayList();
       public List<InvocationWithString> invocationWithStringList = Lists.newArrayList();
