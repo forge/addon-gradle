@@ -32,10 +32,11 @@ public class InvocationWithClosure extends SourceCodeElement
    private final Map<String, InvocationWithMap> mapInvocationMap = Maps.newHashMap();
    private final Map<String, VariableAssignment> variableAssignmentMap = Maps.newHashMap();
 
-   public InvocationWithClosure(String methodName, int lineNumber, int columnNumber, int lastLineNumber,
+   public InvocationWithClosure(String code, String methodName, int lineNumber, int columnNumber, int lastLineNumber,
             int lastColumnNumber)
    {
-      this(methodName,
+      this(code,
+               methodName,
                new ArrayList<InvocationWithClosure>(),
                new ArrayList<InvocationWithString>(),
                new ArrayList<InvocationWithMap>(),
@@ -43,14 +44,15 @@ public class InvocationWithClosure extends SourceCodeElement
                lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
    }
 
-   public InvocationWithClosure(String methodName,
+   public InvocationWithClosure(String code,
+            String methodName,
             List<InvocationWithClosure> internalInvocations,
             List<InvocationWithString> stringInvocations,
             List<InvocationWithMap> mapInvocations,
             List<VariableAssignment> variableAssignments,
             int lineNumber, int columnNumber, int lastLineNumber, int lastColumnNumber)
    {
-      super(lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+      super(code, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       this.methodName = methodName;
       this.internalInvocations = ImmutableList.<InvocationWithClosure> copyOf(internalInvocations);
       this.stringInvocations = ImmutableList.<InvocationWithString> copyOf(stringInvocations);
@@ -95,27 +97,27 @@ public class InvocationWithClosure extends SourceCodeElement
    {
       return mapInvocations;
    }
-   
+
    public List<VariableAssignment> getVariableAssignments()
    {
       return variableAssignments;
    }
-   
+
    public Optional<InvocationWithClosure> invocationWithClosureByName(String name)
    {
       return Optional.fromNullable(internalInvocationMap.get(name));
    }
-   
+
    public Optional<InvocationWithString> invocationWithStringByName(String name)
    {
       return Optional.fromNullable(stringInvocationMap.get(name));
    }
-   
+
    public Optional<InvocationWithMap> invocationWithMapByName(String name)
    {
       return Optional.fromNullable(mapInvocationMap.get(name));
    }
-   
+
    public Optional<VariableAssignment> variableAssignmentByName(String name)
    {
       return Optional.fromNullable(variableAssignmentMap.get(name));

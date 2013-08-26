@@ -11,18 +11,24 @@ package org.jboss.forge.addon.gradle.parser;
  */
 public abstract class SourceCodeElement
 {
-
+   private final String code;
    private final int lineNumber;
    private final int columnNumber;
    private final int lastLineNumber;
    private final int lastColumnNumber;
 
-   public SourceCodeElement(int lineNumber, int columnNumber, int lastLineNumber, int lastColumnNumber)
+   public SourceCodeElement(String code, int lineNumber, int columnNumber, int lastLineNumber, int lastColumnNumber)
    {
+      this.code = code;
       this.lineNumber = lineNumber;
       this.columnNumber = columnNumber;
       this.lastLineNumber = lastLineNumber;
       this.lastColumnNumber = lastColumnNumber;
+   }
+   
+   public String getCode()
+   {
+      return code;
    }
 
    public int getLineNumber()
@@ -43,5 +49,11 @@ public abstract class SourceCodeElement
    public int getLastColumnNumber()
    {
       return lastColumnNumber;
+   }
+   
+   @Override
+   public String toString()
+   {
+      return getCode();
    }
 }

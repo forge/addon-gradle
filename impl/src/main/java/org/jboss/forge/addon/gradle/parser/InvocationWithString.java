@@ -16,10 +16,10 @@ public class InvocationWithString extends SourceCodeElement
    private final String methodName;
    private final String string;
 
-   public InvocationWithString(String methodName, String string,
+   public InvocationWithString(String code, String methodName, String string,
             int lineNumber, int columnNumber, int lastLineNumber, int lastColumnNumber)
    {
-      super(lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+      super(code, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       this.methodName = methodName;
       this.string = string;
    }

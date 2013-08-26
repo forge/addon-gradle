@@ -52,18 +52,22 @@ public class SimpleGroovyParser
       public List<InvocationWithString> invocationWithStringList = Lists.newArrayList();
       public List<VariableAssignment> variableAssignmentList = Lists.newArrayList();
 
-      public InvocationWithClosure create()
+      public InvocationWithClosure create(String source)
       {
-         return new InvocationWithClosure(methodName, invocationWithClosureList, invocationWithStringList,
+         String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
+                  SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
+         return new InvocationWithClosure(code, methodName, invocationWithClosureList, invocationWithStringList,
                   invocationWithMapList, variableAssignmentList,
                   lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       }
    }
 
+   private final String source;
    private final InvocationWithClosure root;
 
    private SimpleGroovyParser(String source)
    {
+      this.source = source;
       root = createInvocationWithClosureRoot(source);
    }
 
@@ -137,15 +141,15 @@ public class SimpleGroovyParser
       }
    }
 
-   static InvocationWithClosure createInvocationWithClosureRoot(String source)
+   private InvocationWithClosure createInvocationWithClosureRoot(String source)
    {
       BlockStatement sourceBlockStatement = parseSource(source);
       PreInvocationWithClosure root = new PreInvocationWithClosure();
       fillInvocationFromStatement(sourceBlockStatement, root);
-      return root.create();
+      return root.create(source);
    }
 
-   static BlockStatement parseSource(String source)
+   private BlockStatement parseSource(String source)
    {
       SourceUnit sourceUnit = SourceUnit.create("script", source);
       sourceUnit.parse();
@@ -158,7 +162,7 @@ public class SimpleGroovyParser
    /**
     * Goes through blockStatement recursively to create InvocationWithClosure tree.
     */
-   static void fillInvocationFromStatement(BlockStatement blockStatement, PreInvocationWithClosure node)
+   private void fillInvocationFromStatement(BlockStatement blockStatement, PreInvocationWithClosure node)
    {
       for (Statement statement : blockStatement.getStatements())
       {
@@ -166,7 +170,7 @@ public class SimpleGroovyParser
       }
    }
 
-   static void processStatement(Statement statement, PreInvocationWithClosure node)
+   private void processStatement(Statement statement, PreInvocationWithClosure node)
    {
       // If statement is an expression like function call
       if (statement instanceof ExpressionStatement)
@@ -187,7 +191,7 @@ public class SimpleGroovyParser
       }
    }
 
-   static void processMethodCallExpression(Expression expression, PreInvocationWithClosure node)
+   private void processMethodCallExpression(Expression expression, PreInvocationWithClosure node)
    {
       String methodName = ((MethodCallExpression) expression).getMethodAsString();
       int lineNumber = expression.getLineNumber();
@@ -214,7 +218,7 @@ public class SimpleGroovyParser
       }
    }
 
-   static void processArgumentListExpression(ArgumentListExpression argumentsExpression, PreInvocationWithClosure node,
+   private void processArgumentListExpression(ArgumentListExpression argumentsExpression, PreInvocationWithClosure node,
             String methodName, int lineNumber, int columnNumber,
             int lastLineNumber, int lastColumnNumber)
    {
@@ -224,7 +228,10 @@ public class SimpleGroovyParser
       if (argumentExpression instanceof ConstantExpression)
       {
          String string = ((ConstantExpression) argumentExpression).getValue().toString();
-         InvocationWithString invocation = new InvocationWithString(methodName, string, lineNumber, columnNumber,
+         
+         String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
+                  SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
+         InvocationWithString invocation = new InvocationWithString(code, methodName, string, lineNumber, columnNumber,
                   lastLineNumber, lastColumnNumber);
          node.invocationWithStringList.add(invocation);
       }
@@ -242,11 +249,11 @@ public class SimpleGroovyParser
          invocation.lastColumnNumber = lastColumnNumber;
 
          fillInvocationFromStatement(blockStatement, invocation);
-         node.invocationWithClosureList.add(invocation.create());
+         node.invocationWithClosureList.add(invocation.create(source));
       }
    }
 
-   static void processTupleExpression(TupleExpression argumentsExpression, PreInvocationWithClosure node,
+   private void processTupleExpression(TupleExpression argumentsExpression, PreInvocationWithClosure node,
             String methodName, int lineNumber, int columnNumber,
             int lastLineNumber, int lastColumnNumber)
    {
@@ -260,7 +267,7 @@ public class SimpleGroovyParser
       }
    }
 
-   static void processNamedArgumentListExpression(NamedArgumentListExpression argumentListExpression,
+   private void processNamedArgumentListExpression(NamedArgumentListExpression argumentListExpression,
             PreInvocationWithClosure node,
             String methodName, int lineNumber, int columnNumber,
             int lastLineNumber, int lastColumnNumber)
@@ -278,12 +285,15 @@ public class SimpleGroovyParser
             parameters.put(key, value);
          }
       }
-      InvocationWithMap invocation = new InvocationWithMap(methodName, parameters,
+      
+      String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
+               SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
+      InvocationWithMap invocation = new InvocationWithMap(code, methodName, parameters,
                lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       node.invocationWithMapList.add(invocation);
    }
 
-   static void processBinaryExpression(BinaryExpression expression, PreInvocationWithClosure node)
+   private void processBinaryExpression(BinaryExpression expression, PreInvocationWithClosure node)
    {
       // This condition must be true to be string variable assignment
       // but not new variable declaration
@@ -301,9 +311,12 @@ public class SimpleGroovyParser
          int columnNumber = expression.getColumnNumber();
          int lastLineNumber = expression.getLastLineNumber();
          int lastColumnNumber = expression.getLastColumnNumber();
-
+         
+         String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
+                  SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
          VariableAssignment variableAssignment =
-                  new VariableAssignment(variable, value, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+                  new VariableAssignment(code, variable, value, 
+                           lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
          node.variableAssignmentList.add(variableAssignment);
       }
    }

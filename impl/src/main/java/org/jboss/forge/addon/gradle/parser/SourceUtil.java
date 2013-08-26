@@ -21,7 +21,7 @@ public class SourceUtil
    public static final String INDENT = "    ";
    public static final Pattern PRECEDING_WHITESPACE_PATTERN = Pattern.compile("\\s*$");
    public static final Pattern SUCCEEDING_WHITESPACE_PATTERN = Pattern.compile("^\\s*\n");
-
+   
    /**
     * Inserts string at specified position in source.
     * 
