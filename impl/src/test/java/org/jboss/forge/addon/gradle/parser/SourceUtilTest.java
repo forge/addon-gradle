@@ -88,15 +88,15 @@ public class SourceUtilTest
    public void testRemoveSourceFragmentWithLineNested()
    {
       String source = "" +
-      		"a {\n" +
-      		"    b {\n" +
-      		"        c {\n" +
-      		"            println AAA\n" +
-      		"            println BBB\n" +
-      		"            println CCC\n" +
-      		"        }\n" +
-      		"    }\n" +
-      		"}\n";
+            "a {\n" +
+            "    b {\n" +
+            "        c {\n" +
+            "            println AAA\n" +
+            "            println BBB\n" +
+            "            println CCC\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n";
       String expected = "" +
                "a {\n" +
                "    b {\n" +
@@ -118,7 +118,7 @@ public class SourceUtilTest
                "invo {\n" +
                "    cation {\n" +
                "        very important stuff\n" +
-               "    }\n" +
+               "    }  \n" +
                "}\n" +
                "\n" +
                "println xyz\n";
@@ -128,7 +128,7 @@ public class SourceUtilTest
                "    cation {\n" +
                "        very important stuff\n" +
                "        something new\n" +
-               "    }\n" +
+               "    }  \n" +
                "}\n" +
                "\n" +
                "println xyz\n";
@@ -237,5 +237,12 @@ public class SourceUtilTest
                "        }\n";
       String result = SourceUtil.createInvocationPath(2, "content", "x", "y", "z");
       assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testFixClosureColumn()
+   {
+      assertEquals(5, SourceUtil.fixClosureColumn("x {}  \n", 1, 7));
+      assertEquals(5, SourceUtil.fixClosureColumn("x {}\t \n\n\n", 1, 7));
    }
 }

@@ -140,13 +140,13 @@ public class GradleSourceUtilTest
       String source = "" +
                "dependencies {\n" +
                "    compile 'a:b:1.0'\n" +
-               "}\n" +
+               "}   \n  \n" +
                "xyz {}";
       String expected = "" +
                "dependencies {\n" +
                "    compile 'a:b:1.0'\n" +
                "    direct handler: it, group: 'x', name: 'y'\n" +
-               "}\n" +
+               "}   \n  \n" +
                "xyz {}";
       String result = GradleSourceUtil.insertDirectDependency(source, "x", "y");
       assertEquals(expected, result);
@@ -203,7 +203,7 @@ public class GradleSourceUtilTest
                "}\n" +
                "allprojects {\n" +
                "    dependencies {\n" +
-               "    }\n" +
+               "    }  \t\n" +
                "}\n";
       String expected = "" +
                "dependencies {\n" +
@@ -212,7 +212,7 @@ public class GradleSourceUtilTest
                "allprojects {\n" +
                "    dependencies {\n" +
                "        managed config: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
-               "    }\n" +
+               "    }  \t\n" +
                "}\n";
       String result = GradleSourceUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile");
       assertEquals(expected, result);

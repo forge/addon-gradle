@@ -21,7 +21,7 @@ public class SourceUtil
    public static final String INDENT = "    ";
    public static final Pattern PRECEDING_WHITESPACE_PATTERN = Pattern.compile("\\s*$");
    public static final Pattern SUCCEEDING_WHITESPACE_PATTERN = Pattern.compile("^\\s*\n");
-   
+
    /**
     * Inserts string at specified position in source.
     * 
@@ -159,7 +159,7 @@ public class SourceUtil
 
       return insertString(source, addNewLineAtEnd(INDENT + codeToBeInserted) + invocationIndentation,
                invocation.getLastLineNumber(),
-               invocation.getLastColumnNumber() - 1);
+               fixClosureColumn(source, invocation.getLastLineNumber(), invocation.getLastColumnNumber()) - 1);
    }
 
    /**
@@ -262,5 +262,20 @@ public class SourceUtil
    public static String addNewLineAtEnd(String source)
    {
       return source.endsWith("\n") ? source : source + "\n";
+   }
+
+   /**
+    * Returns proper last column number of given closure (i.e. it removes all whitespaces between "}" and given
+    * position).
+    * <p/>
+    * For example calling fixClosureColumn("abc { }  \n", 1, 10) will return 8.
+    */
+   public static int fixClosureColumn(String code, int lineNumber, int columnNumber)
+   {
+      String codeBefore = code.substring(0, positionInSource(code, lineNumber, columnNumber));
+      Matcher matcher = PRECEDING_WHITESPACE_PATTERN.matcher(codeBefore);
+      matcher.find();
+      int whitespaces = matcher.group().length();
+      return columnNumber - whitespaces;
    }
 }
