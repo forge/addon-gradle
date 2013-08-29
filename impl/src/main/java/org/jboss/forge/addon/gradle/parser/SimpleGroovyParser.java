@@ -18,6 +18,7 @@ import org.codehaus.groovy.ast.expr.ClosureExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.DeclarationExpression;
 import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.GStringExpression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.NamedArgumentListExpression;
@@ -218,7 +219,8 @@ public class SimpleGroovyParser
       }
    }
 
-   private void processArgumentListExpression(ArgumentListExpression argumentsExpression, PreInvocationWithClosure node,
+   private void processArgumentListExpression(ArgumentListExpression argumentsExpression,
+            PreInvocationWithClosure node,
             String methodName, int lineNumber, int columnNumber,
             int lastLineNumber, int lastColumnNumber)
    {
@@ -228,7 +230,7 @@ public class SimpleGroovyParser
       if (argumentExpression instanceof ConstantExpression)
       {
          String string = ((ConstantExpression) argumentExpression).getValue().toString();
-         
+
          String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
                   SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
          InvocationWithString invocation = new InvocationWithString(code, methodName, string, lineNumber, columnNumber,
@@ -285,7 +287,7 @@ public class SimpleGroovyParser
             parameters.put(key, value);
          }
       }
-      
+
       String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
                SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
       InvocationWithMap invocation = new InvocationWithMap(code, methodName, parameters,
@@ -295,27 +297,39 @@ public class SimpleGroovyParser
 
    private void processBinaryExpression(BinaryExpression expression, PreInvocationWithClosure node)
    {
+      boolean rightExpressionIsAString = expression.getRightExpression() instanceof ConstantExpression &&
+               ((ConstantExpression) expression.getRightExpression()).getValue() instanceof String;
+      boolean rightExpressionIsAGString = expression.getRightExpression() instanceof GStringExpression;
+      
       // This condition must be true to be string variable assignment
       // but not new variable declaration
       if (!(expression instanceof DeclarationExpression) &&
                (expression.getLeftExpression() instanceof VariableExpression ||
                expression.getLeftExpression() instanceof PropertyExpression) &&
                expression.getOperation().getText().toString().equals("=") &&
-               expression.getRightExpression() instanceof ConstantExpression &&
-               ((ConstantExpression) expression.getRightExpression()).getValue() instanceof String)
+               (rightExpressionIsAString || rightExpressionIsAGString))
       {
          String variable = expression.getLeftExpression().getText();
-         String value = (String)((ConstantExpression) expression.getRightExpression()).getValue();
+         String value = null;
+         
+         if (rightExpressionIsAString)
+         {
+            value = (String) ((ConstantExpression) expression.getRightExpression()).getValue();
+         }
+         else if (rightExpressionIsAGString)
+         {
+            value = (String) ((GStringExpression) expression.getRightExpression()).getText();
+         }
 
          int lineNumber = expression.getLineNumber();
          int columnNumber = expression.getColumnNumber();
          int lastLineNumber = expression.getLastLineNumber();
          int lastColumnNumber = expression.getLastColumnNumber();
-         
+
          String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
                   SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
          VariableAssignment variableAssignment =
-                  new VariableAssignment(code, variable, value, 
+                  new VariableAssignment(code, variable, value,
                            lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
          node.variableAssignmentList.add(variableAssignment);
       }

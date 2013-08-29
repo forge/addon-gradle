@@ -29,7 +29,7 @@ public class SimpleGroovyParserTest
                "apply plugin: 'java'\n" +
                "number = 30\n" +
                "def newVar = 'xyz'\n" +
-               "x = 'y'\n";
+               "x = 'y'";
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       assertEquals(1, parser.getInvocationsWithClosure().size());
@@ -177,5 +177,76 @@ public class SimpleGroovyParserTest
       invocation = list.get(1);
       assertEquals(1, invocation.getInvocationsWithString().size());
       assertEquals("testRuntime", invocation.getInvocationsWithString().get(0).getMethodName());
+   }
+   
+   @Test
+   public void testLineColumnNumbers()
+   {
+      String source = "" +
+               "abc 'def'\n" +
+               "alpha beta: gamma\n" +
+               "clojure {\n" +
+               "}\n";
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      
+      assertEquals(1, parser.getInvocationsWithString().size());
+      assertEquals(1, parser.getInvocationsWithMap().size());
+      assertEquals(1, parser.getInvocationsWithClosure().size());
+      
+      InvocationWithString strInv = parser.getInvocationsWithString().get(0);
+      assertEquals(1, strInv.getLineNumber());
+      assertEquals(1, strInv.getColumnNumber());
+      assertEquals(1, strInv.getLastLineNumber());
+      assertEquals(10, strInv.getLastColumnNumber());
+      
+      InvocationWithMap mapInv = parser.getInvocationsWithMap().get(0);
+      assertEquals(2, mapInv.getLineNumber());
+      assertEquals(1, mapInv.getColumnNumber());
+      assertEquals(2, mapInv.getLastLineNumber());
+      assertEquals(18, mapInv.getLastColumnNumber());
+      
+      InvocationWithClosure closureInv = parser.getInvocationsWithClosure().get(0);
+      assertEquals(3, closureInv.getLineNumber());
+      assertEquals(1, closureInv.getColumnNumber());
+      assertEquals(4, closureInv.getLastLineNumber());
+      assertEquals(2, closureInv.getLastColumnNumber());
+   }
+   
+   @Test
+   public void testGetCode()
+   {
+      String source = "" +
+               "abc 'def'\n" +
+               "alpha beta: gamma\n" +
+               "clojure {\n" +
+               "}\n";
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      
+      assertEquals(1, parser.getInvocationsWithString().size());
+      assertEquals(1, parser.getInvocationsWithMap().size());
+      assertEquals(1, parser.getInvocationsWithClosure().size());
+      
+      InvocationWithString strInv = parser.getInvocationsWithString().get(0);
+      assertEquals("abc 'def'", strInv.getCode());
+      
+      InvocationWithMap mapInv = parser.getInvocationsWithMap().get(0);
+      assertEquals("alpha beta: gamma", mapInv.getCode());
+      
+      InvocationWithClosure closureInv = parser.getInvocationsWithClosure().get(0);
+      assertEquals("clojure {\n}", closureInv.getCode());
+   }
+   
+   @Test
+   public void testGStringVariableAssignment()
+   {
+      String source = "" +
+               "variable = \"2 + 2 = ${2 + 2}\"";
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+
+      assertEquals(1, parser.getVariableAssignments().size());
+
+      VariableAssignment variableAssignment = parser.getVariableAssignments().get(0);
+      assertEquals("variable", variableAssignment.getVariable());
+      assertEquals("2 + 2 = $(2 + 2)", variableAssignment.getValue());
    }
 }

@@ -140,12 +140,14 @@ public class GradleSourceUtilTest
       String source = "" +
                "dependencies {\n" +
                "    compile 'a:b:1.0'\n" +
-               "}";
+               "}\n" +
+               "xyz {}";
       String expected = "" +
                "dependencies {\n" +
                "    compile 'a:b:1.0'\n" +
                "    direct handler: it, group: 'x', name: 'y'\n" +
-               "}";
+               "}\n" +
+               "xyz {}";
       String result = GradleSourceUtil.insertDirectDependency(source, "x", "y");
       assertEquals(expected, result);
    }
