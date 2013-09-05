@@ -32,7 +32,7 @@ allprojects {
                     name: it.name
             ]] = [
                     version: it.version,
-                    config: it.config
+                    configuration: it.configuration
             ]
         })
         project.ext.set('direct', {
@@ -41,7 +41,7 @@ allprojects {
                     name: it.name
             ]
             project.afterEvaluate {
-                project.dependencies.add(project.ext._managedDependencies[_groupName].config,
+                project.dependencies.add(project.ext._managedDependencies[_groupName].configuration,
                         _groupName.group + ':' + _groupName.name + ':'
                                 + project.ext._managedDependencies[_groupName].version)
             }
@@ -166,7 +166,7 @@ allprojects {
                     output configVersion.version
                     outputDec '</version>'
                     outputInc '<configuration>'
-                    output configVersion.config
+                    output configVersion.configuration
                     outputDec '</configuration>'
                     outputDec '</dependency>'
                 }

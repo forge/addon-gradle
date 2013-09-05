@@ -211,7 +211,7 @@ public class GradleSourceUtilTest
                "}\n" +
                "allprojects {\n" +
                "    dependencies {\n" +
-               "        managed config: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
+               "        managed configuration: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
                "    }  \t\n" +
                "}\n";
       String result = GradleSourceUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile");
@@ -227,7 +227,7 @@ public class GradleSourceUtilTest
                "}\n" +
                "allprojects {\n" +
                "    dependencies {\n" +
-               "        managed config: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
+               "        managed configuration: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
                "    }\n" +
                "}\n";
       String expected = "" +
@@ -251,7 +251,7 @@ public class GradleSourceUtilTest
                "}\n" +
                "allprojects {\n" +
                "    dependencies {\n" +
-               "        managed config: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
+               "        managed configuration: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
                "    }\n" +
                "}\n";
       

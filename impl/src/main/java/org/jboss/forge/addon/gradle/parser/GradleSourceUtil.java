@@ -219,7 +219,7 @@ public class GradleSourceUtil
    public static String insertManagedDependency(String source, String group, String name, String version,
             String configuration)
    {
-      String depString = String.format("managed config: '%s', group: '%s', name: '%s', version: '%s'",
+      String depString = String.format("managed configuration: '%s', group: '%s', name: '%s', version: '%s'",
                configuration, group, name, version);
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "allprojects", "dependencies");
       return source;
@@ -263,7 +263,7 @@ public class GradleSourceUtil
             {
                Map<String, String> params = mapInvocation.getParameters();
                GradleDependencyBuilder dep = GradleDependencyBuilder.create()
-                        .setConfiguration(params.get("config"))
+                        .setConfiguration(params.get("configuration"))
                         .setGroup(params.get("group"))
                         .setName(params.get("name"))
                         .setVersion(params.get("version"));
