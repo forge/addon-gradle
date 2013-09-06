@@ -82,7 +82,7 @@ public class GradleSourceUtil
 
    public static String insertDependency(String source, String group, String name, String version, String configuration)
    {
-      String depString = String.format("%s '%s:%s:%s'", configuration, group, name, version);
+      String depString = String.format("%s \"%s:%s:%s\"", configuration, group, name, version);
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "dependencies");
       return source;
    }
@@ -162,7 +162,7 @@ public class GradleSourceUtil
 
    public static String insertDirectDependency(String source, String group, String name)
    {
-      String depString = String.format("%s group: '%s', name: '%s'", DIRECT_CONFIG, group, name);
+      String depString = String.format("%s group: \"%s\", name: \"%s\"", DIRECT_CONFIG, group, name);
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "dependencies");
       return source;
    }
@@ -219,7 +219,8 @@ public class GradleSourceUtil
    public static String insertManagedDependency(String source, String group, String name, String version,
             String configuration)
    {
-      String depString = String.format("managed configuration: '%s', group: '%s', name: '%s', version: '%s'",
+      String depString = String.format("%s configuration: \"%s\", group: \"%s\", name: \"%s\", version: \"%s\"",
+               MANAGED_CONFIG,
                configuration, group, name, version);
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "allprojects", "dependencies");
       return source;
@@ -354,6 +355,7 @@ public class GradleSourceUtil
    {
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       String assignmentString = variableAssignmentString(key, value);
+      
       for (VariableAssignment assignment : parser.getVariableAssignments())
       {
          // If it's already defined somewhere
@@ -374,7 +376,7 @@ public class GradleSourceUtil
 
    private static String variableAssignmentString(String variable, String value)
    {
-      return String.format("%s = '%s'", variable, value);
+      return String.format("%s = \"%s\"", variable, value);
    }
 
    public static String removeProperty(String source, String key) throws UnremovableElementException

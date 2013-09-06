@@ -65,9 +65,9 @@ public class GradleSourceUtilTest
       String expected = "" +
                "dependencies {\n" +
                "    compile 'a:b:1.0'\n" +
-               "    testRuntime 'x:y:3.0'\n" +
+               "    testRuntime \"x:$y:3.0\"\n" +
                "}";
-      String result = GradleSourceUtil.insertDependency(source, "x", "y", "3.0", "testRuntime");
+      String result = GradleSourceUtil.insertDependency(source, "x", "$y", "3.0", "testRuntime");
       assertEquals(expected, result);
    }
 
@@ -145,7 +145,7 @@ public class GradleSourceUtilTest
       String expected = "" +
                "dependencies {\n" +
                "    compile 'a:b:1.0'\n" +
-               "    direct group: 'x', name: 'y'\n" +
+               "    direct group: \"x\", name: \"y\"\n" +
                "}   \n  \n" +
                "xyz {}";
       String result = GradleSourceUtil.insertDirectDependency(source, "x", "y");
@@ -183,9 +183,9 @@ public class GradleSourceUtilTest
    {
       String source = "" +
                "dependencies {\n" +
-               "    testRuntime 'x:z:4.0'\n" +
+               "    testRuntime \"x:z:4.0\"\n" +
                "    compile name: 'b', version: '1.0', group: 'a'\n" +
-               "    direct group: 'ggg', name: 'nnn'\n" +
+               "    direct group: 'ggg', name: \"nnn\"\n" +
                "}";
 
       List<GradleDependencyBuilder> deps = GradleSourceUtil.getDirectDependencies(source);
@@ -211,7 +211,7 @@ public class GradleSourceUtilTest
                "}\n" +
                "allprojects {\n" +
                "    dependencies {\n" +
-               "        managed configuration: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
+               "        managed configuration: \"compile\", group: \"xx\", name: \"yy\", version: \"vv\"\n" +
                "    }  \t\n" +
                "}\n";
       String result = GradleSourceUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile");
@@ -227,7 +227,7 @@ public class GradleSourceUtilTest
                "}\n" +
                "allprojects {\n" +
                "    dependencies {\n" +
-               "        managed configuration: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
+               "        managed configuration: \"compile\", group: 'xx', name: 'yy', version: 'vv'\n" +
                "    }\n" +
                "}\n";
       String expected = "" +
@@ -251,7 +251,7 @@ public class GradleSourceUtilTest
                "}\n" +
                "allprojects {\n" +
                "    dependencies {\n" +
-               "        managed configuration: 'compile', group: 'xx', name: 'yy', version: 'vv'\n" +
+               "        managed configuration: 'compile', group: \"xx\", name: 'yy', version: 'vv'\n" +
                "    }\n" +
                "}\n";
       
@@ -377,7 +377,7 @@ public class GradleSourceUtilTest
       String expected = "" +
                "dependencies {\n" +
                "}\n" +
-               "myProp = 'value'\n";
+               "myProp = \"value\"\n";
       String result = GradleSourceUtil.setProperty(source, "myProp", "value");
       assertEquals(expected, result);
    }
@@ -394,7 +394,7 @@ public class GradleSourceUtilTest
       String expected = "" +
                "dependencies {\n" +
                "}\n" +
-               "myProperty = 'newValue'\n" +
+               "myProperty = \"newValue\"\n" +
                "repositories {\n" +
                "}\n";
       String result = GradleSourceUtil.setProperty(source, "myProperty", "newValue");
