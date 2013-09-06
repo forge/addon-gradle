@@ -49,7 +49,7 @@ public class GradleSourceUtil
    public static String setProjectName(String source, String projectPath, String newName)
    {
       source = SourceUtil.addNewLineAtEnd(source);
-      source += String.format("project('%s').name = '%s'\n", projectPath, newName);
+      source += String.format("project(\"%s\").name = \"%s\"\n", projectPath, newName);
 
       return source;
    }
@@ -162,7 +162,7 @@ public class GradleSourceUtil
 
    public static String insertDirectDependency(String source, String group, String name)
    {
-      String depString = String.format("%s handler: it, group: '%s', name: '%s'", DIRECT_CONFIG, group, name);
+      String depString = String.format("%s group: '%s', name: '%s'", DIRECT_CONFIG, group, name);
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "dependencies");
       return source;
    }

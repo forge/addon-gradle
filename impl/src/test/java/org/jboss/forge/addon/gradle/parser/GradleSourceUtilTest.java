@@ -121,7 +121,7 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "    compile name: 'b', version: '1.0', group: 'a'\n" +
-               "    direct handler: it, group: 'ggg', name: 'nnn'\n" +
+               "    direct group: 'ggg', name: 'nnn'\n" +
                "    println 'Hello'\n" +
                "}";
 
@@ -145,7 +145,7 @@ public class GradleSourceUtilTest
       String expected = "" +
                "dependencies {\n" +
                "    compile 'a:b:1.0'\n" +
-               "    direct handler: it, group: 'x', name: 'y'\n" +
+               "    direct group: 'x', name: 'y'\n" +
                "}   \n  \n" +
                "xyz {}";
       String result = GradleSourceUtil.insertDirectDependency(source, "x", "y");
@@ -158,7 +158,7 @@ public class GradleSourceUtilTest
       String source = "" +
                "dependencies {\n" +
                "    compile 'a:b:1.0'\n" +
-               "    direct handler: it, group: 'x', name: 'y'\n" +
+               "    direct group: 'x', name: 'y'\n" +
                "}";
       String expected = "" +
                "dependencies {\n" +
@@ -185,7 +185,7 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "    compile name: 'b', version: '1.0', group: 'a'\n" +
-               "    direct handler: it, group: 'ggg', name: 'nnn'\n" +
+               "    direct group: 'ggg', name: 'nnn'\n" +
                "}";
 
       List<GradleDependencyBuilder> deps = GradleSourceUtil.getDirectDependencies(source);
