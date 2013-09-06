@@ -49,7 +49,7 @@ public class GradleSourceUtil
    public static String setProjectName(String source, String projectPath, String newName)
    {
       source = SourceUtil.addNewLineAtEnd(source);
-      source += String.format("project(\"%s\").name = \"%s\"\n", projectPath, newName);
+      source += String.format("project('%s').name = '%s'\n", projectPath, newName);
 
       return source;
    }

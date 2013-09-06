@@ -202,7 +202,7 @@ public class SimpleGroovyParser
 
       Expression argumentsExpression = ((MethodCallExpression) expression).getArguments();
 
-      // In case argument expression is string constant or closure
+      // In case argument expression is a (G)String constant or closure
       if (argumentsExpression instanceof ArgumentListExpression &&
                ((ArgumentListExpression) argumentsExpression).getExpressions().size() == 1)
       {
@@ -210,7 +210,7 @@ public class SimpleGroovyParser
                   methodName, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       }
 
-      // If argument expression is TupleExpression then it may be a map
+      // If argument expression is a TupleExpression then it may be a map
       else if (argumentsExpression instanceof TupleExpression &&
                ((TupleExpression) argumentsExpression).getExpressions().size() == 1)
       {
@@ -226,10 +226,10 @@ public class SimpleGroovyParser
    {
       Expression argumentExpression = ((ArgumentListExpression) argumentsExpression).getExpressions().get(0);
 
-      // If argument is string constant
-      if (argumentExpression instanceof ConstantExpression)
+      // If argument is a string constant
+      if (isStringOrGString(argumentExpression))
       {
-         String string = ((ConstantExpression) argumentExpression).getValue().toString();
+         String string = valueFromStringOrGString(argumentExpression);
 
          String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
                   SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
@@ -238,7 +238,7 @@ public class SimpleGroovyParser
          node.invocationWithStringList.add(invocation);
       }
 
-      // If argument is closure
+      // If argument is a closure
       else if (argumentExpression instanceof ClosureExpression)
       {
          BlockStatement blockStatement = (BlockStatement) ((ClosureExpression) argumentExpression).getCode();
@@ -280,10 +280,10 @@ public class SimpleGroovyParser
          Expression keyExpression = mapEntryExpression.getKeyExpression();
          Expression valueExpression = mapEntryExpression.getValueExpression();
          if (keyExpression instanceof ConstantExpression &&
-                  valueExpression instanceof ConstantExpression)
+                  isStringOrGString(valueExpression))
          {
             String key = ((ConstantExpression) keyExpression).getValue().toString();
-            String value = ((ConstantExpression) valueExpression).getValue().toString();
+            String value = valueFromStringOrGString(valueExpression);
             parameters.put(key, value);
          }
       }
@@ -297,30 +297,17 @@ public class SimpleGroovyParser
 
    private void processBinaryExpression(BinaryExpression expression, PreInvocationWithClosure node)
    {
-      boolean rightExpressionIsAString = expression.getRightExpression() instanceof ConstantExpression &&
-               ((ConstantExpression) expression.getRightExpression()).getValue() instanceof String;
-      boolean rightExpressionIsAGString = expression.getRightExpression() instanceof GStringExpression;
-      
       // This condition must be true to be string variable assignment
       // but not new variable declaration
       if (!(expression instanceof DeclarationExpression) &&
                (expression.getLeftExpression() instanceof VariableExpression ||
                expression.getLeftExpression() instanceof PropertyExpression) &&
                expression.getOperation().getText().toString().equals("=") &&
-               (rightExpressionIsAString || rightExpressionIsAGString))
+               isStringOrGString(expression.getRightExpression()))
       {
          String variable = expression.getLeftExpression().getText();
-         String value = null;
+         String value = valueFromStringOrGString(expression.getRightExpression());
          
-         if (rightExpressionIsAString)
-         {
-            value = (String) ((ConstantExpression) expression.getRightExpression()).getValue();
-         }
-         else if (rightExpressionIsAGString)
-         {
-            value = (String) ((GStringExpression) expression.getRightExpression()).getText();
-         }
-
          int lineNumber = expression.getLineNumber();
          int columnNumber = expression.getColumnNumber();
          int lastLineNumber = expression.getLastLineNumber();
@@ -333,5 +320,34 @@ public class SimpleGroovyParser
                            lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
          node.variableAssignmentList.add(variableAssignment);
       }
+   }
+   
+   private String valueFromStringOrGString(Expression expression)
+   {
+      if (isString(expression))
+      {
+         return (String) ((ConstantExpression) expression).getValue();
+      }
+      else if (isGString(expression))
+      {
+         return (String) ((GStringExpression) expression).getText();
+      }
+      throw new IllegalArgumentException("Given expression is neither String nor GString expression");
+   }
+   
+   private boolean isStringOrGString(Expression expression)
+   {
+      return isString(expression) || isGString(expression);
+   }
+   
+   private boolean isString(Expression expression)
+   {
+      return expression instanceof ConstantExpression &&
+               ((ConstantExpression) expression).getValue() instanceof String;
+   }
+   
+   private boolean isGString(Expression expression)
+   {
+      return expression instanceof GStringExpression;
    }
 }

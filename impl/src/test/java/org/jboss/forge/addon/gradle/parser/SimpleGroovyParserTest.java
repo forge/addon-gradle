@@ -53,7 +53,7 @@ public class SimpleGroovyParserTest
       Map.Entry<String, String> entry = parameters.entrySet().iterator().next();
       assertEquals("plugin", entry.getKey());
       assertEquals("java", entry.getValue());
-      
+
       VariableAssignment assignment = parser.getVariableAssignments().get(0);
       assertEquals("x", assignment.getVariable());
       assertEquals("y", assignment.getValue());
@@ -91,21 +91,21 @@ public class SimpleGroovyParserTest
       InvocationWithString compile = dependencies.getInvocationsWithString().get(0);
       assertEquals("compile", compile.getMethodName());
       assertEquals("group:artifact:1.0.0", compile.getString());
-      
+
       VariableAssignment assignment = subprojects.getVariableAssignments().get(0);
       assertEquals("abc", assignment.getVariable());
       assertEquals("def", assignment.getValue());
-      
+
       VariableAssignment assignment2 = subprojects.getVariableAssignments().get(1);
       assertEquals("a.b.c", assignment2.getVariable());
       assertEquals("d.e.f", assignment2.getValue());
-      
+
       VariableAssignment assignment3 = subprojects.getVariableAssignments().get(2);
       // Seems that Groovy core parser changes getX() to this.getX()
       assertEquals("this.getX().y", assignment3.getVariable());
       assertEquals("xyz", assignment3.getValue());
    }
-   
+
    @Test
    public void testInvocationWithClosureByName()
    {
@@ -120,33 +120,33 @@ public class SimpleGroovyParserTest
                "}\n";
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      
+
       InvocationWithClosure subprojects = parser.invocationWithClosureByName("subprojects").get();
       assertEquals("subprojects", subprojects.getMethodName());
-      
+
       InvocationWithMap applyPlugin = subprojects.invocationWithMapByName("apply").get();
       assertEquals("apply", applyPlugin.getMethodName());
-      
+
       InvocationWithClosure dependencies = subprojects.invocationWithClosureByName("dependencies").get();
       assertEquals("dependencies", dependencies.getMethodName());
-      
+
       InvocationWithString compile = dependencies.invocationWithStringByName("compile").get();
       assertEquals("compile", compile.getMethodName());
    }
-   
+
    @Test
    public void testInvocationWithClosureByNameAbsent()
    {
       String sauce = "" +
-            "x {\n" +
-            "    y {\n" +
-            "    }\n" +
-            "}\n";
-      
+               "x {\n" +
+               "    y {\n" +
+               "    }\n" +
+               "}\n";
+
       Optional<InvocationWithClosure> optional = SimpleGroovyParser.fromSource(sauce).invocationWithClosureByName("z");
       assertFalse(optional.isPresent());
    }
-   
+
    @Test
    public void testAllInvocationAtPath()
    {
@@ -166,19 +166,19 @@ public class SimpleGroovyParserTest
                "}\n" +
                "";
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      
+
       List<InvocationWithClosure> list = parser.allInvocationsAtPath("subprojects", "dependencies");
       assertEquals(2, list.size());
-      
+
       InvocationWithClosure invocation = list.get(0);
       assertEquals(1, invocation.getInvocationsWithString().size());
       assertEquals("compile", invocation.getInvocationsWithString().get(0).getMethodName());
-      
+
       invocation = list.get(1);
       assertEquals(1, invocation.getInvocationsWithString().size());
       assertEquals("testRuntime", invocation.getInvocationsWithString().get(0).getMethodName());
    }
-   
+
    @Test
    public void testLineColumnNumbers()
    {
@@ -188,30 +188,30 @@ public class SimpleGroovyParserTest
                "clojure {\n" +
                "}\n";
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      
+
       assertEquals(1, parser.getInvocationsWithString().size());
       assertEquals(1, parser.getInvocationsWithMap().size());
       assertEquals(1, parser.getInvocationsWithClosure().size());
-      
+
       InvocationWithString strInv = parser.getInvocationsWithString().get(0);
       assertEquals(1, strInv.getLineNumber());
       assertEquals(1, strInv.getColumnNumber());
       assertEquals(1, strInv.getLastLineNumber());
       assertEquals(10, strInv.getLastColumnNumber());
-      
+
       InvocationWithMap mapInv = parser.getInvocationsWithMap().get(0);
       assertEquals(2, mapInv.getLineNumber());
       assertEquals(1, mapInv.getColumnNumber());
       assertEquals(2, mapInv.getLastLineNumber());
       assertEquals(18, mapInv.getLastColumnNumber());
-      
+
       InvocationWithClosure closureInv = parser.getInvocationsWithClosure().get(0);
       assertEquals(3, closureInv.getLineNumber());
       assertEquals(1, closureInv.getColumnNumber());
       assertEquals(4, closureInv.getLastLineNumber());
       assertEquals(2, closureInv.getLastColumnNumber());
    }
-   
+
    @Test
    public void testGetCode()
    {
@@ -221,21 +221,21 @@ public class SimpleGroovyParserTest
                "clojure {\n" +
                "}\n";
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      
+
       assertEquals(1, parser.getInvocationsWithString().size());
       assertEquals(1, parser.getInvocationsWithMap().size());
       assertEquals(1, parser.getInvocationsWithClosure().size());
-      
+
       InvocationWithString strInv = parser.getInvocationsWithString().get(0);
       assertEquals("abc 'def'", strInv.getCode());
-      
+
       InvocationWithMap mapInv = parser.getInvocationsWithMap().get(0);
       assertEquals("alpha beta: gamma", mapInv.getCode());
-      
+
       InvocationWithClosure closureInv = parser.getInvocationsWithClosure().get(0);
       assertEquals("clojure {\n}", closureInv.getCode());
    }
-   
+
    @Test
    public void testGStringVariableAssignment()
    {
@@ -248,5 +248,20 @@ public class SimpleGroovyParserTest
       VariableAssignment variableAssignment = parser.getVariableAssignments().get(0);
       assertEquals("variable", variableAssignment.getVariable());
       assertEquals("2 + 2 = $(2 + 2)", variableAssignment.getValue());
+   }
+
+   @Test
+   public void testGStringInvocations()
+   {
+      String source = "" +
+               "strInv \"abc $xyz\"\n" +
+               "mapInv a: \"b$c:x\"\n";
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      
+      assertEquals(1, parser.getInvocationsWithString().size());
+      assertEquals(1, parser.getInvocationsWithMap().size());
+      
+      assertEquals("abc $xyz", parser.getInvocationsWithString().get(0).getString());
+      assertEquals("b$c:x", parser.getInvocationsWithMap().get(0).getParameters().get("a"));
    }
 }
