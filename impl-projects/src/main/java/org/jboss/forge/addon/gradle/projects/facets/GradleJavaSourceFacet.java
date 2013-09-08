@@ -11,7 +11,8 @@ import java.util.List;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.facets.AbstractFacet;
-import org.jboss.forge.addon.facets.constraints.RequiresFacet;
+import org.jboss.forge.addon.facets.constraints.FacetConstraint;
+import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradlePluginType;
@@ -30,7 +31,9 @@ import org.jboss.forge.parser.java.JavaSource;
 /**
  * @author Adam Wyłuda
  */
-@RequiresFacet(value = { GradleFacet.class })
+@FacetConstraints({
+         @FacetConstraint(GradleFacet.class)
+})
 public class GradleJavaSourceFacet extends AbstractFacet<Project> implements JavaSourceFacet
 {
    // TODO Base facet for Maven and Gradle?
@@ -44,7 +47,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
          {
             folder.mkdirs();
          }
-         
+
          GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
          if (!model.hasPlugin(GradlePluginType.JAVA.getClazz()))
          {

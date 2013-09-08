@@ -10,7 +10,8 @@ import java.util.List;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.facets.AbstractFacet;
-import org.jboss.forge.addon.facets.constraints.RequiresFacet;
+import org.jboss.forge.addon.facets.constraints.FacetConstraint;
+import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceDirectory;
@@ -23,7 +24,9 @@ import org.jboss.forge.addon.resource.FileResource;
 /**
  * @author Adam Wyłuda
  */
-@RequiresFacet(value = { GradleFacet.class })
+@FacetConstraints({
+   @FacetConstraint(GradleFacet.class)
+})
 public class GradleResourceFacet extends AbstractFacet<Project> implements ResourcesFacet
 {
    @Override

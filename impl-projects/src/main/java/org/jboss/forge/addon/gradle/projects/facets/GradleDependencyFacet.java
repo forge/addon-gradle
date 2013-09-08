@@ -25,7 +25,8 @@ import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.dependencies.util.NonSnapshotDependencyFilter;
 import org.jboss.forge.addon.facets.AbstractFacet;
-import org.jboss.forge.addon.facets.constraints.RequiresFacet;
+import org.jboss.forge.addon.facets.constraints.FacetConstraint;
+import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
@@ -40,7 +41,9 @@ import org.jboss.forge.addon.projects.facets.DependencyFacet;
 /**
  * @author Adam Wyłuda
  */
-@RequiresFacet(value = { GradleFacet.class })
+@FacetConstraints({
+   @FacetConstraint(GradleFacet.class)
+})
 public class GradleDependencyFacet extends AbstractFacet<Project> implements DependencyFacet
 {
    @Inject
@@ -376,7 +379,8 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
                         .fromName(gradleDep.getConfiguration()).toMavenScope())
                .setGroupId(gradleDep.getGroup())
                .setArtifactId(gradleDep.getName())
-               .setVersion(gradleDep.getVersion());
+               .setVersion(gradleDep.getVersion())
+               .setPackaging(gradleDep.getPackaging());
       return forgeDep;
    }
 
@@ -387,7 +391,8 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
                         .fromMavenScope(forgeDep.getScopeType()).getName())
                .setGroup(forgeDep.getCoordinate().getGroupId())
                .setName(forgeDep.getCoordinate().getArtifactId())
-               .setVersion(forgeDep.getCoordinate().getVersion());
+               .setVersion(forgeDep.getCoordinate().getVersion())
+               .setPackaging(forgeDep.getCoordinate().getPackaging());
    }
 
    private List<Dependency> filterDependenciesFromScopes(List<Dependency> deps, String... scopes)

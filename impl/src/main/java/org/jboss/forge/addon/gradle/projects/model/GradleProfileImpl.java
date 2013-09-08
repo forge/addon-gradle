@@ -14,7 +14,7 @@ import org.jboss.forge.addon.resource.FileResource;
 public class GradleProfileImpl implements GradleProfile
 {
    private final String name;
-   private final GradleModel model;
+   private GradleModel model;
    private FileResource<?> profileResource;
 
    public GradleProfileImpl(String name, GradleModel model)
@@ -38,7 +38,7 @@ public class GradleProfileImpl implements GradleProfile
    @Override
    public void setModel(GradleModel model)
    {
-      // TODO Auto-generated method stub
+      this.model = model;
    }
 
    @Override

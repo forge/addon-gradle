@@ -15,6 +15,7 @@ public class GradleDependencyBuilder
    private String group;
    private String version;
    private String configuration;
+   private String packaging;
 
    private GradleDependencyBuilder()
    {
@@ -86,6 +87,17 @@ public class GradleDependencyBuilder
    public GradleDependencyBuilder setConfiguration(String configuration)
    {
       this.configuration = configuration;
+      return this;
+   }
+   
+   public String getPackaging()
+   {
+      return packaging;
+   }
+   
+   public GradleDependencyBuilder setPackaging(String packaging)
+   {
+      this.packaging = packaging;
       return this;
    }
 
