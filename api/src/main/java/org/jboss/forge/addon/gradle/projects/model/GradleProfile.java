@@ -18,9 +18,9 @@ public interface GradleProfile
 {
    String getName();
 
-   GradleModel getModel();
+   GradleEffectiveModel getModel();
    
-   void setModel(GradleModel model);
+   void setModel(GradleEffectiveModel model);
 
    FileResource<?> getProfileScriptResource();
    

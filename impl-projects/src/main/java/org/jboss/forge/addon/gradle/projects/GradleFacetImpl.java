@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
-import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleEffectiveModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelImpl;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelLoader;
 import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
@@ -39,7 +39,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Inject
    private ResourceFactory resourceFactory;
 
-   private GradleModel model;
+   private GradleEffectiveModel model;
 
    @Override
    public boolean install()
@@ -78,7 +78,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    }
 
    @Override
-   public GradleModel getModel()
+   public GradleEffectiveModel getModel()
    {
       if (this.model != null)
       {
@@ -90,7 +90,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    }
 
    @Override
-   public void setModel(GradleModel newModel)
+   public void setModel(GradleEffectiveModel newModel)
    {
       getBuildScriptResource().setContents(newModel.getScript());
 
@@ -177,7 +177,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 
       forgeOutputfile.delete();
 
-      GradleModel loadedModel = GradleModelLoader.fromXML(forgeOutput);
+      GradleEffectiveModel loadedModel = GradleModelLoader.fromXML(forgeOutput);
       loadedModel.setScript(getBuildScriptResource().getContents());
 
       // Set resources for profiles

@@ -14,10 +14,10 @@ import org.jboss.forge.addon.resource.FileResource;
 public class GradleProfileImpl implements GradleProfile
 {
    private final String name;
-   private GradleModel model;
+   private GradleEffectiveModel model;
    private FileResource<?> profileResource;
 
-   public GradleProfileImpl(String name, GradleModel model)
+   public GradleProfileImpl(String name, GradleEffectiveModel model)
    {
       this.name = name;
       this.model = model;
@@ -30,13 +30,13 @@ public class GradleProfileImpl implements GradleProfile
    }
 
    @Override
-   public GradleModel getModel()
+   public GradleEffectiveModel getModel()
    {
       return model;
    }
 
    @Override
-   public void setModel(GradleModel model)
+   public void setModel(GradleEffectiveModel model)
    {
       this.model = model;
    }

@@ -14,7 +14,7 @@ import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
-import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleEffectiveModel;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 
@@ -46,7 +46,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    {
       try
       {
-         GradleModel model = getGradleFacet().getModel();
+         GradleEffectiveModel model = getGradleFacet().getModel();
          model.setName(name);
          getGradleFacet().setModel(model);
       }
@@ -68,7 +68,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    {
       try
       {
-         GradleModel model = getGradleFacet().getModel();
+         GradleEffectiveModel model = getGradleFacet().getModel();
          model.setGroup(groupId);
          getGradleFacet().setModel(model);
       }
@@ -90,7 +90,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    {
       try
       {
-         GradleModel model = getGradleFacet().getModel();
+         GradleEffectiveModel model = getGradleFacet().getModel();
          model.setVersion(version);
          getGradleFacet().setModel(model);
       }
@@ -135,7 +135,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    @Override
    public void setDirectProperty(String name, String value)
    {
-      GradleModel model = getGradleFacet().getModel();
+      GradleEffectiveModel model = getGradleFacet().getModel();
       model.setProperty(name, value);
       getGradleFacet().setModel(model);
    }
@@ -146,7 +146,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
       String property = null;
       try
       {
-         GradleModel model = getGradleFacet().getModel();
+         GradleEffectiveModel model = getGradleFacet().getModel();
          property = model.getProperties().get(name);
          model.removeProperty(name);
          getGradleFacet().setModel(model);

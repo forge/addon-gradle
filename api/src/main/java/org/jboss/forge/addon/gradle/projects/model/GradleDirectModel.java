@@ -14,20 +14,8 @@ import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementExcept
 /**
  * @author Adam Wyłuda
  */
-public interface GradleModel
+public interface GradleDirectModel
 {
-   // ---------- Script
-
-   String getScript();
-
-   void setScript(String script);
-
-   // ---------- Project paths
-
-   String getProjectPath();
-
-   String getRootProjectPath();
-
    // ---------- Group
 
    String getGroup();
@@ -51,43 +39,33 @@ public interface GradleModel
    String getPackaging();
 
    void setPackaging(String packaging);
+
+   // ----------- Archive name
    
-   // ---------- Archive path/name
-
-   String getArchivePath();
-
    String getArchiveName();
 
    void setArchiveName(String archiveName);
 
    // ---------- Tasks
-   
+
    List<GradleTask> getTasks();
 
    boolean hasTask(String name);
 
    void addTask(GradleTaskBuilder builder);
-   
+
    // ---------- Dependencies
-
-   List<GradleDependency> getEffectiveDependencies();
-
-   boolean hasEffectiveDependency(GradleDependencyBuilder builder);
 
    void addDependency(GradleDependencyBuilder builder);
 
    void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
-   
+
    // ---------- Managed dependencies
-
-   List<GradleDependency> getEffectiveManagedDependencies();
-
-   boolean hasEffectiveManagedDependency(GradleDependencyBuilder builder);
 
    void addManagedDependency(GradleDependencyBuilder builder);
 
    void removeManagedDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
-   
+
    // ---------- Profiles
 
    List<GradleProfile> getProfiles();
@@ -97,7 +75,7 @@ public interface GradleModel
    void addProfile(String name);
 
    void removeProfile(String name);
-   
+
    // ---------- Plugins
 
    List<GradlePlugin> getPlugins();
@@ -107,7 +85,7 @@ public interface GradleModel
    void addPlugin(String name);
 
    void removePlugin(String name) throws UnremovableElementException;
-   
+
    // ---------- Repositories
 
    List<GradleRepository> getRepositories();
@@ -117,13 +95,9 @@ public interface GradleModel
    void addRepository(String url);
 
    void removeRepository(String url) throws UnremovableElementException;
-   
-   // --------- Source sets
-
-   List<GradleSourceSet> getSourceSets();
 
    // ---------- Properties
-   
+
    Map<String, String> getProperties();
 
    boolean hasProperty(String key);

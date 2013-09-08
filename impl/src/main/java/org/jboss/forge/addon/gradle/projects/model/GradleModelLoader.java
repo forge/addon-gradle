@@ -28,11 +28,11 @@ public class GradleModelLoader
    /**
     * Parses XML source into Gradle model, setting given file resource as Gradle resource.
     */
-   public static GradleModel fromXML(String source)
+   public static GradleEffectiveModel fromXML(String source)
    {
       Node root = XMLParser.parse(source);
       List<GradleProfile> profiles = profilesFromNode(root);
-      GradleModel projectModel = modelFromNode(root.getSingle("project"), profiles);
+      GradleEffectiveModel projectModel = modelFromNode(root.getSingle("project"), profiles);
       return projectModel;
    }
 
@@ -42,13 +42,13 @@ public class GradleModelLoader
       for (Node profileNode : rootNode.get("profile"))
       {
          String name = profileNode.getSingle("name").getText().trim();
-         GradleModel model = modelFromNode(profileNode.getSingle("project"), new ArrayList<GradleProfile>());
+         GradleEffectiveModel model = modelFromNode(profileNode.getSingle("project"), new ArrayList<GradleProfile>());
          profiles.add(new GradleProfileImpl(name, model));
       }
       return profiles;
    }
 
-   private static GradleModel modelFromNode(Node projectNode, List<GradleProfile> profiles)
+   private static GradleEffectiveModel modelFromNode(Node projectNode, List<GradleProfile> profiles)
    {
       String group = groupFromNode(projectNode);
       String name = nameFromNode(projectNode);

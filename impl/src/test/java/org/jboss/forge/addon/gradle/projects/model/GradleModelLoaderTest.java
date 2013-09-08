@@ -22,7 +22,7 @@ import org.junit.Test;
  */
 public class GradleModelLoaderTest
 {
-   private static GradleModel model;
+   private static GradleEffectiveModel model;
 
    @BeforeClass
    public static void init() throws IOException
@@ -214,9 +214,9 @@ public class GradleModelLoaderTest
    @Test
    public void testSourceSets()
    {
-      assertEquals("There are more or less than two source sets", 2, model.getSourceSets().size());
+      assertEquals("There are more or less than two source sets", 2, model.getEffectiveSourceSets().size());
       boolean mainSetSet = false, testSetSet = false;
-      for (GradleSourceSet sourceSet : model.getSourceSets())
+      for (GradleSourceSet sourceSet : model.getEffectiveSourceSets())
       {
          if (sourceSet.getName().equals("main"))
          {

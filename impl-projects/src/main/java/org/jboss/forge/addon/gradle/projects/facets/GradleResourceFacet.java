@@ -13,7 +13,7 @@ import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
-import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleEffectiveModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceDirectory;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceSet;
 import org.jboss.forge.addon.projects.Project;
@@ -46,9 +46,9 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    {
       List<DirectoryResource> resources = Lists.newArrayList();
       GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
-      GradleModel model = gradleFacet.getModel();
+      GradleEffectiveModel model = gradleFacet.getModel();
 
-      for (GradleSourceSet sourceSet : model.getSourceSets())
+      for (GradleSourceSet sourceSet : model.getEffectiveSourceSets())
       {
          for (GradleSourceDirectory sourceDir : sourceSet.getResourcesDirectories())
          {
@@ -62,8 +62,8 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    @Override
    public DirectoryResource getResourceFolder()
    {
-      GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
-      GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getSourceSets(), "main")
+      GradleEffectiveModel model = getFaceted().getFacet(GradleFacet.class).getModel();
+      GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "main")
                .getResourcesDirectories().get(0);
       return directoryResourceFromRelativePath(dir.getPath());
    }
@@ -71,8 +71,8 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    @Override
    public DirectoryResource getTestResourceFolder()
    {
-      GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
-      GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getSourceSets(), "test")
+      GradleEffectiveModel model = getFaceted().getFacet(GradleFacet.class).getModel();
+      GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "test")
                .getResourcesDirectories().get(0);
       return directoryResourceFromRelativePath(dir.getPath());
    }
@@ -119,10 +119,10 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    {
       List<DirectoryResource> resources = Lists.newArrayList();
       GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
-      GradleModel model = gradleFacet.getModel();
+      GradleEffectiveModel model = gradleFacet.getModel();
 
       for (GradleSourceDirectory sourceDir : GradleResourceUtil
-               .findSourceSetNamed(model.getSourceSets(), sourceSetName)
+               .findSourceSetNamed(model.getEffectiveSourceSets(), sourceSetName)
                .getResourcesDirectories())
       {
          resources.add(directoryResourceFromRelativePath(sourceDir.getPath()));

@@ -20,7 +20,7 @@ import org.jboss.forge.furnace.util.Strings;
 /**
  * @author Adam Wyłuda
  */
-public class GradleModelImpl implements GradleModel
+public class GradleModelImpl implements GradleEffectiveModel
 {
    private String script;
 
@@ -96,7 +96,7 @@ public class GradleModelImpl implements GradleModel
    /**
     * Performs copy of the given instance.
     */
-   public GradleModelImpl(GradleModel original)
+   public GradleModelImpl(GradleEffectiveModel original)
    {
       this.script = original.getScript();
       this.group = original.getGroup();
@@ -120,7 +120,7 @@ public class GradleModelImpl implements GradleModel
       }
       this.plugins = Lists.newArrayList(original.getPlugins());
       this.repositories = Lists.newArrayList(original.getRepositories());
-      this.sourceSets = Lists.newArrayList(original.getSourceSets());
+      this.sourceSets = Lists.newArrayList(original.getEffectiveSourceSets());
       this.properties = Maps.newHashMap(original.getProperties());
    }
 
@@ -221,7 +221,7 @@ public class GradleModelImpl implements GradleModel
    }
 
    @Override
-   public List<GradleSourceSet> getSourceSets()
+   public List<GradleSourceSet> getEffectiveSourceSets()
    {
       return Collections.unmodifiableList(sourceSets);
    }
