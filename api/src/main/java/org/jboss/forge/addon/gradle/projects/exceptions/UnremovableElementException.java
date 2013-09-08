@@ -11,7 +11,7 @@ package org.jboss.forge.addon.gradle.projects.exceptions;
  * 
  * @author Adam Wyłuda
  */
-public class UnremovableElementException extends Exception
+public class UnremovableElementException extends RuntimeException
 {
    private static final long serialVersionUID = 3676296264423815416L;
 }

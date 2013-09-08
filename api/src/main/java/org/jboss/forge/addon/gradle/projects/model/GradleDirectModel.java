@@ -20,19 +20,19 @@ public interface GradleDirectModel
 
    String getGroup();
 
-   void setGroup(String group) throws UnremovableElementException;
+   void setGroup(String group);
 
    // ---------- Name
 
    String getName();
 
-   void setName(String name) throws UnremovableElementException;
+   void setName(String name);
 
    // ---------- Version
 
    String getVersion();
 
-   void setVersion(String version) throws UnremovableElementException;
+   void setVersion(String version);
    
    // ---------- Packaging
 
@@ -58,13 +58,13 @@ public interface GradleDirectModel
 
    void addDependency(GradleDependencyBuilder builder);
 
-   void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
+   void removeDependency(GradleDependencyBuilder builder);
 
    // ---------- Managed dependencies
 
    void addManagedDependency(GradleDependencyBuilder builder);
 
-   void removeManagedDependency(GradleDependencyBuilder builder) throws UnremovableElementException;
+   void removeManagedDependency(GradleDependencyBuilder builder);
 
    // ---------- Profiles
 
@@ -84,7 +84,7 @@ public interface GradleDirectModel
 
    void addPlugin(String name);
 
-   void removePlugin(String name) throws UnremovableElementException;
+   void removePlugin(String name);
 
    // ---------- Repositories
 
@@ -94,7 +94,7 @@ public interface GradleDirectModel
 
    void addRepository(String url);
 
-   void removeRepository(String url) throws UnremovableElementException;
+   void removeRepository(String url);
 
    // ---------- Properties
 
@@ -104,5 +104,5 @@ public interface GradleDirectModel
 
    void setProperty(String name, String value);
 
-   void removeProperty(String name) throws UnremovableElementException;
+   void removeProperty(String name);
 }
