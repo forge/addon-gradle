@@ -9,42 +9,22 @@ package org.jboss.forge.addon.gradle.projects.model;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
-
 /**
  * @author Adam Wyłuda
  */
 public interface GradleDirectModel
 {
-   // ---------- Group
+   // ---------- Project metadata
 
    String getGroup();
 
-   void setGroup(String group);
-
-   // ---------- Name
-
    String getName();
 
-   void setName(String name);
-
-   // ---------- Version
-
    String getVersion();
-
-   void setVersion(String version);
    
-   // ---------- Packaging
-
    String getPackaging();
 
-   void setPackaging(String packaging);
-
-   // ----------- Archive name
-   
    String getArchiveName();
-
-   void setArchiveName(String archiveName);
 
    // ---------- Tasks
 
@@ -52,19 +32,11 @@ public interface GradleDirectModel
 
    boolean hasTask(String name);
 
-   void addTask(GradleTaskBuilder builder);
-
    // ---------- Dependencies
+   
+   List<GradleDependency> getDependencies();
 
-   void addDependency(GradleDependencyBuilder builder);
-
-   void removeDependency(GradleDependencyBuilder builder);
-
-   // ---------- Managed dependencies
-
-   void addManagedDependency(GradleDependencyBuilder builder);
-
-   void removeManagedDependency(GradleDependencyBuilder builder);
+   List<GradleDependency> getManagedDependencies();
 
    // ---------- Profiles
 
@@ -72,19 +44,11 @@ public interface GradleDirectModel
 
    boolean hasProfile(String name);
 
-   void addProfile(String name);
-
-   void removeProfile(String name);
-
    // ---------- Plugins
 
    List<GradlePlugin> getPlugins();
 
    boolean hasPlugin(String clazz);
-
-   void addPlugin(String name);
-
-   void removePlugin(String name);
 
    // ---------- Repositories
 
@@ -92,17 +56,9 @@ public interface GradleDirectModel
 
    boolean hasRepository(String url);
 
-   void addRepository(String url);
-
-   void removeRepository(String url);
-
    // ---------- Properties
 
    Map<String, String> getProperties();
 
    boolean hasProperty(String key);
-
-   void setProperty(String name, String value);
-
-   void removeProperty(String name);
 }
