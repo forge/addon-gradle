@@ -48,6 +48,8 @@ public class GradleDirectModelBuilder implements GradleDirectModel
       builder.version = model.getVersion();
       builder.packaging = model.getPackaging();
       builder.archiveName = model.getArchiveName();
+      
+      // TODO Perform a deep copy of the lists
       builder.tasks = new ArrayList<GradleTask>(model.getTasks());
       builder.dependencies = new ArrayList<GradleDependency>(model.getDependencies());
       builder.managedDependencies = new ArrayList<GradleDependency>(model.getManagedDependencies());
