@@ -13,12 +13,6 @@ import java.util.List;
  */
 public interface GradleEffectiveModel extends GradleDirectModel
 {
-   // ---------- Script
-
-   String getScript();
-
-   void setScript(String script);
-
    // ---------- Project paths
 
    String getProjectPath();

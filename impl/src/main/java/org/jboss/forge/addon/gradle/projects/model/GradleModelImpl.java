@@ -20,7 +20,7 @@ import org.jboss.forge.furnace.util.Strings;
 /**
  * @author Adam Wyłuda
  */
-public class GradleModelImpl implements GradleEffectiveModel
+public class GradleModelImpl
 {
    private String script;
 
@@ -65,11 +65,11 @@ public class GradleModelImpl implements GradleEffectiveModel
 
    public GradleModelImpl(String group, String name, String version,
             String projectPath, String rootProjectDirectory,
-            String packaging, String archivePath, 
+            String packaging, String archivePath,
             List<GradleTask> tasks,
-            List<GradleDependency> dependencies, 
+            List<GradleDependency> dependencies,
             List<GradleDependency> managedDependencies,
-            List<GradleProfile> profiles, 
+            List<GradleProfile> profiles,
             List<GradlePlugin> plugins,
             List<GradleRepository> repositories,
             List<GradleSourceSet> sourceSets,
@@ -98,7 +98,6 @@ public class GradleModelImpl implements GradleEffectiveModel
     */
    public GradleModelImpl(GradleEffectiveModel original)
    {
-      this.script = original.getScript();
       this.group = original.getGroup();
       this.name = original.getName();
       this.projectPath = original.getProjectPath();
@@ -124,115 +123,96 @@ public class GradleModelImpl implements GradleEffectiveModel
       this.properties = Maps.newHashMap(original.getProperties());
    }
 
-   @Override
    public String getScript()
    {
       return script;
    }
 
-   @Override
    public void setScript(String script)
    {
       this.script = script;
    }
 
-   @Override
    public String getGroup()
    {
       return group;
    }
 
-   @Override
    public String getName()
    {
       return name;
    }
 
-   @Override
    public String getVersion()
    {
       return version;
    }
 
-   @Override
    public String getProjectPath()
    {
       return projectPath;
    }
 
-   @Override
    public String getRootProjectPath()
    {
       return rootProjectPath;
    }
 
-   @Override
    public String getPackaging()
    {
       return packaging;
    }
 
-   @Override
    public String getArchiveName()
    {
       return archivePath.substring(archivePath.lastIndexOf("/") + 1, archivePath.lastIndexOf("."));
    }
 
-   @Override
    public String getArchivePath()
    {
       return archivePath;
    }
 
-   @Override
    public List<GradleTask> getTasks()
    {
       return Collections.unmodifiableList(tasks);
    }
 
-   @Override
    public List<GradleDependency> getEffectiveDependencies()
    {
       return Collections.unmodifiableList(dependencies);
    }
 
-   @Override
    public List<GradleDependency> getEffectiveManagedDependencies()
    {
       return Collections.unmodifiableList(managedDependencies);
    }
 
-   @Override
    public List<GradleProfile> getProfiles()
    {
       return Collections.unmodifiableList(profiles);
    }
 
-   @Override
    public List<GradlePlugin> getPlugins()
    {
       return Collections.unmodifiableList(plugins);
    }
 
-   @Override
    public List<GradleRepository> getRepositories()
    {
       return Collections.unmodifiableList(repositories);
    }
 
-   @Override
    public List<GradleSourceSet> getEffectiveSourceSets()
    {
       return Collections.unmodifiableList(sourceSets);
    }
 
-   @Override
    public Map<String, String> getProperties()
    {
       return Collections.unmodifiableMap(properties);
    }
 
-   @Override
    public boolean hasTask(String name)
    {
       for (GradleTask task : tasks)
@@ -245,7 +225,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       return false;
    }
 
-   @Override
    public boolean hasEffectiveDependency(GradleDependencyBuilder builder)
    {
       for (GradleDependency dep : dependencies)
@@ -258,7 +237,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       return false;
    }
 
-   @Override
    public boolean hasEffectiveManagedDependency(GradleDependencyBuilder builder)
    {
       for (GradleDependency dep : managedDependencies)
@@ -271,7 +249,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       return false;
    }
 
-   @Override
    public boolean hasProfile(String name)
    {
       for (GradleProfile profile : profiles)
@@ -284,7 +261,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       return false;
    }
 
-   @Override
    public boolean hasPlugin(String clazz)
    {
       for (GradlePlugin plugin : plugins)
@@ -297,7 +273,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       return false;
    }
 
-   @Override
    public boolean hasRepository(String url)
    {
       for (GradleRepository repo : repositories)
@@ -310,20 +285,17 @@ public class GradleModelImpl implements GradleEffectiveModel
       return false;
    }
 
-   @Override
    public boolean hasProperty(String key)
    {
       return properties.containsKey(key);
    }
 
-   @Override
    public void setGroup(String group) throws UnremovableElementException
    {
       script = GradleSourceUtil.setProperty(script, "group", group);
       this.group = group;
    }
 
-   @Override
    public void setName(String name) throws UnremovableElementException
    {
       // That's all. GradleFacet will check if name of the project has changed and then
@@ -331,14 +303,12 @@ public class GradleModelImpl implements GradleEffectiveModel
       this.name = name;
    }
 
-   @Override
    public void setVersion(String version) throws UnremovableElementException
    {
       script = GradleSourceUtil.setProperty(script, "version", version);
       this.version = version;
    }
 
-   @Override
    public void setPackaging(String packaging)
    {
       for (GradlePluginType type : GradlePluginType.values())
@@ -356,14 +326,12 @@ public class GradleModelImpl implements GradleEffectiveModel
       throw new IllegalArgumentException("There is no such packaging: " + packaging);
    }
 
-   @Override
    public void setArchiveName(String archiveName)
    {
       script = GradleSourceUtil.setArchiveName(script, archiveName);
       this.archivePath = archivePath.substring(0, archivePath.lastIndexOf("/") + 1) + archiveName + "." + packaging;
    }
 
-   @Override
    public void addTask(GradleTaskBuilder builder)
    {
       script = GradleSourceUtil.insertTask(script,
@@ -383,7 +351,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       this.tasks.add(new GradleTaskImpl(builder.getName(), dependsOn));
    }
 
-   @Override
    public void addDependency(GradleDependencyBuilder builder)
    {
       if (!Strings.isNullOrEmpty(builder.getVersion()) && !Strings.isNullOrEmpty(builder.getConfiguration()))
@@ -410,7 +377,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       }
    }
 
-   @Override
    public void addManagedDependency(GradleDependencyBuilder builder)
    {
       script = GradleSourceUtil.insertManagedDependency(script,
@@ -421,13 +387,11 @@ public class GradleModelImpl implements GradleEffectiveModel
                builder.getConfiguration()));
    }
 
-   @Override
    public void addProfile(String name)
    {
       profiles.add(new GradleProfileImpl(name, new GradleModelImpl()));
    }
 
-   @Override
    public void addPlugin(String name)
    {
       script = GradleSourceUtil.insertPlugin(script, name);
@@ -435,21 +399,18 @@ public class GradleModelImpl implements GradleEffectiveModel
       this.plugins.add(new GradlePluginImpl(name, type));
    }
 
-   @Override
    public void addRepository(String url)
    {
       script = GradleSourceUtil.insertRepository(script, url);
       this.repositories.add(new GradleRepositoryImpl("MavenRepo", url));
    }
 
-   @Override
    public void setProperty(String name, String value)
    {
       script = GradleSourceUtil.setProperty(script, "ext." + name, value);
       this.properties.put(name, value);
    }
 
-   @Override
    public void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException
    {
       script = GradleSourceUtil.removeDependency(script,
@@ -468,7 +429,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       }
    }
 
-   @Override
    public void removeManagedDependency(GradleDependencyBuilder builder) throws UnremovableElementException
    {
       script = GradleSourceUtil.removeManagedDependency(script,
@@ -484,7 +444,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       }
    }
 
-   @Override
    public void removeProfile(String name)
    {
       for (GradleProfile profile : profiles)
@@ -499,7 +458,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       throw new RuntimeException("Can't remove profile non existing profile named " + name);
    }
 
-   @Override
    public void removePlugin(String name) throws UnremovableElementException
    {
       GradlePluginType type = GradlePluginType.typeByClazz(name);
@@ -530,7 +488,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       }
    }
 
-   @Override
    public void removeRepository(String url) throws UnremovableElementException
    {
       script = GradleSourceUtil.removeRepository(script, url);
@@ -545,7 +502,6 @@ public class GradleModelImpl implements GradleEffectiveModel
       }
    }
 
-   @Override
    public void removeProperty(String name) throws UnremovableElementException
    {
       script = GradleSourceUtil.removeProperty(script, "ext." + name);

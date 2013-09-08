@@ -19,16 +19,16 @@ import org.jboss.forge.parser.xml.XMLParser;
 /**
  * @author Adam Wyłuda
  */
-public class GradleModelLoader
+public class GradleModelLoadUtil
 {
-   private GradleModelLoader()
+   private GradleModelLoadUtil()
    {
    }
    
    /**
     * Parses XML source into Gradle model, setting given file resource as Gradle resource.
     */
-   public static GradleEffectiveModel fromXML(String source)
+   public static GradleEffectiveModel load(String source)
    {
       Node root = XMLParser.parse(source);
       List<GradleProfile> profiles = profilesFromNode(root);

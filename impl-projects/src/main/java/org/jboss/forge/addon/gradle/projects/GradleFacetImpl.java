@@ -7,14 +7,17 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import java.io.File;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleEffectiveModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelImpl;
-import org.jboss.forge.addon.gradle.projects.model.GradleModelLoader;
+import org.jboss.forge.addon.gradle.projects.model.GradleModelLoadUtil;
+import org.jboss.forge.addon.gradle.projects.model.GradleModelMergeUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.FileResource;
@@ -39,7 +42,9 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Inject
    private ResourceFactory resourceFactory;
 
+   // Cached model
    private GradleEffectiveModel model;
+   private Map<String, GradleEffectiveModel> profileModels;
 
    @Override
    public boolean install()
@@ -92,7 +97,9 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public void setModel(GradleEffectiveModel newModel)
    {
-      getBuildScriptResource().setContents(newModel.getScript());
+      String oldSource = getBuildScriptResource().getContents();
+      String newSource = GradleModelMergeUtil.merge(oldSource, model, newModel);
+      getBuildScriptResource().setContents(newSource);
 
       // If we need to change model name then it must be done in settings.gradle
       if (!this.model.getName().equals(newModel.getName()))
@@ -114,10 +121,13 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
             profile.getProfileScriptResource().createNewFile();
          }
 
-         // If there is a change in profile
-         if (!profile.getProfileScriptResource().getContents().equals(profile.getModel().getScript()))
+         // Merge new profile contents
+         String oldProfileSource = profile.getProfileScriptResource().getContents();
+         String newProfileSource = GradleModelMergeUtil.merge(oldProfileSource, 
+                  profileModels.get(profile.getName()), profile.getModel());
+         if (!newProfileSource.equals(oldProfileSource))
          {
-            profile.getProfileScriptResource().setContents(profile.getModel().getScript());
+            profile.getProfileScriptResource().setContents(newProfileSource);
          }
       }
 
@@ -177,16 +187,16 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 
       forgeOutputfile.delete();
 
-      GradleEffectiveModel loadedModel = GradleModelLoader.fromXML(forgeOutput);
-      loadedModel.setScript(getBuildScriptResource().getContents());
+      GradleEffectiveModel loadedModel = GradleModelLoadUtil.load(forgeOutput);
 
       // Set resources for profiles
+      profileModels = Maps.newHashMap();
       for (GradleProfile profile : loadedModel.getProfiles())
       {
          profile.setProfileScriptResource(
                   (FileResource<?>) getBuildScriptResource().getParent()
                            .getChild(profile.getName() + GradleSourceUtil.PROFILE_SUFFIX));
-         profile.getModel().setScript(profile.getProfileScriptResource().getContents());
+         profileModels.put(profile.getName(), profile.getModel());
       }
 
       this.model = loadedModel;
