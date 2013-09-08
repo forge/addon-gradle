@@ -6,8 +6,6 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
-import org.jboss.forge.addon.resource.FileResource;
-
 /**
  * It represents Gradle simulated profile. It offers similar functionality as Maven profiles. Gradle profiles are
  * implemented as additional Gradle build scripts using convention: {@code name-profile.gradle}
@@ -18,11 +16,5 @@ public interface GradleProfile
 {
    String getName();
 
-   GradleEffectiveModel getModel();
-   
-   void setModel(GradleEffectiveModel model);
-
-   FileResource<?> getProfileScriptResource();
-   
-   void setProfileScriptResource(FileResource<?> profileResource);
+   GradleDirectModel getModel();
 }

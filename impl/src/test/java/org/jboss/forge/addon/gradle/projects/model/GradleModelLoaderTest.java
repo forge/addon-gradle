@@ -178,7 +178,7 @@ public class GradleModelLoaderTest
             assertTrue(
                      "Glassfish profile doesn't contain specified dependency",
                      profile.getModel().hasEffectiveDependency(
-                              GradleDependencyBuilder.fromGradleString("compile", "javax.annotation:jsr250-api:1.0")));
+                              GradleDependencyBuilder.create("compile", "javax.annotation:jsr250-api:1.0")));
          }
          else if (profile.getName().equals("wildfly"))
          {
@@ -188,7 +188,7 @@ public class GradleModelLoaderTest
             assertTrue(
                      "Wildfly profile doesn't contain specified dependency",
                      profile.getModel().hasEffectiveDependency(
-                              GradleDependencyBuilder.fromGradleString("compile", "log4j:log4j:1.2.17")));
+                              GradleDependencyBuilder.create("compile", "log4j:log4j:1.2.17")));
          }
       }
       assertTrue("glassfish profile not found", glassfishSet);
@@ -238,8 +238,8 @@ public class GradleModelLoaderTest
             assertTrue("Java directory set not found", javaSet);
             assertTrue("Alter directory set not found", alterSet);
 
-            assertEquals(1, sourceSet.getResourcesDirectories().size());
-            assertEquals("src/main/resources", sourceSet.getResourcesDirectories().get(0).getPath());
+            assertEquals(1, sourceSet.getResourceDirectories().size());
+            assertEquals("src/main/resources", sourceSet.getResourceDirectories().get(0).getPath());
          }
          if (sourceSet.getName().equals("test"))
          {
@@ -248,8 +248,8 @@ public class GradleModelLoaderTest
             assertEquals(1, sourceSet.getJavaDirectories().size());
             assertEquals("src/test/java", sourceSet.getJavaDirectories().get(0).getPath());
 
-            assertEquals(1, sourceSet.getResourcesDirectories().size());
-            assertEquals("src/test/resources", sourceSet.getResourcesDirectories().get(0).getPath());
+            assertEquals(1, sourceSet.getResourceDirectories().size());
+            assertEquals("src/test/resources", sourceSet.getResourceDirectories().get(0).getPath());
          }
       }
       assertTrue("main source set not found", mainSetSet);

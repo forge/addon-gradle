@@ -16,4 +16,8 @@ public interface GradleTask
    String getName();
    
    List<GradleTask> getDependsOn();
+   
+   String getCode();
+   
+   String getType();
 }

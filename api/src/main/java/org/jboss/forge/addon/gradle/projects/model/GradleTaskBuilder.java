@@ -12,10 +12,10 @@ import java.util.List;
 /**
  * @author Adam Wyłuda
  */
-public class GradleTaskBuilder
+public class GradleTaskBuilder implements GradleTask
 {
    private String name = "forgeTask";
-   private List<String> dependsOn = new ArrayList<String>();
+   private List<GradleTask> dependsOn = new ArrayList<GradleTask>();
    private String type = "";
    private String code = "";
 
@@ -26,6 +26,30 @@ public class GradleTaskBuilder
    public static GradleTaskBuilder create()
    {
       return new GradleTaskBuilder();
+   }
+   
+   public static GradleTaskBuilder create(GradleTask task)
+   {
+      GradleTaskBuilder builder = new GradleTaskBuilder();
+      
+      builder.name = task.getName();
+      builder.dependsOn = task.getDependsOn();
+      builder.type = task.getType();
+      builder.code = task.getCode();
+      
+      return builder;
+   }
+   
+   public static List<GradleTask> deepCopy(List<GradleTask> tasks)
+   {
+      List<GradleTask> lists = new ArrayList<GradleTask>();
+      
+      for (GradleTask task : tasks)
+      {
+         lists.add(create(task));
+      }
+      
+      return lists;
    }
 
    public String getName()
@@ -39,25 +63,20 @@ public class GradleTaskBuilder
       return this;
    }
 
-   public List<String> getDependsOn()
+   public List<GradleTask> getDependsOn()
    {
       return dependsOn;
    }
 
-   public GradleTaskBuilder setDependsOn(List<String> dependsOn)
+   public GradleTaskBuilder setDependsOn(List<GradleTask> dependsOn)
    {
       this.dependsOn = dependsOn;
-      return this;
-   }
-   
-   public GradleTaskBuilder setDependsOn(String dependsOn) {
-      this.dependsOn.add(dependsOn);
       return this;
    }
 
    public GradleTaskBuilder setDependsOn(GradleTask task)
    {
-      dependsOn.add(task.getName());
+      dependsOn.add(task);
       return this;
    }
 

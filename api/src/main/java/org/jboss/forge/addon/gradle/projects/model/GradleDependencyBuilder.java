@@ -6,16 +6,19 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Adam Wyłuda
  */
-public class GradleDependencyBuilder
+public class GradleDependencyBuilder implements GradleDependency
 {
-   private String name;
-   private String group;
-   private String version;
-   private String configuration;
-   private String packaging;
+   private String group = "";
+   private String name = "";
+   private String version = "";
+   private String configurationName = "";
+   private String packaging = "";
 
    private GradleDependencyBuilder()
    {
@@ -25,11 +28,24 @@ public class GradleDependencyBuilder
    {
       return new GradleDependencyBuilder();
    }
+   
+   public static GradleDependencyBuilder create(GradleDependency dependency)
+   {
+      GradleDependencyBuilder builder = new GradleDependencyBuilder();
+      
+      builder.name = dependency.getName();
+      builder.group = dependency.getGroup();
+      builder.version = dependency.getVersion();
+      builder.configurationName = dependency.getConfigurationName();
+      builder.packaging = dependency.getPackaging();
+      
+      return builder;
+   }
 
    /**
     * Creates gradle dependency using given configuration and parsing gradleString in format: {@code group:name:version}
     */
-   public static GradleDependencyBuilder fromGradleString(String configuration, String gradleString)
+   public static GradleDependencyBuilder create(String configuration, String gradleString)
    {
       String[] split = gradleString.split(":");
       if (split.length != 3)
@@ -43,7 +59,19 @@ public class GradleDependencyBuilder
                .setName(name)
                .setGroup(group)
                .setVersion(version)
-               .setConfiguration(configuration);
+               .setConfigurationName(configuration);
+   }
+   
+   public static List<GradleDependency> deepCopy(List<GradleDependency> deps)
+   {
+      List<GradleDependency> list = new ArrayList<GradleDependency>();
+      
+      for (GradleDependency dep : deps)
+      {
+         list.add(create(dep));
+      }
+      
+      return list;
    }
 
    public String getName()
@@ -79,14 +107,14 @@ public class GradleDependencyBuilder
       return this;
    }
 
-   public String getConfiguration()
+   public String getConfigurationName()
    {
-      return configuration;
+      return configurationName;
    }
 
-   public GradleDependencyBuilder setConfiguration(String configuration)
+   public GradleDependencyBuilder setConfigurationName(String configuration)
    {
-      this.configuration = configuration;
+      this.configurationName = configuration;
       return this;
    }
    
@@ -101,13 +129,31 @@ public class GradleDependencyBuilder
       return this;
    }
 
+   @Override
+   public GradleDependencyConfiguration getConfiguration()
+   {
+      return GradleDependencyConfiguration.fromName(configurationName);
+   }
+   
+   public GradleDependencyBuilder setConfiguration(GradleDependencyConfiguration configuration)
+   {
+      this.configurationName = configuration.getName();
+      return this;
+   }
+
+   @Override
+   public String toGradleString()
+   {
+      return String.format("%s:%s:%s", group, name, version);
+   }
+
    /**
     * Compares this builder to given {@link GradleDependency}.
     */
    public boolean equalsToDependency(GradleDependency dep)
    {
       return group.equals(dep.getGroup()) && name.equals(dep.getName()) && version.equals(dep.getVersion())
-               && configuration.equals(dep.getConfigurationName());
+               && configurationName.equals(dep.getConfigurationName());
    }
 
    /**
@@ -121,7 +167,7 @@ public class GradleDependencyBuilder
    public boolean equalsToDependencyBuilder(GradleDependencyBuilder dep)
    {
       return group.equals(dep.getGroup()) && name.equals(dep.getName()) && version.equals(dep.getVersion())
-               && configuration.equals(dep.getConfiguration());
+               && configurationName.equals(dep.getConfigurationName());
    }
 
    public boolean equalsToDirectDependencyBuilder(GradleDependencyBuilder dep)
@@ -132,6 +178,6 @@ public class GradleDependencyBuilder
    @Override
    public String toString()
    {
-      return String.format("%s '%s:%s:%s'", configuration, group, name, version);
+      return String.format("%s '%s'", configurationName, toGradleString());
    }
 }

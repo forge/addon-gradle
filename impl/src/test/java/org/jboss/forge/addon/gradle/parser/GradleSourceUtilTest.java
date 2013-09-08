@@ -129,9 +129,9 @@ public class GradleSourceUtilTest
 
       assertEquals(2, deps.size());
       assertContainsDependency(deps, GradleDependencyBuilder.create()
-               .setConfiguration("testRuntime").setGroup("x").setName("z").setVersion("4.0"));
+               .setConfigurationName("testRuntime").setGroup("x").setName("z").setVersion("4.0"));
       assertContainsDependency(deps, GradleDependencyBuilder.create()
-               .setConfiguration("compile").setGroup("a").setName("b").setVersion("1.0"));
+               .setConfigurationName("compile").setGroup("a").setName("b").setVersion("1.0"));
    }
 
    @Test
@@ -259,7 +259,7 @@ public class GradleSourceUtilTest
       
       assertEquals(1, deps.size());
       assertContainsDependency(deps, GradleDependencyBuilder.create()
-               .setConfiguration("compile").setGroup("xx").setName("yy").setVersion("vv"));
+               .setConfigurationName("compile").setGroup("xx").setName("yy").setVersion("vv"));
    }
 
    @Test

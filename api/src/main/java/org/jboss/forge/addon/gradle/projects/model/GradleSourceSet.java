@@ -17,5 +17,5 @@ public interface GradleSourceSet
    
    List<GradleSourceDirectory> getJavaDirectories();
    
-   List<GradleSourceDirectory> getResourcesDirectories();
+   List<GradleSourceDirectory> getResourceDirectories();
 }

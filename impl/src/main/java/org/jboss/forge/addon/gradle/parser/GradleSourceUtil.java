@@ -136,7 +136,7 @@ public class GradleSourceUtil
             if (isGradleString(stringInvocation.getString()))
             {
                GradleDependencyBuilder dep =
-                        GradleDependencyBuilder.fromGradleString(stringInvocation.getMethodName(),
+                        GradleDependencyBuilder.create(stringInvocation.getMethodName(),
                                  stringInvocation.getString());
                deps.add(dep);
             }
@@ -148,7 +148,7 @@ public class GradleSourceUtil
             if (params.containsKey("group") && params.containsKey("name") && params.containsKey("version"))
             {
                GradleDependencyBuilder dep = GradleDependencyBuilder.create()
-                        .setConfiguration(mapInvocation.getMethodName())
+                        .setConfigurationName(mapInvocation.getMethodName())
                         .setGroup(params.get("group"))
                         .setName(params.get("name"))
                         .setVersion(params.get("version"));
@@ -264,7 +264,7 @@ public class GradleSourceUtil
             {
                Map<String, String> params = mapInvocation.getParameters();
                GradleDependencyBuilder dep = GradleDependencyBuilder.create()
-                        .setConfiguration(params.get("configuration"))
+                        .setConfigurationName(params.get("configuration"))
                         .setGroup(params.get("group"))
                         .setName(params.get("name"))
                         .setVersion(params.get("version"));

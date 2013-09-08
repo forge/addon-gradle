@@ -353,13 +353,13 @@ public class GradleModelImpl
 
    public void addDependency(GradleDependencyBuilder builder)
    {
-      if (!Strings.isNullOrEmpty(builder.getVersion()) && !Strings.isNullOrEmpty(builder.getConfiguration()))
+      if (!Strings.isNullOrEmpty(builder.getVersion()) && !Strings.isNullOrEmpty(builder.getConfigurationName()))
       {
          script = GradleSourceUtil.insertDependency(script,
                   builder.getGroup(),
                   builder.getName(),
                   builder.getVersion(),
-                  builder.getConfiguration());
+                  builder.getConfigurationName());
          this.dependencies.add(new GradleDependencyImpl(
                   builder.getGroup(), builder.getName(), builder.getVersion(),
                   GradleDependencyConfiguration.DIRECT,
@@ -372,19 +372,19 @@ public class GradleModelImpl
                   builder.getName());
          this.dependencies.add(new GradleDependencyImpl(
                   builder.getGroup(), builder.getName(), builder.getVersion(),
-                  GradleDependencyConfiguration.fromName(builder.getConfiguration()),
-                  builder.getConfiguration()));
+                  GradleDependencyConfiguration.fromName(builder.getConfigurationName()),
+                  builder.getConfigurationName()));
       }
    }
 
    public void addManagedDependency(GradleDependencyBuilder builder)
    {
       script = GradleSourceUtil.insertManagedDependency(script,
-               builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
+               builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfigurationName());
       this.managedDependencies.add(new GradleDependencyImpl(
                builder.getGroup(), builder.getName(), builder.getVersion(),
-               GradleDependencyConfiguration.fromName(builder.getConfiguration()),
-               builder.getConfiguration()));
+               GradleDependencyConfiguration.fromName(builder.getConfigurationName()),
+               builder.getConfigurationName()));
    }
 
    public void addProfile(String name)
@@ -414,13 +414,13 @@ public class GradleModelImpl
    public void removeDependency(GradleDependencyBuilder builder) throws UnremovableElementException
    {
       script = GradleSourceUtil.removeDependency(script,
-               builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
+               builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfigurationName());
 
       for (GradleDependency dep : this.dependencies)
       {
          if (builder.equalsToDependency(dep) ||
                   (Strings.isNullOrEmpty(builder.getVersion()) &&
-                           Strings.isNullOrEmpty(builder.getConfiguration()) &&
+                           Strings.isNullOrEmpty(builder.getConfigurationName()) &&
                   builder.equalsToDirectDependency(dep)))
          {
             this.dependencies.remove(dep);
@@ -432,7 +432,7 @@ public class GradleModelImpl
    public void removeManagedDependency(GradleDependencyBuilder builder) throws UnremovableElementException
    {
       script = GradleSourceUtil.removeManagedDependency(script,
-               builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfiguration());
+               builder.getGroup(), builder.getName(), builder.getVersion(), builder.getConfigurationName());
 
       for (GradleDependency dep : this.managedDependencies)
       {

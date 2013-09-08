@@ -376,7 +376,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       Dependency forgeDep;
       forgeDep = DependencyBuilder.create()
                .setScopeType(GradleDependencyConfiguration
-                        .fromName(gradleDep.getConfiguration()).toMavenScope())
+                        .fromName(gradleDep.getConfigurationName()).toMavenScope())
                .setGroupId(gradleDep.getGroup())
                .setArtifactId(gradleDep.getName())
                .setVersion(gradleDep.getVersion())
@@ -387,7 +387,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    private GradleDependencyBuilder forgeDepToGradleDepBuilder(Dependency forgeDep)
    {
       return GradleDependencyBuilder.create()
-               .setConfiguration(GradleDependencyConfiguration
+               .setConfigurationName(GradleDependencyConfiguration
                         .fromMavenScope(forgeDep.getScopeType()).getName())
                .setGroup(forgeDep.getCoordinate().getGroupId())
                .setName(forgeDep.getCoordinate().getArtifactId())
