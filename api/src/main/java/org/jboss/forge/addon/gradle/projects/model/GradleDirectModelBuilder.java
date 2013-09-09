@@ -29,26 +29,26 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    private List<GradlePlugin> plugins = new ArrayList<GradlePlugin>();
    private List<GradleRepository> repositories = new ArrayList<GradleRepository>();
    private Map<String, String> properties = new HashMap<String, String>();
-   
-   private GradleDirectModelBuilder()
+
+   GradleDirectModelBuilder()
    {
    }
-   
+
    public static GradleDirectModelBuilder create()
    {
       return new GradleDirectModelBuilder();
    }
-   
+
    public static GradleDirectModelBuilder create(GradleDirectModel model)
    {
       GradleDirectModelBuilder builder = new GradleDirectModelBuilder();
-      
+
       builder.group = model.getGroup();
       builder.name = model.getName();
       builder.version = model.getVersion();
       builder.packaging = model.getPackaging();
       builder.archiveName = model.getArchiveName();
-      
+
       builder.tasks = GradleTaskBuilder.deepCopy(model.getTasks());
       builder.dependencies = GradleDependencyBuilder.deepCopy(model.getDependencies());
       builder.managedDependencies = GradleDependencyBuilder.deepCopy(model.getManagedDependencies());
@@ -56,10 +56,10 @@ public class GradleDirectModelBuilder implements GradleDirectModel
       builder.plugins = GradlePluginBuilder.deepCopy(model.getPlugins());
       builder.repositories = GradleRepositoryBuilder.deepCopy(model.getRepositories());
       builder.properties = new HashMap<String, String>(model.getProperties());
-      
+
       return builder;
    }
-   
+
    @Override
    public String getGroup()
    {
@@ -120,28 +120,14 @@ public class GradleDirectModelBuilder implements GradleDirectModel
       return this;
    }
 
-   @Override
    public List<GradleTask> getTasks()
    {
       return Collections.unmodifiableList(tasks);
    }
 
-   @Override
-   public boolean hasTask(String name)
+   public GradleDirectModelBuilder addTask(GradleTask task)
    {
-      for (GradleTask task : tasks)
-      {
-         if (task.getName().equals(name))
-         {
-            return true;
-         }
-      }
-      return false;
-   }
-
-   public GradleDirectModelBuilder addTask(GradleTaskBuilder builder)
-   {
-      // TODO Complete this after merging GradleTaskImpl with GradleTaskBuilder
+      tasks.add(task);
       return this;
    }
 
@@ -151,15 +137,29 @@ public class GradleDirectModelBuilder implements GradleDirectModel
       return Collections.unmodifiableList(dependencies);
    }
 
-   public GradleDirectModelBuilder addDependency(GradleDependencyBuilder builder)
+   @Override
+   public boolean hasDependency(GradleDependency dep)
    {
-      // TODO Complete this after merging GradleDependencyImpl with GradleDependencyBuilder
+      GradleDependencyBuilder depBuilder = GradleDependencyBuilder.create(dep);
+      for (GradleDependency gradleDep : dependencies)
+      {
+         if (depBuilder.equalsToDependency(gradleDep))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   public GradleDirectModelBuilder addDependency(GradleDependency dep)
+   {
+      dependencies.add(dep);
       return this;
    }
 
-   public GradleDirectModelBuilder removeDependency(GradleDependencyBuilder builder)
+   public GradleDirectModelBuilder removeDependency(GradleDependency dep)
    {
-      // TODO Complete this after merging GradleDependencyImpl with GradleDependencyBuilder
+      dependencies.remove(dep);
       return this;
    }
 
@@ -169,15 +169,29 @@ public class GradleDirectModelBuilder implements GradleDirectModel
       return Collections.unmodifiableList(managedDependencies);
    }
 
-   public GradleDirectModelBuilder addManagedDependency(GradleDependencyBuilder builder)
+   @Override
+   public boolean hasManagedDependency(GradleDependency dep)
    {
-      // TODO Complete this after merging GradleDependencyImpl with GradleDependencyBuilder
+      GradleDependencyBuilder depBuilder = GradleDependencyBuilder.create(dep);
+      for (GradleDependency gradleDep : managedDependencies)
+      {
+         if (depBuilder.equalsToDependency(gradleDep))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   public GradleDirectModelBuilder addManagedDependency(GradleDependency dep)
+   {
+      managedDependencies.add(dep);
       return this;
    }
 
-   public GradleDirectModelBuilder removeManagedDependency(GradleDependencyBuilder builder)
+   public GradleDirectModelBuilder removeManagedDependency(GradleDependency dep)
    {
-      // TODO Complete this after merging GradleDependencyImpl with GradleDependencyBuilder
+      managedDependencies.remove(dep);
       return this;
    }
 
@@ -188,11 +202,11 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    }
 
    @Override
-   public boolean hasProfile(String name)
+   public boolean hasProfile(GradleProfile profile)
    {
-      for (GradleProfile profile : profiles)
+      for (GradleProfile gradleProfile : profiles)
       {
-         if (profile.getName().equals(name))
+         if (gradleProfile.getName().equals(profile.getName()))
          {
             return true;
          }
@@ -200,22 +214,15 @@ public class GradleDirectModelBuilder implements GradleDirectModel
       return false;
    }
 
-   public GradleDirectModelBuilder addProfile(String name)
+   public GradleDirectModelBuilder addProfile(GradleProfile profile)
    {
-      // TODO Complete this after creating GradleProfileBuilder
+      profiles.add(profile);
       return this;
    }
 
-   public GradleDirectModelBuilder removeProfile(String name)
+   public GradleDirectModelBuilder removeProfile(GradleProfile profile)
    {
-      for (GradleProfile profile : profiles)
-      {
-         if (profile.getName().equals(name))
-         {
-            profiles.remove(profile);
-            break;
-         }
-      }
+      profiles.remove(profile);
       return this;
    }
 
@@ -224,13 +231,13 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    {
       return Collections.unmodifiableList(plugins);
    }
-
+   
    @Override
-   public boolean hasPlugin(String clazz)
+   public boolean hasPlugin(GradlePlugin plugin)
    {
-      for (GradlePlugin plugin : plugins)
+      for (GradlePlugin gradlePlugin : plugins)
       {
-         if (plugin.getClazz().equals(clazz) || plugin.getType().getShortName().equals(clazz))
+         if (plugin.getClazz().equals(gradlePlugin.getClazz()))
          {
             return true;
          }
@@ -238,22 +245,15 @@ public class GradleDirectModelBuilder implements GradleDirectModel
       return false;
    }
 
-   public GradleDirectModelBuilder addPlugin(String name)
+   public GradleDirectModelBuilder addPlugin(GradlePlugin plugin)
    {
-      // TODO Complete this after creating GradlePluginBuilder
+      plugins.add(plugin);
       return this;
    }
 
-   public GradleDirectModelBuilder removePlugin(String name)
+   public GradleDirectModelBuilder removePlugin(GradlePlugin plugin)
    {
-      for (GradlePlugin plugin : plugins)
-      {
-         if (plugin.getClazz().equals(name) || plugin.getType().getShortName().equals(name))
-         {
-            plugins.remove(plugin);
-            break;
-         }
-      }
+      plugins.remove(plugin);
       return this;
    }
 
@@ -262,13 +262,13 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    {
       return Collections.unmodifiableList(repositories);
    }
-
+   
    @Override
-   public boolean hasRepository(String url)
+   public boolean hasRepository(GradleRepository repo)
    {
-      for (GradleRepository repo : repositories)
+      for (GradleRepository gradleRepo : repositories)
       {
-         if (repo.getUrl().equals(url))
+         if (gradleRepo.getUrl().equals(repo.getUrl()))
          {
             return true;
          }
@@ -276,22 +276,15 @@ public class GradleDirectModelBuilder implements GradleDirectModel
       return false;
    }
 
-   public GradleDirectModelBuilder addRepository(String url)
+   public GradleDirectModelBuilder addRepository(GradleRepository repo)
    {
-      // TODO Complete after creating GradleRepositoryBuilder
+      repositories.add(repo);
       return this;
    }
 
-   public GradleDirectModelBuilder removeRepository(String url)
+   public GradleDirectModelBuilder removeRepository(GradleRepository repo)
    {
-      for (GradleRepository repo : repositories)
-      {
-         if (repo.getUrl().equals(url))
-         {
-            repositories.remove(repo);
-            break;
-         }
-      }
+      repositories.remove(repo);
       return this;
    }
 
@@ -299,13 +292,6 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    public Map<String, String> getProperties()
    {
       return Collections.unmodifiableMap(properties);
-   }
-
-   @Override
-   public boolean hasProperty(String key)
-   {
-      // TODO Remove this?
-      return properties.containsKey(key);
    }
 
    public GradleDirectModelBuilder setProperty(String name, String value)

@@ -164,17 +164,6 @@ public class GradleDependencyBuilder implements GradleDependency
       return group.equals(dep.getGroup()) && name.equals(dep.getName());
    }
 
-   public boolean equalsToDependencyBuilder(GradleDependencyBuilder dep)
-   {
-      return group.equals(dep.getGroup()) && name.equals(dep.getName()) && version.equals(dep.getVersion())
-               && configurationName.equals(dep.getConfigurationName());
-   }
-
-   public boolean equalsToDirectDependencyBuilder(GradleDependencyBuilder dep)
-   {
-      return group.equals(dep.getGroup()) && name.equals(dep.getName());
-   }
-
    @Override
    public String toString()
    {

@@ -14,51 +14,37 @@ import java.util.Map;
  */
 public interface GradleDirectModel
 {
-   // ---------- Project metadata
-
    String getGroup();
 
    String getName();
 
    String getVersion();
-   
+
    String getPackaging();
 
    String getArchiveName();
 
-   // ---------- Tasks
-
    List<GradleTask> getTasks();
-
-   boolean hasTask(String name);
-
-   // ---------- Dependencies
    
    List<GradleDependency> getDependencies();
+   
+   boolean hasDependency(GradleDependency dep);
 
    List<GradleDependency> getManagedDependencies();
-
-   // ---------- Profiles
+   
+   boolean hasManagedDependency(GradleDependency dep);
 
    List<GradleProfile> getProfiles();
-
-   boolean hasProfile(String name);
-
-   // ---------- Plugins
+   
+   boolean hasProfile(GradleProfile profile);
 
    List<GradlePlugin> getPlugins();
-
-   boolean hasPlugin(String clazz);
-
-   // ---------- Repositories
+   
+   boolean hasPlugin(GradlePlugin plugin);
 
    List<GradleRepository> getRepositories();
-
-   boolean hasRepository(String url);
-
-   // ---------- Properties
+   
+   boolean hasRepository(GradleRepository repo);
 
    Map<String, String> getProperties();
-
-   boolean hasProperty(String key);
 }
