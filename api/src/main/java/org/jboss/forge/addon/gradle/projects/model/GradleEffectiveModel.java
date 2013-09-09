@@ -7,49 +7,40 @@
 package org.jboss.forge.addon.gradle.projects.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Adam Wyłuda
  */
 public interface GradleEffectiveModel extends GradleDirectModel
 {
-   // ---------- Project paths
-
    String getProjectPath();
 
    String getRootProjectPath();
 
    String getArchivePath();
 
-   // ---------- Dependencies
+   List<GradleTask> getEffectiveTasks();
+
+   boolean hasEffectiveTask(GradleTask task);
 
    List<GradleDependency> getEffectiveDependencies();
 
-   boolean hasEffectiveDependency(GradleDependencyBuilder builder);
-
-   // ---------- Managed dependencies
+   boolean hasEffectiveDependency(GradleDependency dependency);
 
    List<GradleDependency> getEffectiveManagedDependencies();
 
-   boolean hasEffectiveManagedDependency(GradleDependencyBuilder builder);
+   boolean hasEffectiveManagedDependency(GradleDependency dependency);
 
-   // ---------- Profiles
+   List<GradlePlugin> getEffectivePlugins();
    
-   // TODO Effective profiles
+   boolean hasEffectivePlugin(GradlePlugin plugin);
 
-   // ---------- Plugins
+   List<GradleRepository> getEffectiveRepositories();
    
-   // TODO Effective plugins
-
-   // ---------- Repositories
-
-   // TODO Effective repositories
-
-   // --------- Source sets
+   boolean hasEffectiveRepository(GradleRepository repo);
 
    List<GradleSourceSet> getEffectiveSourceSets();
 
-   // ---------- Properties
-
-   // TODO Effective properties
+   Map<String, String> getEffectiveProperties();
 }

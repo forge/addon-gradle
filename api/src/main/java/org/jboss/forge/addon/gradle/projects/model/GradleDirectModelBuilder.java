@@ -140,15 +140,7 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    @Override
    public boolean hasDependency(GradleDependency dep)
    {
-      GradleDependencyBuilder depBuilder = GradleDependencyBuilder.create(dep);
-      for (GradleDependency gradleDep : dependencies)
-      {
-         if (depBuilder.equalsToDependency(gradleDep))
-         {
-            return true;
-         }
-      }
-      return false;
+      return listContainsDependency(dependencies, dep);
    }
 
    public GradleDirectModelBuilder addDependency(GradleDependency dep)
@@ -172,15 +164,7 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    @Override
    public boolean hasManagedDependency(GradleDependency dep)
    {
-      GradleDependencyBuilder depBuilder = GradleDependencyBuilder.create(dep);
-      for (GradleDependency gradleDep : managedDependencies)
-      {
-         if (depBuilder.equalsToDependency(gradleDep))
-         {
-            return true;
-         }
-      }
-      return false;
+      return listContainsDependency(managedDependencies, dep);
    }
 
    public GradleDirectModelBuilder addManagedDependency(GradleDependency dep)
@@ -204,14 +188,7 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    @Override
    public boolean hasProfile(GradleProfile profile)
    {
-      for (GradleProfile gradleProfile : profiles)
-      {
-         if (gradleProfile.getName().equals(profile.getName()))
-         {
-            return true;
-         }
-      }
-      return false;
+      return listContainsProfile(profiles, profile);
    }
 
    public GradleDirectModelBuilder addProfile(GradleProfile profile)
@@ -235,14 +212,7 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    @Override
    public boolean hasPlugin(GradlePlugin plugin)
    {
-      for (GradlePlugin gradlePlugin : plugins)
-      {
-         if (plugin.getClazz().equals(gradlePlugin.getClazz()))
-         {
-            return true;
-         }
-      }
-      return false;
+      return listContainsPlugin(plugins, plugin);
    }
 
    public GradleDirectModelBuilder addPlugin(GradlePlugin plugin)
@@ -266,14 +236,7 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    @Override
    public boolean hasRepository(GradleRepository repo)
    {
-      for (GradleRepository gradleRepo : repositories)
-      {
-         if (gradleRepo.getUrl().equals(repo.getUrl()))
-         {
-            return true;
-         }
-      }
-      return false;
+      return listContainsRepository(repositories, repo);
    }
 
    public GradleDirectModelBuilder addRepository(GradleRepository repo)
@@ -304,5 +267,54 @@ public class GradleDirectModelBuilder implements GradleDirectModel
    {
       properties.remove(name);
       return this;
+   }
+   
+   boolean listContainsDependency(List<GradleDependency> deps, GradleDependency dep)
+   {
+      GradleDependencyBuilder depBuilder = GradleDependencyBuilder.create(dep);
+      for (GradleDependency gradleDep : deps)
+      {
+         if (depBuilder.equalsToDependency(gradleDep))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+   
+   boolean listContainsProfile(List<GradleProfile> profiles, GradleProfile profile)
+   {
+      for (GradleProfile gradleProfile : profiles)
+      {
+         if (gradleProfile.getName().equals(profile.getName()))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+   
+   boolean listContainsPlugin(List<GradlePlugin> plugins, GradlePlugin plugin)
+   {
+      for (GradlePlugin gradlePlugin : plugins)
+      {
+         if (plugin.getClazz().equals(gradlePlugin.getClazz()))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+   
+   boolean listContainsRepository(List<GradleRepository> repos, GradleRepository repo)
+   {
+      for (GradleRepository gradleRepo : repos)
+      {
+         if (gradleRepo.getUrl().equals(repo.getUrl()))
+         {
+            return true;
+         }
+      }
+      return false;
    }
 }
