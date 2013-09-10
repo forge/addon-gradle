@@ -13,8 +13,13 @@ import org.gradle.jarjar.com.google.common.base.Joiner;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
+import org.jboss.forge.addon.gradle.projects.model.GradleDependency;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyConfiguration;
+import org.jboss.forge.addon.gradle.projects.model.GradlePlugin;
+import org.jboss.forge.addon.gradle.projects.model.GradlePluginBuilder;
+import org.jboss.forge.addon.gradle.projects.model.GradleRepository;
+import org.jboss.forge.addon.gradle.projects.model.GradleRepositoryBuilder;
 import org.jboss.forge.furnace.util.Strings;
 
 /**
@@ -124,9 +129,9 @@ public class GradleSourceUtil
    /**
     * Returns a list of dependencies which are declared in given source.
     */
-   public static List<GradleDependencyBuilder> getDependencies(String source)
+   public static List<GradleDependency> getDependencies(String source)
    {
-      List<GradleDependencyBuilder> deps = Lists.newArrayList();
+      List<GradleDependency> deps = Lists.newArrayList();
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithClosure invocation : parser.allInvocationsAtPath("dependencies"))
@@ -193,9 +198,9 @@ public class GradleSourceUtil
    /**
     * Returns a list of direct (defined using <i>direct</i> closure) dependencies declared in given source.
     */
-   public static List<GradleDependencyBuilder> getDirectDependencies(String source)
+   public static List<GradleDependency> getDirectDependencies(String source)
    {
-      List<GradleDependencyBuilder> deps = Lists.newArrayList();
+      List<GradleDependency> deps = Lists.newArrayList();
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithClosure invocation : parser.allInvocationsAtPath("dependencies"))
@@ -251,9 +256,9 @@ public class GradleSourceUtil
    /**
     * Returns a list of managed dependencies (declared using <i>managed</i> closure) in given source.
     */
-   public static List<GradleDependencyBuilder> getManagedDependencies(String source)
+   public static List<GradleDependency> getManagedDependencies(String source)
    {
-      List<GradleDependencyBuilder> deps = Lists.newArrayList();
+      List<GradleDependency> deps = Lists.newArrayList();
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithClosure invocation : parser.allInvocationsAtPath("allprojects", "dependencies"))
@@ -274,6 +279,26 @@ public class GradleSourceUtil
       }
 
       return deps;
+   }
+   
+   public static List<GradlePlugin> getPlugins(String source)
+   {
+      List<GradlePlugin> plugins = Lists.newArrayList();
+      
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithMap invocation : parser.getInvocationsWithMap())
+      {
+         if (invocation.getMethodName().equals("apply"))
+         {
+            String plugin = invocation.getParameters().get("plugin");
+            if (invocation.getParameters().size() == 1 && plugin != null)
+            {
+               plugins.add(GradlePluginBuilder.create().setClazz(plugin));
+            }
+         }
+      }
+      
+      return plugins;
    }
 
    /**
@@ -314,6 +339,25 @@ public class GradleSourceUtil
       }
 
       throw new UnremovableElementException();
+   }
+   
+   public static List<GradleRepository> getRepositories(String source)
+   {
+      List<GradleRepository> repos = Lists.newArrayList();
+      
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithClosure closure : parser.allInvocationsAtPath("repositories", "maven"))
+      {
+         for (InvocationWithString invocation : closure.getInvocationsWithString())
+         {
+            if (invocation.getMethodName().equals("url"))
+            {
+               repos.add(GradleRepositoryBuilder.create().setUrl(invocation.getString()));
+            }
+         }
+      }
+      
+      return repos;
    }
 
    public static String insertRepository(String source, String url)

@@ -14,7 +14,10 @@ import java.util.Map;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
+import org.jboss.forge.addon.gradle.projects.model.GradleDependency;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyBuilder;
+import org.jboss.forge.addon.gradle.projects.model.GradlePlugin;
+import org.jboss.forge.addon.gradle.projects.model.GradleRepository;
 import org.junit.Test;
 
 /**
@@ -125,7 +128,7 @@ public class GradleSourceUtilTest
                "    println 'Hello'\n" +
                "}";
 
-      List<GradleDependencyBuilder> deps = GradleSourceUtil.getDependencies(source);
+      List<GradleDependency> deps = GradleSourceUtil.getDependencies(source);
 
       assertEquals(2, deps.size());
       assertContainsDependency(deps, GradleDependencyBuilder.create()
@@ -188,7 +191,7 @@ public class GradleSourceUtilTest
                "    direct group: 'ggg', name: \"nnn\"\n" +
                "}";
 
-      List<GradleDependencyBuilder> deps = GradleSourceUtil.getDirectDependencies(source);
+      List<GradleDependency> deps = GradleSourceUtil.getDirectDependencies(source);
 
       assertEquals(1, deps.size());
       assertContainsDirectDependency(deps, GradleDependencyBuilder.create().setGroup("ggg").setName("nnn"));
@@ -255,11 +258,27 @@ public class GradleSourceUtilTest
                "    }\n" +
                "}\n";
       
-      List<GradleDependencyBuilder> deps = GradleSourceUtil.getManagedDependencies(source);
+      List<GradleDependency> deps = GradleSourceUtil.getManagedDependencies(source);
       
       assertEquals(1, deps.size());
       assertContainsDependency(deps, GradleDependencyBuilder.create()
                .setConfigurationName("compile").setGroup("xx").setName("yy").setVersion("vv"));
+   }
+   
+   @Test
+   public void testGetPlugins()
+   {
+      String source = "" +
+               "version = '4.0'\n" +
+               "\n" +
+               "apply plugin: 'java'\n" +
+               "\n" +
+               "repositories {}\n";
+      List<GradlePlugin> plugins = GradleSourceUtil.getPlugins(source);
+      
+      assertEquals(1, plugins.size());
+      GradlePlugin plugin = plugins.get(0);
+      assertEquals("java", plugin.getType().getShortName());
    }
 
    @Test
@@ -323,6 +342,22 @@ public class GradleSourceUtilTest
                "\n" +
                "repositories {}\n";
       GradleSourceUtil.removePlugin(source, "scala");
+   }
+   
+   @Test
+   public void testGetRepositories()
+   {
+      String source = "" +
+               "repositories {\n" +
+               "    maven {\n" +
+               "        url 'http://repo.com'\n" +
+               "    }\n" +
+               "}";
+      List<GradleRepository> repos = GradleSourceUtil.getRepositories(source);
+      
+      assertEquals(1, repos.size());
+      GradleRepository repo = repos.get(0);
+      assertEquals("http://repo.com", repo.getUrl());
    }
 
    @Test
@@ -550,11 +585,11 @@ public class GradleSourceUtilTest
       assertEquals("zzz", result.get("goodProperty"));
    }
 
-   private static void assertContainsDependency(List<GradleDependencyBuilder> list, GradleDependencyBuilder dep)
+   private static void assertContainsDependency(List<GradleDependency> list, GradleDependency dep)
    {
-      for (GradleDependencyBuilder listDep : list)
+      for (GradleDependency listDep : list)
       {
-         if (listDep.equalsToDependency(dep))
+         if (GradleDependencyBuilder.create(listDep).equalsToDependency(dep))
          {
             return;
          }
@@ -562,11 +597,11 @@ public class GradleSourceUtilTest
       fail("List doesn't contain dependency " + dep.toString());
    }
 
-   private static void assertContainsDirectDependency(List<GradleDependencyBuilder> list, GradleDependencyBuilder dep)
+   private static void assertContainsDirectDependency(List<GradleDependency> list, GradleDependency dep)
    {
-      for (GradleDependencyBuilder listDep : list)
+      for (GradleDependency listDep : list)
       {
-         if (listDep.equalsToDirectDependency(dep))
+         if (GradleDependencyBuilder.create(listDep).equalsToDirectDependency(dep))
          {
             return;
          }
