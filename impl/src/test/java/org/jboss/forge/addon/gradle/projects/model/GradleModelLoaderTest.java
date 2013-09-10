@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.furnace.util.Streams;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,9 +28,9 @@ public class GradleModelLoaderTest
    @BeforeClass
    public static void init() throws IOException
    {
-      String source = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
-      model = GradleModelLoadUtil.load(source);
-      model.setScript(Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/build.gradle")));
+      String script = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/build.gradle"));
+      String xmlOutput = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
+      model = GradleModelLoadUtil.load(script, Maps.<String, String> newHashMap(), xmlOutput);
    }
 
    @Test
@@ -78,7 +79,7 @@ public class GradleModelLoaderTest
    @Test
    public void testSetArchiveName()
    {
-      model.setArchiveName("NEWNAME");
+      ((GradleEffectiveModelBuilder) model).setArchiveName("NEWNAME");
       assertEquals("build/libs/NEWNAME.jar", model.getArchivePath());
    }
 
@@ -168,13 +169,14 @@ public class GradleModelLoaderTest
    {
       assertEquals("There are more or less than 2 profiles", 2, model.getProfiles().size());
       boolean glassfishSet = false, wildflySet = false;
+      GradleTask runApplicationServerTask = GradleTaskBuilder.create().setName("runApplicationServer");
       for (GradleProfile profile : model.getProfiles())
       {
          if (profile.getName().equals("glassfish"))
          {
             glassfishSet = true;
             assertTrue("Glassfish profile doesn't contain runApplicationServer task",
-                     profile.getModel().hasTask("runApplicationServer"));
+                     profile.getModel().hasTask(runApplicationServerTask));
             assertTrue(
                      "Glassfish profile doesn't contain specified dependency",
                      profile.getModel().hasEffectiveDependency(
@@ -184,7 +186,7 @@ public class GradleModelLoaderTest
          {
             wildflySet = true;
             assertTrue("Wildfly profile doesn't contain runApplicationServer task",
-                     profile.getModel().hasTask("runApplicationServer"));
+                     profile.getModel().hasTask(runApplicationServerTask));
             assertTrue(
                      "Wildfly profile doesn't contain specified dependency",
                      profile.getModel().hasEffectiveDependency(

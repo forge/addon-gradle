@@ -14,19 +14,15 @@ import java.util.List;
  */
 public class GradlePluginBuilder implements GradlePlugin
 {
-   private String clazz;
+   private String clazz = "";
    
    private GradlePluginBuilder()
    {
    }
    
-   public static GradlePluginBuilder create(String name)
+   public static GradlePluginBuilder create()
    {
-      GradlePluginBuilder builder = new GradlePluginBuilder();
-      
-      builder.clazz = name;
-      
-      return builder;
+      return new GradlePluginBuilder();
    }
    
    public static GradlePluginBuilder create(GradlePlugin plugin)
@@ -55,11 +51,23 @@ public class GradlePluginBuilder implements GradlePlugin
    {
       return clazz;
    }
+   
+   public GradlePluginBuilder setClazz(String clazz)
+   {
+      this.clazz = clazz;
+      return this;
+   }
 
    @Override
    public GradlePluginType getType()
    {
       return GradlePluginType.typeByClazz(clazz);
+   }
+   
+   public GradlePluginBuilder setType(GradlePluginType type)
+   {
+      this.clazz = type.getClazz();
+      return this;
    }
 
 }

@@ -45,15 +45,33 @@ public class GradleSourceSetBuilder implements GradleSourceSet
       return name;
    }
    
+   public GradleSourceSetBuilder setName(String name)
+   {
+      this.name = name;
+      return this;
+   }
+   
    @Override
    public List<GradleSourceDirectory> getJavaDirectories()
    {
       return Collections.unmodifiableList(javaDirs);
    }
    
+   public GradleSourceSetBuilder setJavaDirectories(List<GradleSourceDirectory> dirs)
+   {
+      this.javaDirs = dirs;
+      return this;
+   }
+   
    @Override
    public List<GradleSourceDirectory> getResourceDirectories()
    {
       return Collections.unmodifiableList(resourceDirs);
+   }
+   
+   public GradleSourceSetBuilder setResourceDirectories(List<GradleSourceDirectory> dirs)
+   {
+      this.resourceDirs = dirs;
+      return this;
    }
 }

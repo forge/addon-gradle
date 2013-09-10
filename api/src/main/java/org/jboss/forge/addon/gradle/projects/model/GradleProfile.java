@@ -16,5 +16,5 @@ public interface GradleProfile
 {
    String getName();
 
-   GradleDirectModel getModel();
+   GradleModel getModel();
 }

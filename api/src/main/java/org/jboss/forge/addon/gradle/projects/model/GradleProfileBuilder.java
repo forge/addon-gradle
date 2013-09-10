@@ -15,7 +15,7 @@ import java.util.List;
 public class GradleProfileBuilder implements GradleProfile
 {
    private String name = "";
-   private GradleDirectModel model = GradleDirectModelBuilder.create();
+   private GradleModel model = GradleModelBuilder.create();
    
    private GradleProfileBuilder()
    {
@@ -31,7 +31,7 @@ public class GradleProfileBuilder implements GradleProfile
       GradleProfileBuilder builder = new GradleProfileBuilder();
       
       builder.name = profile.getName();
-      builder.model = GradleDirectModelBuilder.create(profile.getModel());
+      builder.model = GradleModelBuilder.create(profile.getModel());
       
       return builder;
    }
@@ -61,14 +61,14 @@ public class GradleProfileBuilder implements GradleProfile
    }
 
    @Override
-   public GradleDirectModel getModel()
+   public GradleModel getModel()
    {
       return model;
    }
 
-   public GradleProfileBuilder setModel(GradleDirectModel model)
+   public GradleProfileBuilder setModel(GradleModel model)
    {
-      this.model = GradleDirectModelBuilder.create(model);
+      this.model = GradleModelBuilder.create(model);
       return this;
    }
 }

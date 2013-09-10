@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
@@ -24,51 +23,61 @@ public class GradleModelLoadUtil
    private GradleModelLoadUtil()
    {
    }
-   
-   /**
-    * Parses XML source into Gradle model, setting given file resource as Gradle resource.
-    */
-   public static GradleEffectiveModel load(String source)
+
+   public static GradleEffectiveModel load(String script, Map<String, String> profileScriptMap, String xmlOutput)
    {
-      Node root = XMLParser.parse(source);
-      List<GradleProfile> profiles = profilesFromNode(root);
-      GradleEffectiveModel projectModel = modelFromNode(root.getSingle("project"), profiles);
-      return projectModel;
+      Node root = XMLParser.parse(xmlOutput);
+
+      List<GradleProfile> profiles = profilesFromNode(root, profileScriptMap);
+
+      GradleEffectiveModelBuilder modelBuilder = GradleEffectiveModelBuilder.create();
+      effectiveModelFromNode(modelBuilder, root.getSingle("project"), profiles);
+      directModelFromScript(modelBuilder, script);
+
+      return modelBuilder;
    }
 
-   private static List<GradleProfile> profilesFromNode(Node rootNode)
+   private static List<GradleProfile> profilesFromNode(Node rootNode, Map<String, String> profileScriptMap)
    {
       List<GradleProfile> profiles = new ArrayList<GradleProfile>();
       for (Node profileNode : rootNode.get("profile"))
       {
          String name = profileNode.getSingle("name").getText().trim();
-         GradleEffectiveModel model = modelFromNode(profileNode.getSingle("project"), new ArrayList<GradleProfile>());
-         profiles.add(new GradleProfileImpl(name, model));
+         String script = profileScriptMap.get(name);
+
+         GradleEffectiveModelBuilder modelBuilder = GradleEffectiveModelBuilder.create();
+         effectiveModelFromNode(modelBuilder, profileNode.getSingle("project"), new ArrayList<GradleProfile>());
+         directModelFromScript(modelBuilder, script);
+
+         profiles.add(GradleProfileBuilder.create()
+                  .setName(name)
+                  .setModel(modelBuilder));
       }
       return profiles;
    }
 
-   private static GradleEffectiveModel modelFromNode(Node projectNode, List<GradleProfile> profiles)
+   private static void directModelFromScript(GradleModelBuilder builder, String script)
    {
-      String group = groupFromNode(projectNode);
-      String name = nameFromNode(projectNode);
-      String version = versionFromNode(projectNode);
-      String packaging = packagingFromNode(projectNode);
-      String archivePath = archivePathFromNode(projectNode);
-      String projectPath = projectPathFromNode(projectNode);
-      String rootProjectDirectory = rootProjectDirectoryFromNode(projectNode);
-      List<GradleTask> tasks = tasksFromNode(projectNode);
-      List<GradleDependency> deps = depsFromNode(projectNode);
-      List<GradleDependency> managedDeps = managedDepsFromNode(projectNode);
-      List<GradlePlugin> plugins = pluginsFromNode(projectNode);
-      List<GradleRepository> repositories = reposFromNode(projectNode);
-      List<GradleSourceSet> sourceSets = sourceSetsFromNode(projectNode);
-      Map<String, String> properties = propertiesFromNode(projectNode);
+      // builder.setDependencies();
+   }
 
-      return new GradleModelImpl(group, name, version,
-               projectPath, rootProjectDirectory,
-               packaging, archivePath, tasks, deps,
-               managedDeps, profiles, plugins, repositories, sourceSets, properties);
+   private static void effectiveModelFromNode(GradleEffectiveModelBuilder builder,
+            Node projectNode, List<GradleProfile> profiles)
+   {
+      builder.setGroup(groupFromNode(projectNode));
+      builder.setName(nameFromNode(projectNode));
+      builder.setVersion(versionFromNode(projectNode));
+      builder.setPackaging(packagingFromNode(projectNode));
+      builder.setArchivePath(archivePathFromNode(projectNode));
+      builder.setProjectPath(projectPathFromNode(projectNode));
+      builder.setRootProjectPath(rootProjectPathFromNode(projectNode));
+      builder.setEffectiveTasks(tasksFromNode(projectNode));
+      builder.setEffectiveDependencies(depsFromNode(projectNode));
+      builder.setEffectiveManagedDependencies(managedDepsFromNode(projectNode));
+      builder.setEffectivePlugins(pluginsFromNode(projectNode));
+      builder.setEffectiveRepositories(reposFromNode(projectNode));
+      builder.setEffectiveSourceSets(sourceSetsFromNode(projectNode));
+      builder.setEffectiveProperties(propertiesFromNode(projectNode));
    }
 
    private static String groupFromNode(Node projectNode)
@@ -91,7 +100,7 @@ public class GradleModelLoadUtil
       return projectNode.getSingle("projectPath").getText().trim();
    }
 
-   private static String rootProjectDirectoryFromNode(Node projectNode)
+   private static String rootProjectPathFromNode(Node projectNode)
    {
       return projectNode.getSingle("rootProjectDirectory").getText().trim();
    }
@@ -121,7 +130,7 @@ public class GradleModelLoadUtil
             String text = dependsOnNode.getText().trim();
             taskDeps.add(text);
          }
-         GradleTask task = new GradleTaskImpl(name, Lists.<GradleTask> newArrayList());
+         GradleTask task = GradleTaskBuilder.create().setName(name);
          tasks.add(task);
          taskDepsMap.put(task, taskDeps);
          taskByNameMap.put(task.getName(), task);
@@ -142,10 +151,10 @@ public class GradleModelLoadUtil
 
    private static List<GradleDependency> depsFromNode(Node projectNode)
    {
-      // Gradle string -> Best dependency 
+      // Gradle string -> Best dependency
       // (one which has the biggest priority, determined by overrides relationship)
       Map<String, GradleDependency> depByString = new HashMap<String, GradleDependency>();
-      
+
       for (Node depNode : projectNode.getSingle("dependencies").get("dependency"))
       {
          GradleDependency gradleDep = depFromNode(depNode);
@@ -163,7 +172,6 @@ public class GradleModelLoadUtil
             }
          }
       }
-
 
       List<GradleDependency> deps = new ArrayList<GradleDependency>();
       deps.addAll(depByString.values());
@@ -186,7 +194,12 @@ public class GradleModelLoadUtil
       String name = depNode.getSingle("name").getText().trim();
       String version = depNode.getSingle("version").getText().trim();
       String config = depNode.getSingle("configuration").getText().trim();
-      return new GradleDependencyImpl(group, name, version, GradleDependencyConfiguration.fromName(config), config);
+
+      return GradleDependencyBuilder.create()
+               .setGroup(group)
+               .setName(name)
+               .setVersion(version)
+               .setConfigurationName(config);
    }
 
    private static List<GradlePlugin> pluginsFromNode(Node projectNode)
@@ -202,7 +215,8 @@ public class GradleModelLoadUtil
    private static GradlePlugin pluginFromNode(Node pluginNode)
    {
       String clazz = pluginNode.getSingle("class").getText().trim();
-      return new GradlePluginImpl(clazz, GradlePluginType.typeByClazz(clazz));
+      return GradlePluginBuilder.create()
+               .setClazz(clazz);
    }
 
    private static List<GradleRepository> reposFromNode(Node projectNode)
@@ -212,7 +226,9 @@ public class GradleModelLoadUtil
       {
          String name = repoNode.getSingle("name").getText().trim();
          String url = repoNode.getSingle("url").getText().trim();
-         repos.add(new GradleRepositoryImpl(name, url));
+         repos.add(GradleRepositoryBuilder.create()
+                  .setName(name)
+                  .setUrl(url));
       }
       return repos;
    }
@@ -240,13 +256,17 @@ public class GradleModelLoadUtil
       {
          resourceSourceDirs.add(sourceDirectoryFromNode(directoryNode));
       }
-      return new GradleSourceSetImpl(name, javaSourceDirs, resourceSourceDirs);
+      return GradleSourceSetBuilder.create()
+               .setName(name)
+               .setJavaDirectories(javaSourceDirs)
+               .setResourceDirectories(resourceSourceDirs);
    }
 
    private static GradleSourceDirectory sourceDirectoryFromNode(Node directoryNode)
    {
       String path = directoryNode.getText().trim();
-      return new GradleSourceDirectoryImpl(path);
+      return GradleSourceDirectoryBuilder.create()
+               .setPath(path);
    }
 
    private static Map<String, String> propertiesFromNode(Node projectNode)

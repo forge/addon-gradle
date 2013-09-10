@@ -25,15 +25,6 @@ public class GradleSourceDirectoryBuilder implements GradleSourceDirectory
       return new GradleSourceDirectoryBuilder();
    }
    
-   public static GradleSourceDirectoryBuilder create(String path)
-   {
-      GradleSourceDirectoryBuilder builder = new GradleSourceDirectoryBuilder();
-      
-      builder.path = path;
-      
-      return builder;
-   }
-   
    public static GradleSourceDirectoryBuilder create(GradleSourceDirectory sourceDirectory)
    {
       GradleSourceDirectoryBuilder builder = new GradleSourceDirectoryBuilder();

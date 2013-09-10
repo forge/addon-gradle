@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author Adam Wyłuda
  */
-public interface GradleDirectModel
+public interface GradleModel
 {
    String getGroup();
 
@@ -24,27 +24,57 @@ public interface GradleDirectModel
 
    String getArchiveName();
 
+   String getProjectPath();
+
+   String getRootProjectPath();
+
+   String getArchivePath();
+
    List<GradleTask> getTasks();
-   
+
+   List<GradleTask> getEffectiveTasks();
+
+   boolean hasEffectiveTask(GradleTask task);
+
    List<GradleDependency> getDependencies();
-   
+
    boolean hasDependency(GradleDependency dep);
 
+   List<GradleDependency> getEffectiveDependencies();
+
+   boolean hasEffectiveDependency(GradleDependency dependency);
+
    List<GradleDependency> getManagedDependencies();
-   
+
    boolean hasManagedDependency(GradleDependency dep);
 
+   List<GradleDependency> getEffectiveManagedDependencies();
+
+   boolean hasEffectiveManagedDependency(GradleDependency dependency);
+
    List<GradleProfile> getProfiles();
-   
+
    boolean hasProfile(GradleProfile profile);
 
    List<GradlePlugin> getPlugins();
-   
+
    boolean hasPlugin(GradlePlugin plugin);
 
+   List<GradlePlugin> getEffectivePlugins();
+
+   boolean hasEffectivePlugin(GradlePlugin plugin);
+
    List<GradleRepository> getRepositories();
-   
+
    boolean hasRepository(GradleRepository repo);
 
+   List<GradleRepository> getEffectiveRepositories();
+
+   boolean hasEffectiveRepository(GradleRepository repo);
+
    Map<String, String> getProperties();
+
+   List<GradleSourceSet> getEffectiveSourceSets();
+
+   Map<String, String> getEffectiveProperties();
 }

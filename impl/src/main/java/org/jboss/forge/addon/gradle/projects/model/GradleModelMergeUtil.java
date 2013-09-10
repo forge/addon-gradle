@@ -15,7 +15,7 @@ public class GradleModelMergeUtil
    {
    }
    
-   public static String merge(String source, GradleDirectModel oldModel, GradleDirectModel newModel)
+   public static String merge(String source, GradleModel oldModel, GradleModel newModel)
    {
       // TODO Merge Gradle models
       return source;

@@ -554,7 +554,7 @@ public class GradleSourceUtilTest
    {
       for (GradleDependencyBuilder listDep : list)
       {
-         if (listDep.equalsToDependencyBuilder(dep))
+         if (listDep.equalsToDependency(dep))
          {
             return;
          }
@@ -566,7 +566,7 @@ public class GradleSourceUtilTest
    {
       for (GradleDependencyBuilder listDep : list)
       {
-         if (listDep.equalsToDirectDependencyBuilder(dep))
+         if (listDep.equalsToDirectDependency(dep))
          {
             return;
          }

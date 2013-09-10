@@ -6,7 +6,7 @@
  */
 package org.jboss.forge.addon.gradle.projects;
 
-import org.jboss.forge.addon.gradle.projects.model.GradleEffectiveModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
 import org.jboss.forge.addon.projects.ProjectFacet;
 import org.jboss.forge.addon.resource.FileResource;
@@ -34,9 +34,9 @@ public interface GradleFacet extends ProjectFacet
     */
    boolean executeTask(String task, String profile, String... arguments);
 
-   GradleEffectiveModel getModel();
+   GradleModel getModel();
    
-   void setModel(GradleEffectiveModel model);
+   void setModel(GradleModel model);
 
    FileResource<?> getBuildScriptResource();
    
