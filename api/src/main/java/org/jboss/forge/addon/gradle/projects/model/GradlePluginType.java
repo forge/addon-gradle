@@ -73,6 +73,7 @@ public enum GradlePluginType
    {
       this.clazz = clazz;
       TypeContainer.TYPE_BY_CLAZZ_MAP.put(clazz, this);
+      TypeContainer.TYPE_BY_CLAZZ_MAP.put(shortName, this);
       this.shortName = shortName;
       this.packaging = packaging;
       if (!Strings.isNullOrEmpty(packaging))

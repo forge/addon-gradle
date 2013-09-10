@@ -74,7 +74,7 @@ public interface GradleModel
 
    Map<String, String> getProperties();
 
-   List<GradleSourceSet> getEffectiveSourceSets();
-
    Map<String, String> getEffectiveProperties();
+
+   List<GradleSourceSet> getEffectiveSourceSets();
 }

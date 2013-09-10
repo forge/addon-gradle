@@ -21,16 +21,22 @@ import org.junit.Test;
 /**
  * @author Adam Wyłuda
  */
-public class GradleModelLoaderTest
+public class GradleModelLoadUtilTest
 {
-   private static GradleEffectiveModel model;
+   private static GradleModel model;
 
    @BeforeClass
    public static void init() throws IOException
    {
-      String script = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/build.gradle"));
-      String xmlOutput = Streams.toString(GradleModelLoaderTest.class.getResourceAsStream("/loader/forge-output.xml"));
-      model = GradleModelLoadUtil.load(script, Maps.<String, String> newHashMap(), xmlOutput);
+      String script = Streams.toString(GradleModelLoadUtilTest.class.getResourceAsStream("/loader/build.gradle"));
+      Map<String, String> profileScripts = Maps.newHashMap();
+      profileScripts.put("glassfish", Streams.toString(GradleModelLoadUtilTest.class
+               .getResourceAsStream("/loader/glassfish-profile.gradle")));
+      profileScripts.put("wildfly", Streams.toString(GradleModelLoadUtilTest.class
+               .getResourceAsStream("/loader/wildfly-profile.gradle")));
+      String xmlOutput = Streams
+               .toString(GradleModelLoadUtilTest.class.getResourceAsStream("/loader/forge-output.xml"));
+      model = GradleModelLoadUtil.load(script, profileScripts, xmlOutput);
    }
 
    @Test
@@ -50,13 +56,13 @@ public class GradleModelLoaderTest
    {
       assertEquals("0.1-SNAPSHOT", model.getVersion());
    }
-   
+
    @Test
    public void testProjectPath()
    {
       assertEquals(":", model.getProjectPath());
    }
-   
+
    @Test
    public void testRootProjectPath()
    {
@@ -77,23 +83,18 @@ public class GradleModelLoaderTest
    }
 
    @Test
-   public void testSetArchiveName()
-   {
-      ((GradleEffectiveModelBuilder) model).setArchiveName("NEWNAME");
-      assertEquals("build/libs/NEWNAME.jar", model.getArchivePath());
-   }
-
-   @Test
    public void testArchivePath()
    {
       assertEquals("build/libs/Gradle Test Project-0.1-SNAPSHOT.jar", model.getArchivePath());
    }
 
    @Test
-   public void testTasks()
+   public void testEffectiveTasks()
    {
+      assertTrue(model.hasEffectiveTask(GradleTaskBuilder.create().setName("zxyz")));
+
       boolean zxyzSet = false;
-      for (GradleTask task : model.getTasks())
+      for (GradleTask task : model.getEffectiveTasks())
       {
          if (task.getName().equals("zxyz"))
          {
@@ -118,10 +119,20 @@ public class GradleModelLoaderTest
       }
       assertTrue("zxyz task not found", zxyzSet);
    }
-
+   
    @Test
-   public void testDependencies()
+   public void testEffectiveDependencies()
    {
+      assertTrue(model.hasEffectiveDependency(GradleDependencyBuilder.create()
+               .setGroup("org.gradle").setName("gradle-tooling-api").setVersion("1.6")
+               .setConfiguration(GradleDependencyConfiguration.COMPILE)));
+      assertTrue(model.hasEffectiveDependency(GradleDependencyBuilder.create()
+               .setGroup("junit").setName("junit").setVersion("4.11")
+               .setConfiguration(GradleDependencyConfiguration.TEST_COMPILE)));
+      assertTrue(model.hasEffectiveDependency(GradleDependencyBuilder.create()
+               .setGroup("x").setName("y").setVersion("z")
+               .setConfiguration(GradleDependencyConfiguration.TEST_RUNTIME)));
+
       boolean gradleToolingSet = false, junitSet = false, xSet = false;
       for (GradleDependency dep : model.getEffectiveDependencies())
       {
@@ -153,8 +164,11 @@ public class GradleModelLoaderTest
    }
 
    @Test
-   public void testManagedDependencies()
+   public void testEffectiveManagedDependencies()
    {
+      assertTrue(model.hasEffectiveManagedDependency(GradleDependencyBuilder.create()
+               .setGroup("com.google.guava").setName("guava").setVersion("14.0.1").setConfigurationName("compile")));
+
       assertEquals(1, model.getEffectiveManagedDependencies().size());
       GradleDependency dep = model.getEffectiveManagedDependencies().get(0);
       assertEquals("com.google.guava", dep.getGroup());
@@ -167,6 +181,9 @@ public class GradleModelLoaderTest
    @Test
    public void testProfiles()
    {
+      assertTrue(model.hasProfile(GradleProfileBuilder.create().setName("glassfish")));
+      assertTrue(model.hasProfile(GradleProfileBuilder.create().setName("wildfly")));
+      
       assertEquals("There are more or less than 2 profiles", 2, model.getProfiles().size());
       boolean glassfishSet = false, wildflySet = false;
       GradleTask runApplicationServerTask = GradleTaskBuilder.create().setName("runApplicationServer");
@@ -176,7 +193,7 @@ public class GradleModelLoaderTest
          {
             glassfishSet = true;
             assertTrue("Glassfish profile doesn't contain runApplicationServer task",
-                     profile.getModel().hasTask(runApplicationServerTask));
+                     profile.getModel().hasEffectiveTask(runApplicationServerTask));
             assertTrue(
                      "Glassfish profile doesn't contain specified dependency",
                      profile.getModel().hasEffectiveDependency(
@@ -186,9 +203,8 @@ public class GradleModelLoaderTest
          {
             wildflySet = true;
             assertTrue("Wildfly profile doesn't contain runApplicationServer task",
-                     profile.getModel().hasTask(runApplicationServerTask));
-            assertTrue(
-                     "Wildfly profile doesn't contain specified dependency",
+                     profile.getModel().hasEffectiveTask(runApplicationServerTask));
+            assertTrue("Wildfly profile doesn't contain specified dependency",
                      profile.getModel().hasEffectiveDependency(
                               GradleDependencyBuilder.create("compile", "log4j:log4j:1.2.17")));
          }
@@ -198,23 +214,29 @@ public class GradleModelLoaderTest
    }
 
    @Test
-   public void testPlugins()
+   public void testEffectivePlugins()
    {
-      assertTrue("There is no java plugin", model.hasPlugin(GradlePluginType.JAVA.getClazz()));
-      assertTrue("There is no groovy plugin", model.hasPlugin(GradlePluginType.GROOVY.getClazz()));
-      assertTrue("There is no scala plugin", model.hasPlugin(GradlePluginType.SCALA.getClazz()));
-      assertTrue("There is no eclipse plugin", model.hasPlugin(GradlePluginType.ECLIPSE.getClazz()));
+      assertTrue("There is no java plugin",
+               model.hasEffectivePlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.JAVA.getClazz())));
+      assertTrue("There is no groovy plugin",
+               model.hasEffectivePlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.GROOVY.getClazz())));
+      assertTrue("There is no scala plugin",
+               model.hasEffectivePlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.SCALA.getClazz())));
+      assertTrue("There is no eclipse plugin",
+               model.hasEffectivePlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.ECLIPSE.getClazz())));
    }
 
    @Test
-   public void testRepositories()
+   public void testEffectiveRepositories()
    {
-      assertTrue("There is no Gradle repository",
-               model.hasRepository("http://repo.gradle.org/gradle/libs-releases-local/"));
+      assertTrue(
+               "There is no Gradle repository",
+               model.hasEffectiveRepository(GradleRepositoryBuilder.create()
+                        .setUrl("http://repo.gradle.org/gradle/libs-releases-local/")));
    }
 
    @Test
-   public void testSourceSets()
+   public void testEffectiveSourceSets()
    {
       assertEquals("There are more or less than two source sets", 2, model.getEffectiveSourceSets().size());
       boolean mainSetSet = false, testSetSet = false;
@@ -259,9 +281,9 @@ public class GradleModelLoaderTest
    }
 
    @Test
-   public void testProperties()
+   public void testEffectiveProperties()
    {
-      Map<String, String> props = model.getProperties();
+      Map<String, String> props = model.getEffectiveProperties();
 
       assertEquals("testMe", props.get("someProperty"));
       assertEquals("xyz", props.get("otherProperty"));

@@ -125,13 +125,13 @@
             </name>
             <dependsOn>
                <task>
+                  cleanEclipseClasspath
+               </task>
+               <task>
                   cleanEclipseProject
                </task>
                <task>
                   cleanEclipseJdt
-               </task>
-               <task>
-                  cleanEclipseClasspath
                </task>
             </dependsOn>
          </task>
@@ -212,10 +212,10 @@
             </name>
             <dependsOn>
                <task>
-                  classes
+                  compileTestJava
                </task>
                <task>
-                  compileTestJava
+                  classes
                </task>
             </dependsOn>
          </task>

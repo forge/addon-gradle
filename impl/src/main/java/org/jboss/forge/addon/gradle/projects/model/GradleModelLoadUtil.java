@@ -11,7 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.gradle.jarjar.com.google.common.collect.Maps;
+import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
+import org.jboss.forge.furnace.util.Strings;
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
 
@@ -24,15 +27,16 @@ public class GradleModelLoadUtil
    {
    }
 
-   public static GradleEffectiveModel load(String script, Map<String, String> profileScriptMap, String xmlOutput)
+   public static GradleModel load(String script, Map<String, String> profileScriptMap, String xmlOutput)
    {
       Node root = XMLParser.parse(xmlOutput);
 
       List<GradleProfile> profiles = profilesFromNode(root, profileScriptMap);
 
-      GradleEffectiveModelBuilder modelBuilder = GradleEffectiveModelBuilder.create();
-      effectiveModelFromNode(modelBuilder, root.getSingle("project"), profiles);
-      directModelFromScript(modelBuilder, script);
+      GradleModelBuilder modelBuilder = GradleModelBuilder.create();
+      modelBuilder.setProfiles(profiles);
+      loadEffectiveModel(modelBuilder, root.getSingle("project"), profiles);
+      loadDirectModel(modelBuilder, script);
 
       return modelBuilder;
    }
@@ -45,9 +49,9 @@ public class GradleModelLoadUtil
          String name = profileNode.getSingle("name").getText().trim();
          String script = profileScriptMap.get(name);
 
-         GradleEffectiveModelBuilder modelBuilder = GradleEffectiveModelBuilder.create();
-         effectiveModelFromNode(modelBuilder, profileNode.getSingle("project"), new ArrayList<GradleProfile>());
-         directModelFromScript(modelBuilder, script);
+         GradleModelBuilder modelBuilder = GradleModelBuilder.create();
+         loadEffectiveModel(modelBuilder, profileNode.getSingle("project"), new ArrayList<GradleProfile>());
+         loadDirectModel(modelBuilder, script);
 
          profiles.add(GradleProfileBuilder.create()
                   .setName(name)
@@ -56,12 +60,44 @@ public class GradleModelLoadUtil
       return profiles;
    }
 
-   private static void directModelFromScript(GradleModelBuilder builder, String script)
+   private static void loadDirectModel(GradleModelBuilder builder, String script)
    {
-      // builder.setDependencies();
+      builder.setDependencies(depsFromScript(script));
+      builder.setManagedDependencies(managedDepsFromScript(script));
+      builder.setPlugins(pluginsFromScript(script));
+      builder.setRepositories(reposFromScript(script));
+      builder.setProperties(propertiesFromScript(script));
    }
 
-   private static void effectiveModelFromNode(GradleEffectiveModelBuilder builder,
+   private static List<GradleDependency> depsFromScript(String script)
+   {
+      List<GradleDependency> deps = Lists.newArrayList();
+      deps.addAll(GradleSourceUtil.getDependencies(script));
+      deps.addAll(GradleSourceUtil.getDirectDependencies(script));
+      return deps;
+   }
+
+   private static List<GradleDependency> managedDepsFromScript(String script)
+   {
+      return GradleSourceUtil.getManagedDependencies(script);
+   }
+
+   private static List<GradlePlugin> pluginsFromScript(String script)
+   {
+      return GradleSourceUtil.getPlugins(script);
+   }
+
+   private static List<GradleRepository> reposFromScript(String script)
+   {
+      return GradleSourceUtil.getRepositories(script);
+   }
+
+   private static Map<String, String> propertiesFromScript(String script)
+   {
+      return GradleSourceUtil.getDirectProperties(script);
+   }
+
+   private static void loadEffectiveModel(GradleModelBuilder builder,
             Node projectNode, List<GradleProfile> profiles)
    {
       builder.setGroup(groupFromNode(projectNode));
@@ -69,6 +105,7 @@ public class GradleModelLoadUtil
       builder.setVersion(versionFromNode(projectNode));
       builder.setPackaging(packagingFromNode(projectNode));
       builder.setArchivePath(archivePathFromNode(projectNode));
+      builder.setArchiveName(archiveNameFromPath(builder.getArchivePath()));
       builder.setProjectPath(projectPathFromNode(projectNode));
       builder.setRootProjectPath(rootProjectPathFromNode(projectNode));
       builder.setEffectiveTasks(tasksFromNode(projectNode));
@@ -113,6 +150,18 @@ public class GradleModelLoadUtil
    private static String archivePathFromNode(Node projectNode)
    {
       return projectNode.getSingle("archivePath").getText().trim();
+   }
+
+   private static String archiveNameFromPath(String archivePath)
+   {
+      if (!Strings.isNullOrEmpty(archivePath))
+      {
+         return archivePath.substring(archivePath.lastIndexOf("/") + 1, archivePath.lastIndexOf("."));
+      }
+      else
+      {
+         return "";
+      }
    }
 
    private static List<GradleTask> tasksFromNode(Node projectNode)
