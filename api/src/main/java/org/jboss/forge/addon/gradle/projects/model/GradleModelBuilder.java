@@ -207,7 +207,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasEffectiveTask(GradleTask task)
    {
-      return listContainsTask(effectiveTasks, task);
+      return taskWhichEqualsTo(effectiveTasks, task) != null;
    }
 
    @Override
@@ -225,7 +225,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasDependency(GradleDependency dep)
    {
-      return listContainsDependency(dependencies, dep);
+      return depWhichEqualsTo(dependencies, dep) != null;
    }
 
    public GradleModelBuilder addDependency(GradleDependency dep)
@@ -236,7 +236,7 @@ public class GradleModelBuilder implements GradleModel
 
    public GradleModelBuilder removeDependency(GradleDependency dep)
    {
-      dependencies.remove(dep);
+      dependencies.remove(depWhichEqualsTo(dependencies, dep));
       return this;
    }
 
@@ -255,7 +255,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasEffectiveDependency(GradleDependency dependency)
    {
-      return listContainsDependency(effectiveDependencies, dependency);
+      return depWhichEqualsTo(effectiveDependencies, dependency) != null;
    }
 
    @Override
@@ -273,7 +273,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasManagedDependency(GradleDependency dep)
    {
-      return listContainsDependency(managedDependencies, dep);
+      return depWhichEqualsTo(managedDependencies, dep) != null;
    }
 
    public GradleModelBuilder addManagedDependency(GradleDependency dep)
@@ -284,7 +284,7 @@ public class GradleModelBuilder implements GradleModel
 
    public GradleModelBuilder removeManagedDependency(GradleDependency dep)
    {
-      managedDependencies.remove(dep);
+      managedDependencies.remove(depWhichEqualsTo(managedDependencies, dep));
       return this;
    }
 
@@ -303,7 +303,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasEffectiveManagedDependency(GradleDependency dependency)
    {
-      return listContainsDependency(effectiveManagedDependencies, dependency);
+      return depWhichEqualsTo(effectiveManagedDependencies, dependency) != null;
    }
 
    @Override
@@ -321,7 +321,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasProfile(GradleProfile profile)
    {
-      return listContainsProfile(profiles, profile);
+      return profileWhichEqualsTo(profiles, profile) != null;
    }
 
    public GradleModelBuilder addProfile(GradleProfile profile)
@@ -332,7 +332,7 @@ public class GradleModelBuilder implements GradleModel
 
    public GradleModelBuilder removeProfile(GradleProfile profile)
    {
-      profiles.remove(profile);
+      profiles.remove(profileWhichEqualsTo(profiles, profile));
       return this;
    }
 
@@ -351,7 +351,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasPlugin(GradlePlugin plugin)
    {
-      return listContainsPlugin(plugins, plugin);
+      return pluginWhichEqualsTo(plugins, plugin) != null;
    }
 
    public GradleModelBuilder addPlugin(GradlePlugin plugin)
@@ -362,7 +362,7 @@ public class GradleModelBuilder implements GradleModel
 
    public GradleModelBuilder removePlugin(GradlePlugin plugin)
    {
-      plugins.remove(plugin);
+      plugins.remove(pluginWhichEqualsTo(plugins, plugin));
       return this;
    }
 
@@ -381,7 +381,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasEffectivePlugin(GradlePlugin plugin)
    {
-      return listContainsPlugin(effectivePlugins, plugin);
+      return pluginWhichEqualsTo(effectivePlugins, plugin) != null;
    }
 
    @Override
@@ -399,7 +399,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasRepository(GradleRepository repo)
    {
-      return listContainsRepository(repositories, repo);
+      return repoWhichEqualsTo(repositories, repo) != null;
    }
 
    public GradleModelBuilder addRepository(GradleRepository repo)
@@ -410,7 +410,7 @@ public class GradleModelBuilder implements GradleModel
 
    public GradleModelBuilder removeRepository(GradleRepository repo)
    {
-      repositories.remove(repo);
+      repositories.remove(repoWhichEqualsTo(repositories, repo));
       return this;
    }
 
@@ -429,7 +429,7 @@ public class GradleModelBuilder implements GradleModel
    @Override
    public boolean hasEffectiveRepository(GradleRepository repo)
    {
-      return listContainsRepository(effectiveRepositories, repo);
+      return repoWhichEqualsTo(effectiveRepositories, repo) != null;
    }
 
    @Override
@@ -479,65 +479,65 @@ public class GradleModelBuilder implements GradleModel
       this.effectiveSourceSets = sourceSets;
       return this;
    }
-
-   boolean listContainsDependency(List<GradleDependency> deps, GradleDependency dep)
+   
+   private GradleDependency depWhichEqualsTo(List<GradleDependency> deps, GradleDependency dependency)
    {
-      GradleDependencyBuilder depBuilder = GradleDependencyBuilder.create(dep);
-      for (GradleDependency gradleDep : deps)
+      GradleDependencyBuilder builder = GradleDependencyBuilder.create(dependency);
+      for (GradleDependency dep : deps)
       {
-         if (depBuilder.equalsToDependency(gradleDep))
+         if (builder.equalsToDependency(dep))
          {
-            return true;
+            return dep;
          }
       }
-      return false;
+      return null;
    }
 
-   boolean listContainsProfile(List<GradleProfile> profiles, GradleProfile profile)
+   private GradleProfile profileWhichEqualsTo(List<GradleProfile> profiles, GradleProfile profile)
    {
       for (GradleProfile gradleProfile : profiles)
       {
          if (gradleProfile.getName().equals(profile.getName()))
          {
-            return true;
+            return gradleProfile;
          }
       }
-      return false;
+      return null;
    }
 
-   boolean listContainsPlugin(List<GradlePlugin> plugins, GradlePlugin plugin)
+   private GradlePlugin pluginWhichEqualsTo(List<GradlePlugin> plugins, GradlePlugin plugin)
    {
       for (GradlePlugin gradlePlugin : plugins)
       {
          if (plugin.getClazz().equals(gradlePlugin.getClazz()))
          {
-            return true;
+            return gradlePlugin;
          }
       }
-      return false;
+      return null;
    }
 
-   boolean listContainsRepository(List<GradleRepository> repos, GradleRepository repo)
+   private GradleRepository repoWhichEqualsTo(List<GradleRepository> repos, GradleRepository repo)
    {
       for (GradleRepository gradleRepo : repos)
       {
          if (gradleRepo.getUrl().equals(repo.getUrl()))
          {
-            return true;
+            return gradleRepo;
          }
       }
-      return false;
+      return null;
    }
 
-   boolean listContainsTask(List<GradleTask> tasks, GradleTask task)
+   private GradleTask taskWhichEqualsTo(List<GradleTask> tasks, GradleTask task)
    {
       for (GradleTask gradleTask : tasks)
       {
          if (gradleTask.getName().equals(task.getName()))
          {
-            return true;
+            return gradleTask;
          }
       }
-      return false;
+      return null;
    }
 }
