@@ -27,14 +27,15 @@ import org.jboss.forge.addon.dependencies.util.NonSnapshotDependencyFilter;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;
-import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependency;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyConfiguration;
-import org.jboss.forge.addon.gradle.projects.model.GradleEffectiveModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleRepository;
+import org.jboss.forge.addon.gradle.projects.model.GradleRepositoryBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 
@@ -64,8 +65,8 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    @Override
    public void addDirectDependency(Dependency dep)
    {
-      GradleEffectiveModel model = getGradleFacet().getModel();
-      model.addDependency(forgeDepToGradleDepBuilder(dep));
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.addDependency(forgeDepToGradleDep(dep));
       getGradleFacet().setModel(model);
    }
 
@@ -81,29 +82,23 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    @Override
    public void addDirectManagedDependency(Dependency dep)
    {
-      GradleEffectiveModel model = getGradleFacet().getModel();
-      model.addManagedDependency(forgeDepToGradleDepBuilder(dep));
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.addManagedDependency(forgeDepToGradleDep(dep));
       getGradleFacet().setModel(model);
    }
 
    @Override
    public void addRepository(String name, String url)
    {
-      GradleEffectiveModel model = getGradleFacet().getModel();
-      model.addRepository(url);
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.addRepository(GradleRepositoryBuilder.create().setName(name).setUrl(url));
       getGradleFacet().setModel(model);
    }
 
    @Override
    public List<Dependency> getDependencies()
    {
-      String script = getGradleFacet().getModel().getScript();
-      List<GradleDependencyBuilder> gradleDeps = Lists.newArrayList();
-
-      gradleDeps.addAll(GradleSourceUtil.getDependencies(script));
-      gradleDeps.addAll(GradleSourceUtil.getDirectDependencies(script));
-
-      return gradleDepBuildersToForgeDeps(gradleDeps);
+      return gradleDepsToForgeDeps(getGradleFacet().getModel().getDependencies());
    }
 
    @Override
@@ -145,8 +140,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    @Override
    public List<Dependency> getManagedDependencies()
    {
-      String script = getGradleFacet().getModel().getScript();
-      return gradleDepBuildersToForgeDeps(GradleSourceUtil.getManagedDependencies(script));
+      return gradleDepsToForgeDeps(getGradleFacet().getModel().getManagedDependencies());
    }
 
    @Override
@@ -160,7 +154,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    {
       List<DependencyRepository> repos = Lists.newArrayList();
 
-      for (GradleRepository gradleRepo : getGradleFacet().getModel().getRepositories())
+      for (GradleRepository gradleRepo : getGradleFacet().getModel().getEffectiveRepositories())
       {
          repos.add(new DependencyRepository(gradleRepo.getName(), gradleRepo.getUrl()));
       }
@@ -210,8 +204,8 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    {
       try
       {
-         GradleEffectiveModel model = getGradleFacet().getModel();
-         model.removeDependency(forgeDepToGradleDepBuilder(dependency));
+         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+         model.removeDependency(forgeDepToGradleDep(dependency));
          getGradleFacet().setModel(model);
       }
       catch (UnremovableElementException e)
@@ -226,8 +220,8 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    {
       try
       {
-         GradleEffectiveModel model = getGradleFacet().getModel();
-         model.removeManagedDependency(forgeDepToGradleDepBuilder(managedDependency));
+         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+         model.removeManagedDependency(forgeDepToGradleDep(managedDependency));
          getGradleFacet().setModel(model);
       }
       catch (UnremovableElementException e)
@@ -243,9 +237,9 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       DependencyRepository repo = null;
       try
       {
-         GradleEffectiveModel model = getGradleFacet().getModel();
+         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
          repo = findRepositoryByUrl(getRepositories(), url);
-         model.removeRepository(url);
+         model.removeRepository(GradleRepositoryBuilder.create().setUrl(url));
          getGradleFacet().setModel(model);
       }
       catch (UnremovableElementException e)
@@ -285,7 +279,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    @Override
    public Dependency resolveProperties(Dependency dependency)
    {
-      GradleEffectiveModel model = getGradleFacet().getModel();
+      GradleModel model = getGradleFacet().getModel();
       Map<String, String> props = model.getProperties();
       DependencyBuilder builder = DependencyBuilder.create(dependency);
 
@@ -340,16 +334,6 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       return gradleDepsToForgeDeps(getGradleFacet().getModel().getEffectiveManagedDependencies());
    }
 
-   private List<Dependency> gradleDepBuildersToForgeDeps(List<GradleDependencyBuilder> gradleDeps)
-   {
-      List<Dependency> deps = Lists.newArrayList();
-      for (GradleDependencyBuilder builder : gradleDeps)
-      {
-         deps.add(gradleDepBuilderToForgeDep(builder));
-      }
-      return deps;
-   }
-
    private List<Dependency> gradleDepsToForgeDeps(List<GradleDependency> gradleDeps)
    {
       List<Dependency> deps = Lists.newArrayList();
@@ -371,20 +355,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       return forgeDep;
    }
 
-   private Dependency gradleDepBuilderToForgeDep(GradleDependencyBuilder gradleDep)
-   {
-      Dependency forgeDep;
-      forgeDep = DependencyBuilder.create()
-               .setScopeType(GradleDependencyConfiguration
-                        .fromName(gradleDep.getConfigurationName()).toMavenScope())
-               .setGroupId(gradleDep.getGroup())
-               .setArtifactId(gradleDep.getName())
-               .setVersion(gradleDep.getVersion())
-               .setPackaging(gradleDep.getPackaging());
-      return forgeDep;
-   }
-
-   private GradleDependencyBuilder forgeDepToGradleDepBuilder(Dependency forgeDep)
+   private GradleDependency forgeDepToGradleDep(Dependency forgeDep)
    {
       return GradleDependencyBuilder.create()
                .setConfigurationName(GradleDependencyConfiguration

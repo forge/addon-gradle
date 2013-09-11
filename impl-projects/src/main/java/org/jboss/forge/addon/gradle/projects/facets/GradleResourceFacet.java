@@ -13,7 +13,7 @@ import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
-import org.jboss.forge.addon.gradle.projects.model.GradleEffectiveModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceDirectory;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceSet;
 import org.jboss.forge.addon.projects.Project;
@@ -25,7 +25,7 @@ import org.jboss.forge.addon.resource.FileResource;
  * @author Adam Wyłuda
  */
 @FacetConstraints({
-   @FacetConstraint(GradleFacet.class)
+         @FacetConstraint(GradleFacet.class)
 })
 public class GradleResourceFacet extends AbstractFacet<Project> implements ResourcesFacet
 {
@@ -46,7 +46,7 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    {
       List<DirectoryResource> resources = Lists.newArrayList();
       GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
-      GradleEffectiveModel model = gradleFacet.getModel();
+      GradleModelBuilder model = GradleModelBuilder.create(gradleFacet.getModel());
 
       for (GradleSourceSet sourceSet : model.getEffectiveSourceSets())
       {
@@ -62,7 +62,7 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    @Override
    public DirectoryResource getResourceFolder()
    {
-      GradleEffectiveModel model = getFaceted().getFacet(GradleFacet.class).getModel();
+      GradleModelBuilder model = GradleModelBuilder.create(getFaceted().getFacet(GradleFacet.class).getModel());
       GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "main")
                .getResourceDirectories().get(0);
       return directoryResourceFromRelativePath(dir.getPath());
@@ -71,7 +71,7 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    @Override
    public DirectoryResource getTestResourceFolder()
    {
-      GradleEffectiveModel model = getFaceted().getFacet(GradleFacet.class).getModel();
+      GradleModelBuilder model = GradleModelBuilder.create(getFaceted().getFacet(GradleFacet.class).getModel());
       GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "test")
                .getResourceDirectories().get(0);
       return directoryResourceFromRelativePath(dir.getPath());
@@ -119,7 +119,7 @@ public class GradleResourceFacet extends AbstractFacet<Project> implements Resou
    {
       List<DirectoryResource> resources = Lists.newArrayList();
       GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
-      GradleEffectiveModel model = gradleFacet.getModel();
+      GradleModelBuilder model = GradleModelBuilder.create(gradleFacet.getModel());
 
       for (GradleSourceDirectory sourceDir : GradleResourceUtil
                .findSourceSetNamed(model.getEffectiveSourceSets(), sourceSetName)

@@ -11,10 +11,9 @@ import java.util.Map;
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
-import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
-import org.jboss.forge.addon.gradle.projects.model.GradleEffectiveModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 
@@ -46,7 +45,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    {
       try
       {
-         GradleEffectiveModel model = getGradleFacet().getModel();
+         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
          model.setName(name);
          getGradleFacet().setModel(model);
       }
@@ -68,7 +67,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    {
       try
       {
-         GradleEffectiveModel model = getGradleFacet().getModel();
+         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
          model.setGroup(groupId);
          getGradleFacet().setModel(model);
       }
@@ -90,7 +89,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    {
       try
       {
-         GradleEffectiveModel model = getGradleFacet().getModel();
+         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
          model.setVersion(version);
          getGradleFacet().setModel(model);
       }
@@ -111,13 +110,13 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    @Override
    public Map<String, String> getEffectiveProperties()
    {
-      return getGradleFacet().getModel().getProperties();
+      return getGradleFacet().getModel().getEffectiveProperties();
    }
 
    @Override
    public Map<String, String> getDirectProperties()
    {
-      return GradleSourceUtil.getDirectProperties(getGradleFacet().getModel().getScript());
+      return getGradleFacet().getModel().getProperties();
    }
 
    @Override
@@ -135,7 +134,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    @Override
    public void setDirectProperty(String name, String value)
    {
-      GradleEffectiveModel model = getGradleFacet().getModel();
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
       model.setProperty(name, value);
       getGradleFacet().setModel(model);
    }
@@ -146,7 +145,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
       String property = null;
       try
       {
-         GradleEffectiveModel model = getGradleFacet().getModel();
+         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
          property = model.getProperties().get(name);
          model.removeProperty(name);
          getGradleFacet().setModel(model);

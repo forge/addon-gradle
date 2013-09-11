@@ -19,7 +19,7 @@ import javax.inject.Inject;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.addon.gradle.projects.model.GradleEffectiveModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleTask;
 import org.jboss.forge.addon.gradle.projects.model.GradleTaskBuilder;
 import org.jboss.forge.addon.projects.Project;
@@ -96,12 +96,12 @@ public class GradleFacetTest
    @Test
    public void testCreateTask()
    {
-      GradleEffectiveModel model = facet.getModel();
+      GradleModelBuilder model = GradleModelBuilder.create(facet.getModel());
       model.addTask(
                GradleTaskBuilder
                         .create()
                         .setName("myTask")
-                        .setDependsOn("abc")
+                        .setDependsOn(GradleTaskBuilder.create().setName("abc"))
                         .setType("Copy")
                         .setCode("println 'myTask!'"));
       facet.setModel(model);
