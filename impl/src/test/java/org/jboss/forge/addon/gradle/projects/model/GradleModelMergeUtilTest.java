@@ -169,7 +169,7 @@ public class GradleModelMergeUtilTest
       source = GradleModelMergeUtil.merge(source, model, builder);
       GradleModel result = GradleModelLoadUtil.load(source);
       
-      assertEquals(2, result.getPlugins());
+      assertEquals(2, result.getPlugins().size());
       assertTrue(result.hasPlugin(GradlePluginBuilder.create().setClazz("java")));
       assertTrue(result.hasPlugin(GradlePluginBuilder.create().setClazz("myplugin")));
    }
@@ -183,7 +183,7 @@ public class GradleModelMergeUtilTest
       source = GradleModelMergeUtil.merge(source, model, builder);
       GradleModel result = GradleModelLoadUtil.load(source);
       
-      assertEquals(0, result.getPlugins());
+      assertEquals(0, result.getPlugins().size());
    }
 
    @Test
@@ -195,7 +195,7 @@ public class GradleModelMergeUtilTest
       source = GradleModelMergeUtil.merge(source, model, builder);
       GradleModel result = GradleModelLoadUtil.load(source);
       
-      assertEquals(2, result.getRepositories());
+      assertEquals(2, result.getRepositories().size());
       assertTrue(result.hasRepository(GradleRepositoryBuilder.create().setUrl("http://url.com/")));
       assertTrue(result.hasRepository(GradleRepositoryBuilder.create().setUrl("http://newrepo.org/")));
    }
@@ -209,6 +209,6 @@ public class GradleModelMergeUtilTest
       source = GradleModelMergeUtil.merge(source, model, builder);
       GradleModel result = GradleModelLoadUtil.load(source);
       
-      assertEquals(0, result.getRepositories());
+      assertEquals(0, result.getRepositories().size());
    }
 }
