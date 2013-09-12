@@ -76,7 +76,7 @@ public class GradleFacetTest
    @Test
    public void testReadTaskList()
    {
-      List<GradleTask> tasks = facet.getModel().getTasks();
+      List<GradleTask> tasks = facet.getModel().getEffectiveTasks();
 
       List<String> taskNames = Lists.newArrayListWithCapacity(tasks.size());
       for (GradleTask task : tasks)
@@ -110,7 +110,7 @@ public class GradleFacetTest
       GradleFacet newGradleFacet = theSameProject.getFacet(GradleFacet.class);
 
       boolean containsMyTask = false;
-      for (GradleTask task : newGradleFacet.getModel().getTasks())
+      for (GradleTask task : newGradleFacet.getModel().getEffectiveTasks())
       {
          if (task.getName().equals("myTask"))
          {

@@ -26,7 +26,20 @@ public class GradleModelLoadUtil
    private GradleModelLoadUtil()
    {
    }
+   
+   /**
+    * Loads only direct model from given script.
+    */
+   public static GradleModel load(String script)
+   {
+      GradleModelBuilder modelBuilder = GradleModelBuilder.create();
+      loadDirectModel(modelBuilder, script);
+      return modelBuilder;
+   }
 
+   /**
+    * Loads both direct and effective model from given scripts and Gradle xml output.
+    */
    public static GradleModel load(String script, Map<String, String> profileScriptMap, String xmlOutput)
    {
       Node root = XMLParser.parse(xmlOutput);

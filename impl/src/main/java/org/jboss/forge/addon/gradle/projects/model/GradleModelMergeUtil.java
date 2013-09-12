@@ -15,6 +15,9 @@ public class GradleModelMergeUtil
    {
    }
    
+   /**
+    * Calculates differences between the old and new model, and then persists these changes in script. 
+    */
    public static String merge(String source, GradleModel oldModel, GradleModel newModel)
    {
       // TODO Merge Gradle models
