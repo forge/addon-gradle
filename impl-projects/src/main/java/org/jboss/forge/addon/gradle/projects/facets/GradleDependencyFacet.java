@@ -280,7 +280,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    public Dependency resolveProperties(Dependency dependency)
    {
       GradleModel model = getGradleFacet().getModel();
-      Map<String, String> props = model.getProperties();
+      Map<String, String> props = model.getEffectiveProperties();
       DependencyBuilder builder = DependencyBuilder.create(dependency);
 
       builder.setGroupId(resolveProperties(props, dependency.getCoordinate().getGroupId()));

@@ -14,6 +14,7 @@ import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
+import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradlePluginBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradlePluginType;
@@ -111,8 +112,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    public List<DirectoryResource> getSourceFolders()
    {
       List<DirectoryResource> resources = Lists.newArrayList();
-      GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
-      GradleModelBuilder model = GradleModelBuilder.create(gradleFacet.getModel());
+      GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
 
       for (GradleSourceSet sourceSet : model.getEffectiveSourceSets())
       {
@@ -128,7 +128,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    @Override
    public DirectoryResource getSourceFolder()
    {
-      GradleModelBuilder model = GradleModelBuilder.create(getFaceted().getFacet(GradleFacet.class).getModel());
+      GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
       GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "main")
                .getJavaDirectories().get(0);
       return directoryResourceFromRelativePath(dir.getPath());
@@ -137,7 +137,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    @Override
    public DirectoryResource getTestSourceFolder()
    {
-      GradleModelBuilder model = GradleModelBuilder.create(getFaceted().getFacet(GradleFacet.class).getModel());
+      GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
       GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "test")
                .getJavaDirectories().get(0);
       return directoryResourceFromRelativePath(dir.getPath());
@@ -238,10 +238,9 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    {
       List<DirectoryResource> resources = Lists.newArrayList();
       GradleFacet gradleFacet = getFaceted().getFacet(GradleFacet.class);
-      GradleModelBuilder model = GradleModelBuilder.create(gradleFacet.getModel());
 
       for (GradleSourceDirectory sourceDir : GradleResourceUtil
-               .findSourceSetNamed(model.getEffectiveSourceSets(), sourceSetName)
+               .findSourceSetNamed(gradleFacet.getModel().getEffectiveSourceSets(), sourceSetName)
                .getJavaDirectories())
       {
          resources.add(directoryResourceFromRelativePath(sourceDir.getPath()));

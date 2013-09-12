@@ -29,9 +29,18 @@ public class GradleModelMergeUtil
     */
    public static String merge(String source, GradleModel oldModel, GradleModel newModel)
    {
-      source = setGroup(source, newModel.getGroup());
-      source = setVersion(source, newModel.getVersion());
-      source = setArchiveName(source, newModel.getArchiveName());
+      if (!newModel.getGroup().equals(oldModel.getGroup()))
+      {
+         source = setGroup(source, newModel.getGroup());
+      }
+      if (!newModel.getVersion().equals(oldModel.getVersion()))
+      {
+         source = setVersion(source, newModel.getVersion());
+      }
+      if (!newModel.getArchiveName().equals(oldModel.getArchiveName()))
+      {
+         source = setArchiveName(source, newModel.getArchiveName());
+      }
 
       source = addTasks(source, newModel.getTasks());
 

@@ -15,7 +15,6 @@ import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
-import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelLoadUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelMergeUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
@@ -87,11 +86,10 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    {
       if (this.model != null)
       {
-         // Returns a copy of model
-         return GradleModelBuilder.create(this.model);
+         return this.model;
       }
       loadModel();
-      return GradleModelBuilder.create(this.model);
+      return this.model;
    }
 
    @Override
