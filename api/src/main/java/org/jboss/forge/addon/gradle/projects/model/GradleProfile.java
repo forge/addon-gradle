@@ -10,11 +10,19 @@ package org.jboss.forge.addon.gradle.projects.model;
  * It represents Gradle simulated profile. It offers similar functionality as Maven profiles. Gradle profiles are
  * implemented as additional Gradle build scripts using convention: {@code name-profile.gradle}
  * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public interface GradleProfile
 {
+   /**
+    * Returns name of the profile. 
+    */
    String getName();
 
+   /**
+    * Returns model of the profile. 
+    */
    GradleModel getModel();
 }

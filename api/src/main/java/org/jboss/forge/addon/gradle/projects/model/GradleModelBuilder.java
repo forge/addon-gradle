@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Default implementation of the {@link GradleModel}.
+ * 
  * @author Adam Wyłuda
  */
 public class GradleModelBuilder implements GradleModel
@@ -49,6 +51,9 @@ public class GradleModelBuilder implements GradleModel
       return new GradleModelBuilder();
    }
 
+   /**
+    * Creates a copy of given model.
+    */
    public static GradleModelBuilder create(GradleModel model)
    {
       GradleModelBuilder builder = new GradleModelBuilder();
@@ -74,6 +79,7 @@ public class GradleModelBuilder implements GradleModel
       builder.effectiveRepositories = GradleRepositoryBuilder.deepCopy(model.getEffectiveRepositories());
       builder.properties = new HashMap<String, String>(model.getProperties());
       builder.effectiveProperties = new HashMap<String, String>(model.getEffectiveProperties());
+      builder.effectiveSourceSets = GradleSourceSetBuilder.deepCopy(model.getEffectiveSourceSets());
 
       return builder;
    }

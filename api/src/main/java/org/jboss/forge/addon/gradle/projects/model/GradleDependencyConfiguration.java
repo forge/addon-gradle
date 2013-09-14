@@ -13,7 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is equivalent to Maven scope.
+ * Represents Gradle dependency configuration.
+ * 
+ * @see GradleDependency
+ * @see GradleModel
  * 
  * @author Adam Wyłuda
  */
@@ -59,18 +62,24 @@ public enum GradleDependencyConfiguration
       ConfigContainer.BY_NAME_MAP.put(name, this);
    }
 
+   /**
+    * Returns configuration name. 
+    */
    public String getName()
    {
       return name;
    }
 
+   /**
+    * Translates this configuration to Maven scope. 
+    */
    public String toMavenScope()
    {
       return mavenScope;
    }
 
    /**
-    * Defines partial ordering (in a mathematical sense) relation for configurations.
+    * Tells if given config extends this.
     */
    public boolean overrides(GradleDependencyConfiguration config)
    {

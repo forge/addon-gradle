@@ -12,7 +12,19 @@ import org.jboss.forge.addon.projects.ProjectFacet;
 import org.jboss.forge.addon.resource.FileResource;
 
 /**
- * Performs Gradle specific operations.
+ * Main Gradle project facet. Responsible for loading and saving of the project model.
+ * 
+ * <p>
+ * 
+ * Example of usage (adding a dependency):
+ * <pre>
+ * GradleModelBuilder builder = GradleModelBuilder.create(gradleFacet.getModel());
+ * builder.addDependency(GradleDependencyBuilder.create("compile", "org.x:y:1.0"));
+ * gradleFacet.setModel(builder);
+ * </pre>
+ * 
+ * @see GradleModel
+ * @see GradleModelBuilder
  * 
  * @author Adam Wyłuda
  */
@@ -20,25 +32,33 @@ public interface GradleFacet extends ProjectFacet
 {
    /**
     * Executes Gradle build with specified task.
-    * 
-    * @param task Task to be executed.
     */
    boolean executeTask(String task);
 
    /**
     * Runs Gradle applying given profile.
     * 
-    * @param profile Used profile.
-    * @see GradleFacet#executeTask(String)
     * @see GradleProfile
     */
    boolean executeTask(String task, String profile, String... arguments);
 
+   /**
+    * Returns evaluated Gradle project model. 
+    */
    GradleModel getModel();
    
+   /**
+    * Merges all changes with the old model and persists them to the build script.
+    */
    void setModel(GradleModel model);
 
+   /**
+    * Returns file resource pointing to the build.gradle script of the project. 
+    */
    FileResource<?> getBuildScriptResource();
    
+   /**
+    * Returns file resource pointing to the build.gradle script of the root project. 
+    */
    FileResource<?> getSettingsScriptResource();
 }

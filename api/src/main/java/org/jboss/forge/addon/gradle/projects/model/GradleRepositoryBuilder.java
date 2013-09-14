@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Default implementation of {@link GradleRepository}.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public class GradleRepositoryBuilder implements GradleRepository
@@ -26,6 +30,9 @@ public class GradleRepositoryBuilder implements GradleRepository
       return new GradleRepositoryBuilder();
    }
    
+   /**
+    * Creates a copy of given repository.
+    */
    public static GradleRepositoryBuilder create(GradleRepository repo)
    {
       GradleRepositoryBuilder builder = new GradleRepositoryBuilder();
@@ -35,6 +42,9 @@ public class GradleRepositoryBuilder implements GradleRepository
       return builder;
    }
    
+   /**
+    * Performs a deep copy of given repositories. 
+    */
    public static List<GradleRepository> deepCopy(List<GradleRepository> repos)
    {
       List<GradleRepository> list = new ArrayList<GradleRepository>();

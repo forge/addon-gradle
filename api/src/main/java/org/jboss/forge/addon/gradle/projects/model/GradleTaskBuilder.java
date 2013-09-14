@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Default implementation of {@link GradleTask}.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public class GradleTaskBuilder implements GradleTask
@@ -28,6 +32,9 @@ public class GradleTaskBuilder implements GradleTask
       return new GradleTaskBuilder();
    }
    
+   /**
+    * Creates a copy of given task. 
+    */
    public static GradleTaskBuilder create(GradleTask task)
    {
       GradleTaskBuilder builder = new GradleTaskBuilder();
@@ -40,6 +47,9 @@ public class GradleTaskBuilder implements GradleTask
       return builder;
    }
    
+   /**
+    * Performs a deep copy of given tasks.
+    */
    public static List<GradleTask> deepCopy(List<GradleTask> tasks)
    {
       List<GradleTask> lists = new ArrayList<GradleTask>();

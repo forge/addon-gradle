@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Default implementation of the {@link GradleDependency}.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public class GradleDependencyBuilder implements GradleDependency
@@ -29,6 +33,9 @@ public class GradleDependencyBuilder implements GradleDependency
       return new GradleDependencyBuilder();
    }
    
+   /**
+    * Creates a copy of given dependency. 
+    */
    public static GradleDependencyBuilder create(GradleDependency dependency)
    {
       GradleDependencyBuilder builder = new GradleDependencyBuilder();
@@ -62,6 +69,9 @@ public class GradleDependencyBuilder implements GradleDependency
                .setConfigurationName(configuration);
    }
    
+   /**
+    * Performs a deep copy of given dependencies. 
+    */
    public static List<GradleDependency> deepCopy(List<GradleDependency> deps)
    {
       List<GradleDependency> list = new ArrayList<GradleDependency>();

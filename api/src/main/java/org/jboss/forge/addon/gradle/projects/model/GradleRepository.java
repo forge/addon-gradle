@@ -7,11 +7,21 @@
 package org.jboss.forge.addon.gradle.projects.model;
 
 /**
+ * Default implementation of {@link GradleRepository}.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public interface GradleRepository
 {
+   /**
+    * Returns name of the repository. 
+    */
    String getName();
    
+   /**
+    * Returns URL of the repository. 
+    */
    String getUrl();
 }

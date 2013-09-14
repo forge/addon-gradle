@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Default implementation of {@link GradleProfile}.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public class GradleProfileBuilder implements GradleProfile
@@ -25,7 +29,10 @@ public class GradleProfileBuilder implements GradleProfile
    {
       return new GradleProfileBuilder();
    }
-   
+
+   /**
+    * Creates a copy of given profile. 
+    */
    public static GradleProfileBuilder create(GradleProfile profile)
    {
       GradleProfileBuilder builder = new GradleProfileBuilder();
@@ -36,6 +43,9 @@ public class GradleProfileBuilder implements GradleProfile
       return builder;
    }
    
+   /**
+    * Performs a deep copy of given profiles. 
+    */
    public static List<GradleProfile> deepCopy(List<GradleProfile> profiles)
    {
       List<GradleProfile> list = new ArrayList<GradleProfile>();

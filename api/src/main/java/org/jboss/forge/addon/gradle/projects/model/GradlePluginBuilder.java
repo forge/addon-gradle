@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Default implementation of the {@link GradlePlugin}.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public class GradlePluginBuilder implements GradlePlugin
@@ -24,7 +28,10 @@ public class GradlePluginBuilder implements GradlePlugin
    {
       return new GradlePluginBuilder();
    }
-   
+
+   /**
+    * Creates a copy of given plugin. 
+    */
    public static GradlePluginBuilder create(GradlePlugin plugin)
    {
       GradlePluginBuilder builder = new GradlePluginBuilder();
@@ -34,6 +41,9 @@ public class GradlePluginBuilder implements GradlePlugin
       return builder;
    }
    
+   /**
+    * Performs a deep copy of given plugins.
+    */
    public static List<GradlePlugin> deepCopy(List<GradlePlugin> plugins)
    {
       List<GradlePlugin> list = new ArrayList<GradlePlugin>();

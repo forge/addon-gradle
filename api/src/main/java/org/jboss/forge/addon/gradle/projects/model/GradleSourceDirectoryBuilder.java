@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Default implementation of {@link GradleSourceDirectory}.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public class GradleSourceDirectoryBuilder implements GradleSourceDirectory
@@ -25,6 +29,9 @@ public class GradleSourceDirectoryBuilder implements GradleSourceDirectory
       return new GradleSourceDirectoryBuilder();
    }
    
+   /**
+    * Creates a copy of given source directory.
+    */
    public static GradleSourceDirectoryBuilder create(GradleSourceDirectory sourceDirectory)
    {
       GradleSourceDirectoryBuilder builder = new GradleSourceDirectoryBuilder();
@@ -34,6 +41,9 @@ public class GradleSourceDirectoryBuilder implements GradleSourceDirectory
       return builder;
    }
    
+   /**
+    * Performs deep copy of given source directories.
+    */
    public static List<GradleSourceDirectory> deepCopy(List<GradleSourceDirectory> sourceDirs)
    {
       List<GradleSourceDirectory> list = new ArrayList<GradleSourceDirectory>();

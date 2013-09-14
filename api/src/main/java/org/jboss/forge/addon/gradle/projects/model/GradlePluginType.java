@@ -14,6 +14,9 @@ import org.jboss.forge.furnace.util.Strings;
 /**
  * Common Gradle plugin types.
  * 
+ * @see GradlePlugin
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public enum GradlePluginType
@@ -92,6 +95,9 @@ public enum GradlePluginType
       return shortName;
    }
    
+   /**
+    * Returns type of packaging enforced by this plugin. 
+    */
    public String getPackaging()
    {
       return packaging;
@@ -105,7 +111,10 @@ public enum GradlePluginType
       GradlePluginType type = TypeContainer.TYPE_BY_CLAZZ_MAP.get(clazz);
       return type != null ? type : OTHER;
    }
-   
+
+   /**
+    * @return Plugin type for given packaging.
+    */
    public static GradlePluginType typeByPackaging(String packaging)
    {
       return TypeContainer.TYPE_BY_PACKAGING_MAP.get(packaging);

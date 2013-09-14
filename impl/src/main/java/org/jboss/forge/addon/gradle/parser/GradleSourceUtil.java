@@ -212,7 +212,8 @@ public class GradleSourceUtil
                Map<String, String> params = mapInvocation.getParameters();
                GradleDependencyBuilder dep = GradleDependencyBuilder.create()
                         .setGroup(params.get("group"))
-                        .setName(params.get("name"));
+                        .setName(params.get("name"))
+                        .setConfiguration(GradleDependencyConfiguration.DIRECT);
                deps.add(dep);
             }
          }
@@ -280,11 +281,11 @@ public class GradleSourceUtil
 
       return deps;
    }
-   
+
    public static List<GradlePlugin> getPlugins(String source)
    {
       List<GradlePlugin> plugins = Lists.newArrayList();
-      
+
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithMap invocation : parser.getInvocationsWithMap())
       {
@@ -297,7 +298,7 @@ public class GradleSourceUtil
             }
          }
       }
-      
+
       return plugins;
    }
 
@@ -340,11 +341,11 @@ public class GradleSourceUtil
 
       throw new UnremovableElementException();
    }
-   
+
    public static List<GradleRepository> getRepositories(String source)
    {
       List<GradleRepository> repos = Lists.newArrayList();
-      
+
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithClosure closure : parser.allInvocationsAtPath("repositories", "maven"))
       {
@@ -356,7 +357,7 @@ public class GradleSourceUtil
             }
          }
       }
-      
+
       return repos;
    }
 
@@ -399,7 +400,7 @@ public class GradleSourceUtil
    {
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       String assignmentString = variableAssignmentString(key, value);
-      
+
       for (VariableAssignment assignment : parser.getVariableAssignments())
       {
          // If it's already defined somewhere

@@ -7,9 +7,17 @@
 package org.jboss.forge.addon.gradle.projects.model;
 
 /**
+ * Represents Gradle source directory.
+ * 
+ * @see GradleSourceSet
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public interface GradleSourceDirectory
 {
+   /**
+    * Returns path of the source directory.
+    */
    String getPath();
 }

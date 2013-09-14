@@ -7,20 +7,42 @@
 package org.jboss.forge.addon.gradle.projects.model;
 
 /**
+ * Project dependency defined in <i>project.dependencies</i>.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public interface GradleDependency
 {
-   String getName();
-
+   /**
+    * Returns group of the dependency.
+    */
    String getGroup();
 
+   /**
+    * Returns name of the dependency.
+    */
+   String getName();
+
+   /**
+    * Returns version of the dependency.
+    */
    String getVersion();
 
+   /**
+    * Returns dependency configuration.
+    */
    GradleDependencyConfiguration getConfiguration();
 
+   /**
+    * Returns dependency configuration name.
+    */
    String getConfigurationName();
-   
+
+   /**
+    * Returns dependency packaging.
+    */
    String getPackaging();
 
    /**

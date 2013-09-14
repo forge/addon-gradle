@@ -7,10 +7,17 @@
 package org.jboss.forge.addon.gradle.projects.model;
 
 /**
+ * Gradle plugin applied to the project.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public interface GradlePlugin
 {
+   /**
+    * Class of the plugin. 
+    */
    String getClazz();
 
    /**

@@ -9,13 +9,26 @@ package org.jboss.forge.addon.gradle.projects.model;
 import java.util.List;
 
 /**
+ * Represents Gradle source set.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public interface GradleSourceSet
 {
+   /**
+    * Returns name of the source set. 
+    */
    String getName();
-   
+
+   /**
+    * Returns list of Java source directories of the source set. 
+    */
    List<GradleSourceDirectory> getJavaDirectories();
-   
+
+   /**
+    * Returns list of resource source directories of the source set. 
+    */
    List<GradleSourceDirectory> getResourceDirectories();
 }

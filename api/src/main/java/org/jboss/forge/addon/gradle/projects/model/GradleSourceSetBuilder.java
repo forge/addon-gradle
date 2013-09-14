@@ -11,6 +11,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Default implementation of {@link GradleSourceSet}.
+ * 
+ * @see GradleModel
+ * 
  * @author Adam Wyłuda
  */
 public class GradleSourceSetBuilder implements GradleSourceSet
@@ -28,6 +32,9 @@ public class GradleSourceSetBuilder implements GradleSourceSet
       return new GradleSourceSetBuilder();
    }
    
+   /**
+    * Creates a copy of given source set. 
+    */
    public static GradleSourceSetBuilder create(GradleSourceSet sourceSet)
    {
       GradleSourceSetBuilder builder = new GradleSourceSetBuilder();
@@ -37,6 +44,21 @@ public class GradleSourceSetBuilder implements GradleSourceSet
       builder.resourceDirs = GradleSourceDirectoryBuilder.deepCopy(sourceSet.getResourceDirectories());
       
       return builder;
+   }
+   
+   /**
+    * Performs deep copy of given source sets. 
+    */
+   public static List<GradleSourceSet> deepCopy(List<GradleSourceSet> sourceSets)
+   {
+      List<GradleSourceSet> list = new ArrayList<GradleSourceSet>();
+      
+      for (GradleSourceSet sourceSet : sourceSets)
+      {
+         list.add(create(sourceSet));
+      }
+      
+      return list;
    }
 
    @Override
