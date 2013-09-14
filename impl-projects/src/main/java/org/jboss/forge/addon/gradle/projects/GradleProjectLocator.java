@@ -31,20 +31,12 @@ public class GradleProjectLocator implements ProjectLocator
    {
       Project project = new GradleProject(targetDir);
 
-      try
-      {
-         facetFactory.install(project, GradleFacet.class);
-         facetFactory.install(project, GradleMetadataFacet.class);
-         facetFactory.install(project, GradlePackagingFacet.class);
-         facetFactory.install(project, GradleDependencyFacet.class);
-         facetFactory.install(project, GradleResourceFacet.class);
-         facetFactory.install(project, GradleJavaSourceFacet.class);
-      }
-      catch (RuntimeException e)
-      {
-         throw new IllegalStateException("Could not install Gradle into Project located at ["
-                  + targetDir.getFullyQualifiedName() + "]");
-      }
+      facetFactory.install(project, GradleFacet.class);
+      facetFactory.install(project, GradleMetadataFacet.class);
+      facetFactory.install(project, GradlePackagingFacet.class);
+      facetFactory.install(project, GradleDependencyFacet.class);
+      facetFactory.install(project, GradleResourceFacet.class);
+      facetFactory.install(project, GradleJavaSourceFacet.class);
 
       return project;
    }
