@@ -485,7 +485,7 @@ public class GradleModelBuilder implements GradleModel
       this.effectiveSourceSets = sourceSets;
       return this;
    }
-   
+
    private GradleDependency depWhichEqualsTo(List<GradleDependency> deps, GradleDependency dependency)
    {
       GradleDependencyBuilder builder = GradleDependencyBuilder.create(dependency);
@@ -515,7 +515,8 @@ public class GradleModelBuilder implements GradleModel
    {
       for (GradlePlugin gradlePlugin : plugins)
       {
-         if (plugin.getClazz().equals(gradlePlugin.getClazz()))
+         if (plugin.getClazz().equals(gradlePlugin.getClazz())
+                  || plugin.getType().getShortName().equals(gradlePlugin.getClazz()))
          {
             return gradlePlugin;
          }

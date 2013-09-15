@@ -211,4 +211,16 @@ public class GradleModelMergeUtilTest
       
       assertEquals(0, result.getRepositories().size());
    }
+   
+   @Test
+   public void testSetPackaging()
+   {
+      GradleModelBuilder builder = GradleModelBuilder.create(model);
+      builder.setPackaging("ear");
+      
+      source = GradleModelMergeUtil.merge(source, model, builder);
+      GradleModel result = GradleModelLoadUtil.load(source);
+      
+      assertTrue(result.hasPlugin(GradlePluginBuilder.create().setType(GradlePluginType.EAR)));
+   }
 }

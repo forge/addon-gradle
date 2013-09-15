@@ -41,6 +41,10 @@ public class GradleModelMergeUtil
       {
          source = setArchiveName(source, newModel.getArchiveName());
       }
+      if (!newModel.getPackaging().equals(oldModel.getPackaging()))
+      {
+         source = setPackaging(source, newModel.getPackaging());
+      }
 
       source = addTasks(source, newModel.getTasks());
 
@@ -80,6 +84,21 @@ public class GradleModelMergeUtil
    {
       source = GradleSourceUtil.setArchiveName(source, archiveName);
       return source;
+   }
+
+   private static String setPackaging(String source, String packaging)
+   {
+      for (GradlePluginType type : GradlePluginType.values())
+      {
+         if (type.getPackaging().equals(packaging))
+         {
+            source = GradleSourceUtil.insertPlugin(source, !Strings.isNullOrEmpty(type.getShortName())
+                     ? type.getShortName()
+                     : type.getClazz());
+            return source;
+         }
+      }
+      throw new IllegalArgumentException("There is no plugin which provides " + packaging + " packaging");
    }
 
    private static String addTasks(String source, List<GradleTask> tasks)
