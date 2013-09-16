@@ -22,6 +22,9 @@ import org.gradle.jarjar.com.google.common.collect.Maps;
 public class InvocationWithClosure extends SourceCodeElement
 {
    private final String methodName;
+   private final String stringParameter;
+   private final Map<String, String> mapParameter;
+   
    private final List<InvocationWithClosure> internalInvocations;
    private final List<InvocationWithString> stringInvocations;
    private final List<InvocationWithMap> mapInvocations;
@@ -32,11 +35,11 @@ public class InvocationWithClosure extends SourceCodeElement
    private final Map<String, InvocationWithMap> mapInvocationMap = Maps.newHashMap();
    private final Map<String, VariableAssignment> variableAssignmentMap = Maps.newHashMap();
 
-   public InvocationWithClosure(String code, String methodName, int lineNumber, int columnNumber, int lastLineNumber,
-            int lastColumnNumber)
+   public InvocationWithClosure(String code, String methodName,  String stringParameter, Map<String, String> mapParameter,
+            int lineNumber, int columnNumber, int lastLineNumber, int lastColumnNumber)
    {
       this(code,
-               methodName,
+               methodName, stringParameter, mapParameter,
                new ArrayList<InvocationWithClosure>(),
                new ArrayList<InvocationWithString>(),
                new ArrayList<InvocationWithMap>(),
@@ -45,7 +48,7 @@ public class InvocationWithClosure extends SourceCodeElement
    }
 
    public InvocationWithClosure(String code,
-            String methodName,
+            String methodName, String stringParameter, Map<String, String> mapParameter,
             List<InvocationWithClosure> internalInvocations,
             List<InvocationWithString> stringInvocations,
             List<InvocationWithMap> mapInvocations,
@@ -53,7 +56,11 @@ public class InvocationWithClosure extends SourceCodeElement
             int lineNumber, int columnNumber, int lastLineNumber, int lastColumnNumber)
    {
       super(code, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+      
       this.methodName = methodName;
+      this.stringParameter = stringParameter;
+      this.mapParameter = mapParameter;
+      
       this.internalInvocations = ImmutableList.<InvocationWithClosure> copyOf(internalInvocations);
       this.stringInvocations = ImmutableList.<InvocationWithString> copyOf(stringInvocations);
       this.mapInvocations = ImmutableList.<InvocationWithMap> copyOf(mapInvocations);
@@ -81,6 +88,16 @@ public class InvocationWithClosure extends SourceCodeElement
    public String getMethodName()
    {
       return methodName;
+   }
+   
+   public String getStringParameter()
+   {
+      return stringParameter;
+   }
+   
+   public Map<String, String> getMapParameter()
+   {
+      return mapParameter;
    }
 
    public List<InvocationWithClosure> getInvocationsWithClosure()

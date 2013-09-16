@@ -32,8 +32,7 @@ public class GroovyASTToStringFormatterUtil
          else if (!inString && (c == ']' || c == '}'))
          {
             System.out.println();
-            indentation--;
-            System.out.print(indent(indentation));
+            System.out.print(indent(--indentation));
          }
          
          System.out.print(c);
@@ -41,8 +40,7 @@ public class GroovyASTToStringFormatterUtil
          if (!inString && (c == '[' || c == '{'))
          {
             System.out.println();
-            indentation++;
-            System.out.print(indent(indentation));
+            System.out.print(indent(++indentation));
          }
       }
    }
@@ -52,7 +50,7 @@ public class GroovyASTToStringFormatterUtil
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < times; i++)
       {
-         sb.append("   ");
+         sb.append(".   ");
       }
       return sb.toString();
    }

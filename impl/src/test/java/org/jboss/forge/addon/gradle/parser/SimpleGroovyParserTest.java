@@ -6,8 +6,7 @@
  */
 package org.jboss.forge.addon.gradle.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Map;
@@ -257,11 +256,96 @@ public class SimpleGroovyParserTest
                "strInv \"abc $xyz\"\n" +
                "mapInv a: \"b$c:x\"\n";
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      
+
       assertEquals(1, parser.getInvocationsWithString().size());
       assertEquals(1, parser.getInvocationsWithMap().size());
-      
+
       assertEquals("abc $xyz", parser.getInvocationsWithString().get(0).getString());
       assertEquals("b$c:x", parser.getInvocationsWithMap().get(0).getParameters().get("a"));
+   }
+
+   @Test
+   public void testInvocationWithClosureStringParameter()
+   {
+      String source = "" +
+               "a {\n" +
+               "    // d {}\n" +
+               "    b('xyz') {\n" +
+               "        c (\"$jkl\") {\n" +
+               "            x = \"$y\"\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      
+      assertEquals(1, parser.getInvocationsWithClosure().size());
+      
+      Optional<InvocationWithClosure> a = parser.invocationWithClosureByName("a");
+      assertTrue(a.isPresent());
+      assertEquals("a", a.get().getMethodName());
+      assertEquals(1, a.get().getInvocationsWithClosure().size());
+      
+      Optional<InvocationWithClosure> b = a.get().invocationWithClosureByName("b");
+      assertTrue(b.isPresent());
+      assertEquals("b", b.get().getMethodName());
+      assertEquals("xyz", b.get().getStringParameter());
+      assertEquals(1, b.get().getInvocationsWithClosure().size());
+      
+      Optional<InvocationWithClosure> c = b.get().invocationWithClosureByName("c");
+      assertTrue(c.isPresent());
+      assertEquals("c", c.get().getMethodName());
+      assertEquals("$jkl", c.get().getStringParameter());
+      assertEquals(1, c.get().getVariableAssignments().size());
+      
+      Optional<VariableAssignment> x = c.get().variableAssignmentByName("x");
+      assertTrue(x.isPresent());
+      assertEquals("x", x.get().getVariable());
+      assertEquals("$y", x.get().getValue());
+   }
+
+   @Test
+   public void testInvocationWithClosureMapParameter()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'x:y:z'\n" +
+               "    runtime(group: 'x', name: 'n', version: 'v') {\n" +
+               "        exclude module: 'y'\n" +
+               "    }\n" +
+               "}\n";
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      
+      assertEquals(1, parser.getInvocationsWithClosure().size());
+      
+      Optional<InvocationWithClosure> dependencies = parser.invocationWithClosureByName("dependencies");
+      assertTrue(dependencies.isPresent());
+      assertEquals("dependencies", dependencies.get().getMethodName());
+      assertEquals(1, dependencies.get().getInvocationsWithString().size());
+      assertEquals(1, dependencies.get().getInvocationsWithClosure().size());
+      
+      Optional<InvocationWithString> compile = dependencies.get().invocationWithStringByName("compile");
+      assertTrue(compile.isPresent());
+      assertEquals("compile", compile.get().getMethodName());
+      assertEquals("x:y:z", compile.get().getString());
+      
+      Optional<InvocationWithClosure> runtime = dependencies.get().invocationWithClosureByName("runtime");
+      assertTrue(runtime.isPresent());
+      assertEquals("runtime", runtime.get().getMethodName());
+      assertEquals(1, runtime.get().getInvocationsWithMap().size());
+
+      Map<String, String> runtimeParams = runtime.get().getMapParameter();
+      assertEquals(3, runtimeParams.size());
+      assertEquals("x", runtimeParams.get("group"));
+      assertEquals("n", runtimeParams.get("name"));
+      assertEquals("v", runtimeParams.get("version"));
+      
+      Optional<InvocationWithMap> exclude = runtime.get().invocationWithMapByName("exclude");
+      assertTrue(exclude.isPresent());
+      assertEquals("exclude", exclude.get().getMethodName());
+      assertEquals(1, exclude.get().getParameters().size());
+      
+      Map<String, String> excludeParams = exclude.get().getParameters();
+      assertEquals(1, excludeParams.size());
+      assertEquals("y", excludeParams.get("module"));
    }
 }

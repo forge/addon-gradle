@@ -20,6 +20,7 @@ import org.codehaus.groovy.ast.expr.DeclarationExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.GStringExpression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
+import org.codehaus.groovy.ast.expr.MapExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.NamedArgumentListExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
@@ -32,6 +33,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import org.gradle.jarjar.com.google.common.base.Optional;
 import org.gradle.jarjar.com.google.common.base.Preconditions;
 import org.gradle.jarjar.com.google.common.collect.Lists;
+import org.gradle.jarjar.com.google.common.collect.Maps;
 
 /**
  * This is a minimal groovy parser necessary to obtain information about gradle project. It can create method invocation
@@ -43,11 +45,15 @@ public class SimpleGroovyParser
 {
    private static class PreInvocationWithClosure
    {
-      public String methodName;
       public int lineNumber = 1;
       public int columnNumber = 1;
       public int lastLineNumber = 1;
       public int lastColumnNumber = 1;
+
+      public String methodName;
+      public String stringParameter;
+      public Map<String, String> mapParameter;
+
       public List<InvocationWithClosure> invocationWithClosureList = Lists.newArrayList();
       public List<InvocationWithMap> invocationWithMapList = Lists.newArrayList();
       public List<InvocationWithString> invocationWithStringList = Lists.newArrayList();
@@ -57,7 +63,8 @@ public class SimpleGroovyParser
       {
          String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
                   SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
-         return new InvocationWithClosure(code, methodName, invocationWithClosureList, invocationWithStringList,
+         return new InvocationWithClosure(code, methodName, stringParameter, mapParameter,
+                  invocationWithClosureList, invocationWithStringList,
                   invocationWithMapList, variableAssignmentList,
                   lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
       }
@@ -195,103 +202,128 @@ public class SimpleGroovyParser
    private void processMethodCallExpression(Expression expression, PreInvocationWithClosure node)
    {
       String methodName = ((MethodCallExpression) expression).getMethodAsString();
-      int lineNumber = expression.getLineNumber();
-      int columnNumber = expression.getColumnNumber();
-      int lastLineNumber = expression.getLastLineNumber();
-      int lastColumnNumber = expression.getLastColumnNumber();
 
       Expression argumentsExpression = ((MethodCallExpression) expression).getArguments();
 
       // In case argument expression is a (G)String constant or closure
-      if (argumentsExpression instanceof ArgumentListExpression &&
-               ((ArgumentListExpression) argumentsExpression).getExpressions().size() == 1)
+      if (argumentsExpression instanceof ArgumentListExpression)
       {
-         processArgumentListExpression((ArgumentListExpression) argumentsExpression, node,
-                  methodName, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+         processArgumentListExpression(expression, (ArgumentListExpression) argumentsExpression, node,
+                  methodName);
       }
 
       // If argument expression is a TupleExpression then it may be a map
       else if (argumentsExpression instanceof TupleExpression &&
                ((TupleExpression) argumentsExpression).getExpressions().size() == 1)
       {
-         processTupleExpression((TupleExpression) argumentsExpression, node,
-                  methodName, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+         processTupleExpression(expression, (TupleExpression) argumentsExpression, node, methodName);
       }
    }
 
-   private void processArgumentListExpression(ArgumentListExpression argumentsExpression,
-            PreInvocationWithClosure node,
-            String methodName, int lineNumber, int columnNumber,
-            int lastLineNumber, int lastColumnNumber)
+   private void processArgumentListExpression(Expression expression,
+            ArgumentListExpression argumentsExpression,
+            PreInvocationWithClosure node, String methodName)
    {
-      Expression argumentExpression = ((ArgumentListExpression) argumentsExpression).getExpressions().get(0);
-
-      // If argument is a string constant
-      if (isStringOrGString(argumentExpression))
+      // If it's single argument call
+      if (argumentsExpression.getExpressions().size() == 1)
       {
-         String string = valueFromStringOrGString(argumentExpression);
+         Expression argumentExpression = argumentsExpression.getExpressions().get(0);
 
-         String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
-                  SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
-         InvocationWithString invocation = new InvocationWithString(code, methodName, string, lineNumber, columnNumber,
-                  lastLineNumber, lastColumnNumber);
-         node.invocationWithStringList.add(invocation);
+         // If argument is a string constant
+         if (isStringOrGString(argumentExpression))
+         {
+            String string = valueFromStringOrGString(argumentExpression);
+
+            String code = source
+                     .substring(
+                              SourceUtil.positionInSource(source, expression.getLineNumber(), expression.getColumnNumber()),
+                              SourceUtil.positionInSource(source, expression.getLastLineNumber(),
+                                       expression.getLastColumnNumber()));
+            InvocationWithString invocation = new InvocationWithString(code, methodName, string,
+                     expression.getLineNumber(), expression.getColumnNumber(),
+                     expression.getLastLineNumber(), expression.getLastColumnNumber());
+            node.invocationWithStringList.add(invocation);
+         }
+
+         // If argument is a closure
+         else if (argumentExpression instanceof ClosureExpression)
+         {
+            processClosureExpression(expression, (ClosureExpression) argumentExpression, node, methodName,
+                     "", Maps.<String, String> newHashMap());
+         }
       }
-
-      // If argument is a closure
-      else if (argumentExpression instanceof ClosureExpression)
+      // If it's two argument call
+      else if (argumentsExpression.getExpressions().size() == 2)
       {
-         BlockStatement blockStatement = (BlockStatement) ((ClosureExpression) argumentExpression).getCode();
-
-         PreInvocationWithClosure invocation = new PreInvocationWithClosure();
-         invocation.methodName = methodName;
-         invocation.lineNumber = lineNumber;
-         invocation.columnNumber = columnNumber;
-         invocation.lastLineNumber = lastLineNumber;
-         invocation.lastColumnNumber = lastColumnNumber;
-
-         fillInvocationFromStatement(blockStatement, invocation);
-         node.invocationWithClosureList.add(invocation.create(source));
+         Expression firstArgumentExpression = argumentsExpression.getExpressions().get(0);
+         Expression secondArgumentExpression = argumentsExpression.getExpressions().get(1);
+         
+         String stringParameter = "";
+         Map<String, String> mapParameter = Maps.newHashMap();
+         
+         if (isStringOrGString(firstArgumentExpression))
+         {
+            stringParameter = valueFromStringOrGString(firstArgumentExpression);
+         }
+         else if (firstArgumentExpression instanceof MapExpression)
+         {
+            mapParameter = mapFromMapEntryExpressions(((MapExpression) firstArgumentExpression).getMapEntryExpressions());
+         }
+         
+         if (secondArgumentExpression instanceof ClosureExpression)
+         {
+            processClosureExpression(expression, (ClosureExpression) secondArgumentExpression, node, methodName,
+                     stringParameter, mapParameter);
+         }
       }
    }
 
-   private void processTupleExpression(TupleExpression argumentsExpression, PreInvocationWithClosure node,
-            String methodName, int lineNumber, int columnNumber,
-            int lastLineNumber, int lastColumnNumber)
+   private void processClosureExpression(Expression expression,
+            ClosureExpression closureExpression,
+            PreInvocationWithClosure node, 
+            String methodName, String stringParameter, Map<String, String> mapParameter)
+   {
+      BlockStatement blockStatement = (BlockStatement) (closureExpression).getCode();
+
+      PreInvocationWithClosure invocation = new PreInvocationWithClosure();
+      invocation.methodName = methodName;
+      invocation.stringParameter = stringParameter;
+      invocation.mapParameter = mapParameter;
+      
+      invocation.lineNumber = expression.getLineNumber();
+      invocation.columnNumber = expression.getColumnNumber();
+      invocation.lastLineNumber = expression.getLastLineNumber();
+      invocation.lastColumnNumber = expression.getLastColumnNumber();
+
+      fillInvocationFromStatement(blockStatement, invocation);
+      node.invocationWithClosureList.add(invocation.create(source));
+   }
+
+   private void processTupleExpression(Expression expression,
+            TupleExpression argumentsExpression, PreInvocationWithClosure node,
+            String methodName)
    {
       Expression argumentExpression = ((TupleExpression) argumentsExpression).getExpressions().get(0);
 
       // In case argument expression is a map
       if (argumentExpression instanceof NamedArgumentListExpression)
       {
-         processNamedArgumentListExpression((NamedArgumentListExpression) argumentExpression, node,
-                  methodName, lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+         processNamedArgumentListExpression(expression, (NamedArgumentListExpression) argumentExpression, node,
+                  methodName);
       }
    }
 
-   private void processNamedArgumentListExpression(NamedArgumentListExpression argumentListExpression,
-            PreInvocationWithClosure node,
-            String methodName, int lineNumber, int columnNumber,
-            int lastLineNumber, int lastColumnNumber)
+   private void processNamedArgumentListExpression(Expression expression,
+            NamedArgumentListExpression argumentListExpression,
+            PreInvocationWithClosure node, String methodName)
    {
-      Map<String, String> parameters = new HashMap<String, String>();
-      for (MapEntryExpression mapEntryExpression : argumentListExpression.getMapEntryExpressions())
-      {
-         Expression keyExpression = mapEntryExpression.getKeyExpression();
-         Expression valueExpression = mapEntryExpression.getValueExpression();
-         if (keyExpression instanceof ConstantExpression &&
-                  isStringOrGString(valueExpression))
-         {
-            String key = ((ConstantExpression) keyExpression).getValue().toString();
-            String value = valueFromStringOrGString(valueExpression);
-            parameters.put(key, value);
-         }
-      }
-
-      String code = source.substring(SourceUtil.positionInSource(source, lineNumber, columnNumber),
-               SourceUtil.positionInSource(source, lastLineNumber, lastColumnNumber));
+      Map<String, String> parameters = mapFromMapEntryExpressions(argumentListExpression.getMapEntryExpressions());
+      String code = source.substring(
+               SourceUtil.positionInSource(source, expression.getLineNumber(), expression.getColumnNumber()),
+               SourceUtil.positionInSource(source, expression.getLastLineNumber(), expression.getLastColumnNumber()));
       InvocationWithMap invocation = new InvocationWithMap(code, methodName, parameters,
-               lineNumber, columnNumber, lastLineNumber, lastColumnNumber);
+               expression.getLineNumber(), expression.getColumnNumber(),
+               expression.getLineNumber(), expression.getLastColumnNumber());
       node.invocationWithMapList.add(invocation);
    }
 
@@ -307,7 +339,7 @@ public class SimpleGroovyParser
       {
          String variable = expression.getLeftExpression().getText();
          String value = valueFromStringOrGString(expression.getRightExpression());
-         
+
          int lineNumber = expression.getLineNumber();
          int columnNumber = expression.getColumnNumber();
          int lastLineNumber = expression.getLastLineNumber();
@@ -321,7 +353,25 @@ public class SimpleGroovyParser
          node.variableAssignmentList.add(variableAssignment);
       }
    }
-   
+
+   private Map<String, String> mapFromMapEntryExpressions(List<MapEntryExpression> mapEntries)
+   {
+      Map<String, String> map = new HashMap<String, String>();
+      for (MapEntryExpression mapEntryExpression : mapEntries)
+      {
+         Expression keyExpression = mapEntryExpression.getKeyExpression();
+         Expression valueExpression = mapEntryExpression.getValueExpression();
+         if (keyExpression instanceof ConstantExpression &&
+                  isStringOrGString(valueExpression))
+         {
+            String key = ((ConstantExpression) keyExpression).getValue().toString();
+            String value = valueFromStringOrGString(valueExpression);
+            map.put(key, value);
+         }
+      }
+      return map;
+   }
+
    private String valueFromStringOrGString(Expression expression)
    {
       if (isString(expression))
@@ -334,18 +384,18 @@ public class SimpleGroovyParser
       }
       throw new IllegalArgumentException("Given expression is neither String nor GString expression");
    }
-   
+
    private boolean isStringOrGString(Expression expression)
    {
       return isString(expression) || isGString(expression);
    }
-   
+
    private boolean isString(Expression expression)
    {
       return expression instanceof ConstantExpression &&
                ((ConstantExpression) expression).getValue() instanceof String;
    }
-   
+
    private boolean isGString(Expression expression)
    {
       return expression instanceof GStringExpression;
