@@ -49,7 +49,7 @@ public class GradleModelMergeUtilTest
    public void testAddDependency()
    {
       Set<GradleDependency> deps = Sets.<GradleDependency> newHashSet(
-               GradleDependencyBuilder.create("test", "j:u:nit"),
+               GradleDependencyBuilder.create("testCompile", "j:u:nit"),
                GradleDependencyBuilder.create("testRuntime", "d:t:z"),
                GradleDependencyBuilder.create("runtime", "x:x:x")
                );
@@ -86,7 +86,7 @@ public class GradleModelMergeUtilTest
    public void testAddManagedDependency()
    {
       Set<GradleDependency> deps = Sets.<GradleDependency> newHashSet(
-               GradleDependencyBuilder.create("test", "j:u:nit"),
+               GradleDependencyBuilder.create("testCompile", "j:u:nit"),
                GradleDependencyBuilder.create("testRuntime", "d:t:z"),
                GradleDependencyBuilder.create("runtime", "x:x:x")
                );
