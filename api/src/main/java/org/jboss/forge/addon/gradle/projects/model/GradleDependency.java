@@ -29,6 +29,11 @@ public interface GradleDependency
     * Returns version of the dependency.
     */
    String getVersion();
+   
+   /**
+    * Returns dependency classifier. 
+    */
+   String getClassifier();
 
    /**
     * Returns dependency configuration.

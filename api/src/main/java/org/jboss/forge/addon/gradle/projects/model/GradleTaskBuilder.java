@@ -62,6 +62,7 @@ public class GradleTaskBuilder implements GradleTask
       return lists;
    }
 
+   @Override
    public String getName()
    {
       return name;
@@ -73,6 +74,7 @@ public class GradleTaskBuilder implements GradleTask
       return this;
    }
 
+   @Override
    public List<GradleTask> getDependsOn()
    {
       return dependsOn;
@@ -90,6 +92,7 @@ public class GradleTaskBuilder implements GradleTask
       return this;
    }
 
+   @Override
    public String getType()
    {
       return type;
@@ -101,6 +104,7 @@ public class GradleTaskBuilder implements GradleTask
       return this;
    }
 
+   @Override
    public String getCode()
    {
       return code;

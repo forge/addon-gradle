@@ -18,11 +18,14 @@ import java.util.List;
  */
 public class GradleDependencyBuilder implements GradleDependency
 {
+   private static final String DEFAULT_PACKAGING = "jar";
+   
    private String group = "";
    private String name = "";
    private String version = "";
+   private String classifier = "";
    private String configurationName = "";
-   private String packaging = "";
+   private String packaging = DEFAULT_PACKAGING;
 
    private GradleDependencyBuilder()
    {
@@ -50,22 +53,36 @@ public class GradleDependencyBuilder implements GradleDependency
    }
 
    /**
-    * Creates gradle dependency using given configuration and parsing gradleString in format: {@code group:name:version}
+    * Creates gradle dependency using given configuration and parsing gradleString in format: 
+    * {@code group:name:version[:classifier][@packaging]}
     */
    public static GradleDependencyBuilder create(String configuration, String gradleString)
    {
-      String[] split = gradleString.split(":");
-      if (split.length != 3)
-      {
-         throw new IllegalArgumentException("Invalid gradle string format");
-      }
+      String[] packagingSplit = gradleString.split("@");
+      String[] split = packagingSplit[0].split(":");
+      
       String group = split[0];
       String name = split[1];
       String version = split[2];
+      String classifier = "";
+      
+      if (split.length == 4)
+      {
+         classifier = split[3];
+      }
+      
+      String packaging = DEFAULT_PACKAGING;
+      if (packagingSplit.length == 2)
+      {
+         packaging = packagingSplit[1];
+      }
+      
       return create()
                .setName(name)
                .setGroup(group)
                .setVersion(version)
+               .setClassifier(classifier)
+               .setPackaging(packaging)
                .setConfigurationName(configuration);
    }
    
@@ -84,6 +101,7 @@ public class GradleDependencyBuilder implements GradleDependency
       return list;
    }
 
+   @Override
    public String getName()
    {
       return name;
@@ -95,6 +113,7 @@ public class GradleDependencyBuilder implements GradleDependency
       return this;
    }
 
+   @Override
    public String getGroup()
    {
       return group;
@@ -106,6 +125,7 @@ public class GradleDependencyBuilder implements GradleDependency
       return this;
    }
 
+   @Override
    public String getVersion()
    {
       return version;
@@ -117,6 +137,19 @@ public class GradleDependencyBuilder implements GradleDependency
       return this;
    }
 
+   @Override
+   public String getClassifier()
+   {
+      return classifier;
+   }
+   
+   public GradleDependencyBuilder setClassifier(String classifier)
+   {
+      this.classifier = classifier;
+      return this;
+   }
+
+   @Override
    public String getConfigurationName()
    {
       return configurationName;
@@ -127,7 +160,8 @@ public class GradleDependencyBuilder implements GradleDependency
       this.configurationName = configuration;
       return this;
    }
-   
+
+   @Override
    public String getPackaging()
    {
       return packaging;
