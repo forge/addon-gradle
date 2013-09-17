@@ -16,11 +16,11 @@ import org.junit.Test;
 public class GradleDependencyBuilderTest
 {
    @Test
-   public void testCreateFromStringSimple()
+   public void testCreateFromString()
    {
       GradleDependency dep = GradleDependencyBuilder
                .create("compile", "group:name:version");
-      
+
       assertEquals("compile", dep.getConfigurationName());
       assertEquals("group", dep.getGroup());
       assertEquals("name", dep.getName());
@@ -28,13 +28,13 @@ public class GradleDependencyBuilderTest
       assertEquals("", dep.getClassifier());
       assertEquals("jar", dep.getPackaging());
    }
-   
+
    @Test
    public void testCreateFromStringWithClassifier()
    {
       GradleDependency dep = GradleDependencyBuilder
                .create("compile", "group:name:version:classifier");
-      
+
       assertEquals("compile", dep.getConfigurationName());
       assertEquals("group", dep.getGroup());
       assertEquals("name", dep.getName());
@@ -42,13 +42,13 @@ public class GradleDependencyBuilderTest
       assertEquals("classifier", dep.getClassifier());
       assertEquals("jar", dep.getPackaging());
    }
-   
+
    @Test
    public void testCreateFromStringWithPackaging()
    {
       GradleDependency dep = GradleDependencyBuilder
                .create("compile", "group:name:version@packaging");
-      
+
       assertEquals("compile", dep.getConfigurationName());
       assertEquals("group", dep.getGroup());
       assertEquals("name", dep.getName());
@@ -56,13 +56,13 @@ public class GradleDependencyBuilderTest
       assertEquals("", dep.getClassifier());
       assertEquals("packaging", dep.getPackaging());
    }
-   
+
    @Test
    public void testCreateFromStringWithClassifierAndPackaging()
    {
       GradleDependency dep = GradleDependencyBuilder
                .create("compile", "group:name:version:classifier@packaging");
-      
+
       assertEquals("compile", dep.getConfigurationName());
       assertEquals("group", dep.getGroup());
       assertEquals("name", dep.getName());
@@ -70,22 +70,50 @@ public class GradleDependencyBuilderTest
       assertEquals("classifier", dep.getClassifier());
       assertEquals("packaging", dep.getPackaging());
    }
-   
+
+   @Test
+   public void testToGradleString()
+   {
+      assertEquals("x:y:z", GradleDependencyBuilder.create()
+               .setGroup("x").setName("y").setVersion("z").toGradleString());
+   }
+
+   @Test
+   public void testToGradleStringWithClassifier()
+   {
+      assertEquals("x:y:z:a", GradleDependencyBuilder.create()
+               .setGroup("x").setName("y").setVersion("z").setClassifier("a").toGradleString());
+   }
+
+   @Test
+   public void testToGradleStringWithPackaging()
+   {
+      assertEquals("x:y:z@pom", GradleDependencyBuilder.create()
+               .setGroup("x").setName("y").setVersion("z").setPackaging("pom").toGradleString());
+   }
+
+   @Test
+   public void testToGradleStringWithClassifierAndPackaging()
+   {
+      assertEquals("x:y:z:a@pom", GradleDependencyBuilder.create()
+               .setGroup("x").setName("y").setVersion("z").setClassifier("a").setPackaging("pom").toGradleString());
+   }
+
    @Test
    public void testConfigurationNameFromEnum()
    {
       GradleDependency dep = GradleDependencyBuilder.create()
                .setConfiguration(GradleDependencyConfiguration.RUNTIME);
-      
+
       assertEquals(GradleDependencyConfiguration.RUNTIME.getName(), dep.getConfigurationName());
    }
-   
+
    @Test
    public void testConfigurationEnumFromName()
    {
       GradleDependency dep = GradleDependencyBuilder.create()
                .setConfigurationName(GradleDependencyConfiguration.RUNTIME.getName());
-      
+
       assertEquals(GradleDependencyConfiguration.RUNTIME, dep.getConfiguration());
    }
 }

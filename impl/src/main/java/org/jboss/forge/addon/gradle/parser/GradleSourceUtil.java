@@ -85,21 +85,29 @@ public class GradleSourceUtil
       return String.format("%s '%s'", ARCHIVE_NAME_METHOD, archiveName);
    }
 
-   public static String insertDependency(String source, String group, String name, String version, String configuration)
+   public static String insertDependency(String source,
+            String configuration,
+            String group, String name, String version,
+            String classifier, String packaging)
    {
-      String depString = String.format("%s \"%s:%s:%s\"", configuration, group, name, version);
+      String depString = String.format("%s \"%s:%s:%s%s%s\"", configuration, group, name, version,
+               !Strings.isNullOrEmpty(classifier) ? ":" + classifier : "",
+               !Strings.isNullOrEmpty(packaging) ? "@" + packaging : "");
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "dependencies");
       return source;
    }
 
-   public static String removeDependency(String source, String group, String name, String version, String configuration)
+   public static String removeDependency(String source,
+            String configuration,
+            String group, String name, String version,
+            String classifier, String packaging)
             throws UnremovableElementException
    {
-      String depString = String.format("%s:%s:%s", group, name, version);
-      Map<String, String> depMap = Maps.newHashMap();
-      depMap.put("group", group);
-      depMap.put("name", name);
-      depMap.put("version", version);
+      GradleDependencyBuilder dep = GradleDependencyBuilder.create()
+               .setConfigurationName(configuration)
+               .setGroup(group).setName(name).setVersion(version)
+               .setClassifier(classifier)
+               .setPackaging(!Strings.isNullOrEmpty(packaging) ? packaging : "jar");
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithClosure deps : parser.allInvocationsAtPath("dependencies"))
@@ -107,7 +115,7 @@ public class GradleSourceUtil
          // Search in string invocations
          for (InvocationWithString invocation : deps.getInvocationsWithString())
          {
-            if (invocation.getMethodName().equals(configuration) && invocation.getString().equals(depString))
+            if (isDependencyInvocation(invocation) && dep.equalsToDependency(dependencyFromInvocation(invocation)))
             {
                return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
@@ -116,7 +124,16 @@ public class GradleSourceUtil
          // Search in map invocations
          for (InvocationWithMap invocation : deps.getInvocationsWithMap())
          {
-            if (invocation.getMethodName().equals(configuration) && invocation.getParameters().equals(depMap))
+            if (isDependencyInvocation(invocation) && dep.equalsToDependency(dependencyFromInvocation(invocation)))
+            {
+               return SourceUtil.removeSourceFragmentWithLine(source, invocation);
+            }
+         }
+
+         // Search in invocations with closure
+         for (InvocationWithClosure invocation : deps.getInvocationsWithClosure())
+         {
+            if (isDependencyInvocation(invocation) && dep.equalsToDependency(dependencyFromInvocation(invocation)))
             {
                return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
@@ -131,38 +148,40 @@ public class GradleSourceUtil
     */
    public static List<GradleDependency> getDependencies(String source)
    {
-      List<GradleDependency> deps = Lists.newArrayList();
+      List<GradleDependency> result = Lists.newArrayList();
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      for (InvocationWithClosure invocation : parser.allInvocationsAtPath("dependencies"))
+      for (InvocationWithClosure deps : parser.allInvocationsAtPath("dependencies"))
       {
-         for (InvocationWithString stringInvocation : invocation.getInvocationsWithString())
+         // Search in string invocations
+         for (InvocationWithString invocation : deps.getInvocationsWithString())
          {
-            if (isGradleString(stringInvocation.getString()))
+            if (isDependencyInvocation(invocation))
             {
-               GradleDependencyBuilder dep =
-                        GradleDependencyBuilder.create(stringInvocation.getMethodName(),
-                                 stringInvocation.getString());
-               deps.add(dep);
+               result.add(dependencyFromInvocation(invocation));
             }
          }
 
-         for (InvocationWithMap mapInvocation : invocation.getInvocationsWithMap())
+         // Search in map invocations
+         for (InvocationWithMap invocation : deps.getInvocationsWithMap())
          {
-            Map<String, String> params = mapInvocation.getParameters();
-            if (params.containsKey("group") && params.containsKey("name") && params.containsKey("version"))
+            if (isDependencyInvocation(invocation))
             {
-               GradleDependencyBuilder dep = GradleDependencyBuilder.create()
-                        .setConfigurationName(mapInvocation.getMethodName())
-                        .setGroup(params.get("group"))
-                        .setName(params.get("name"))
-                        .setVersion(params.get("version"));
-               deps.add(dep);
+               result.add(dependencyFromInvocation(invocation));
+            }
+         }
+
+         // Search in invocations with closure
+         for (InvocationWithClosure invocation : deps.getInvocationsWithClosure())
+         {
+            if (isDependencyInvocation(invocation))
+            {
+               result.add(dependencyFromInvocation(invocation));
             }
          }
       }
-
-      return deps;
+      
+      return result;
    }
 
    public static String insertDirectDependency(String source, String group, String name)
@@ -527,8 +546,111 @@ public class GradleSourceUtil
       return properties;
    }
 
+   private static GradleDependency dependencyFromInvocation(InvocationWithString invocation)
+   {
+      return dependencyFromString(invocation.getMethodName(), invocation.getString());
+   }
+
+   private static GradleDependency dependencyFromInvocation(InvocationWithMap invocation)
+   {
+      return dependencyFromMap(invocation.getMethodName(), invocation.getParameters());
+   }
+
+   private static GradleDependency dependencyFromInvocation(InvocationWithClosure invocation)
+   {
+      if (!Strings.isNullOrEmpty(invocation.getStringParameter()))
+      {
+         return dependencyFromString(invocation.getMethodName(), invocation.getStringParameter());
+      }
+      return dependencyFromMap(invocation.getMethodName(), invocation.getMapParameter());
+   }
+   
+   private static GradleDependency dependencyFromString(String configurationName, String gradleString)
+   {
+      return GradleDependencyBuilder.create(configurationName, gradleString);
+   }
+   
+   private static GradleDependency dependencyFromMap(String configurationName, Map<String, String> params)
+   {
+      String group = params.get("group");
+      String name = params.get("name");
+      String version = params.get("version");
+
+      String classifier = params.get("classifier");
+      if (Strings.isNullOrEmpty(classifier))
+      {
+         classifier = "";
+      }
+
+      String packaging = params.get("ext");
+      if (Strings.isNullOrEmpty(packaging))
+      {
+         packaging = "jar";
+      }
+      
+      return GradleDependencyBuilder.create().setConfigurationName(configurationName)
+               .setGroup(group).setName(name).setVersion(version)
+               .setClassifier(classifier).setPackaging(packaging);
+   }
+
+   private static boolean isDependencyInvocation(InvocationWithString invocation)
+   {
+      return isGradleDependencyConfiguration(invocation.getMethodName()) &&
+               isGradleString(invocation.getString());
+   }
+
+   private static boolean isDependencyInvocation(InvocationWithMap invocation)
+   {
+      return isGradleDependencyConfiguration(invocation.getMethodName()) &&
+               isDependencyMap(invocation.getParameters());
+   }
+
+   private static boolean isDependencyInvocation(InvocationWithClosure invocation)
+   {
+      if (!isGradleDependencyConfiguration(invocation.getMethodName()))
+      {
+         return false;
+      }
+      if (!Strings.isNullOrEmpty(invocation.getStringParameter()) &&
+               isGradleString(invocation.getStringParameter()))
+      {
+         return true;
+      }
+      if (invocation.getMapParameter() != null && !invocation.getMapParameter().isEmpty() &&
+               isDependencyMap(invocation.getMapParameter()))
+      {
+         return true;
+      }
+      return false;
+   }
+
+   private static boolean isDependencyMap(Map<String, String> params)
+   {
+      return params.containsKey("group") && params.containsKey("name") && params.containsKey("version");
+   }
+
+   private static boolean isGradleDependencyConfiguration(String configName)
+   {
+      for (GradleDependencyConfiguration config : GradleDependencyConfiguration.values())
+      {
+         if (!Strings.isNullOrEmpty(config.getName()) && config.getName().equals(configName))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
    private static boolean isGradleString(String string)
    {
-      return string.split(":").length == 3;
+      try
+      {
+         GradleDependencyBuilder.create("", string);
+         return true;
+      }
+      catch (Exception ex)
+      {
+         return false;
+      }
    }
 }

@@ -70,12 +70,29 @@ public class GradleSourceUtilTest
                "    compile 'a:b:1.0'\n" +
                "    testRuntime \"x:$y:3.0\"\n" +
                "}";
-      String result = GradleSourceUtil.insertDependency(source, "x", "$y", "3.0", "testRuntime");
+      String result = GradleSourceUtil.insertDependency(source, "testRuntime", "x", "$y", "3.0", "", "");
       assertEquals(expected, result);
    }
 
    @Test
-   public void testRemoveDependencyDefinedByString() throws UnremovableElementException
+   public void testInsertDependencyWithClassifierAndPackaging()
+   {
+
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}";
+      String expected = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "    testRuntime \"x:$y:3.0:cl@pom\"\n" +
+               "}";
+      String result = GradleSourceUtil.insertDependency(source, "testRuntime", "x", "$y", "3.0", "cl", "pom");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testRemoveDependencyDefinedByString()
    {
       String source = "" +
                "dependencies {\n" +
@@ -86,12 +103,47 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, "a", "b", "1.0", "compile");
+      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
       assertEquals(expected, result);
    }
 
    @Test
-   public void testRemoveDependencyDefinedByMap() throws UnremovableElementException
+   public void testRemoveDependencyDefinedByStringWithClassifierAndPackaging()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "    compile 'a:b:1.0:cl@pom'\n" +
+               "}";
+      String expected = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "}";
+      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "cl", "pom");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testRemoveDependencyDefinedByStringWithConfiguration()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "    compile('a:b:1.0') {\n" +
+               "        transitive = false\n" +
+               "        exclude module: 'x'\n" +
+               "    }\n" +
+               "}";
+      String expected = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "}";
+      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testRemoveDependencyDefinedByMap()
    {
       String source = "" +
                "dependencies {\n" +
@@ -102,19 +154,53 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, "a", "b", "1.0", "compile");
+      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testRemoveDependencyDefinedByMapWithClassifierAndPackaging()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "    compile name: 'b', version: '1.0', group: 'a', classifier: 'cl', ext: 'pom'\n" +
+               "}";
+      String expected = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "}";
+      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "cl", "pom");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testRemoveDependencyDefinedByMapWithConfiguration()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "    compile(name: 'b', version: '1.0', group: 'a') {\n" +
+               "        force = true\n" +
+               "    }\n" +
+               "}";
+      String expected = "" +
+               "dependencies {\n" +
+               "    testRuntime 'x:z:4.0'\n" +
+               "}";
+      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
       assertEquals(expected, result);
    }
 
    @Test(expected = UnremovableElementException.class)
-   public void testRemoveDependencyForException() throws UnremovableElementException
+   public void testRemoveDependencyForException()
    {
       String source = "" +
                "dependencies {\n" +
                "    def alias = compile" +
                "    alias 'a:b:1.0'\n" +
                "}";
-      GradleSourceUtil.removeDependency(source, "a", "b", "1.0", "compile");
+      GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
    }
 
    @Test
@@ -122,7 +208,11 @@ public class GradleSourceUtilTest
    {
       String source = "" +
                "dependencies {\n" +
+               "    println 'x:y:z'\n" +
                "    testRuntime 'x:z:4.0'\n" +
+               "}\n" +
+               "def x = {it * it}\n" +
+               "dependencies {\n" +
                "    compile name: 'b', version: '1.0', group: 'a'\n" +
                "    direct group: 'ggg', name: 'nnn'\n" +
                "    println 'Hello'\n" +
@@ -135,6 +225,29 @@ public class GradleSourceUtilTest
                .setConfigurationName("testRuntime").setGroup("x").setName("z").setVersion("4.0"));
       assertContainsDependency(deps, GradleDependencyBuilder.create()
                .setConfigurationName("compile").setGroup("a").setName("b").setVersion("1.0"));
+   }
+
+   @Test
+   public void testGetDependenciesWithClassifierAndPackaging()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile group: 'x', name: 'y', version: 'v', classifier: 'c', ext: 'pom'\n" +
+               "}\n" +
+               "def y = {it / it}\n" +
+               "dependencies {\n" + 
+               "    runtime 'd:e:f:xx@ear'\n" +
+               "}\n// dependencies { compile 'a:b:c' }";
+      
+      List<GradleDependency> deps = GradleSourceUtil.getDependencies(source);
+      
+      assertEquals(2, deps.size());
+      assertContainsDependency(deps, GradleDependencyBuilder.create()
+               .setConfigurationName("compile").setGroup("x").setName("y").setVersion("v")
+               .setClassifier("c").setPackaging("pom"));
+      assertContainsDependency(deps, GradleDependencyBuilder.create()
+               .setConfigurationName("runtime").setGroup("d").setName("e").setVersion("f")
+               .setClassifier("xx").setPackaging("ear"));
    }
 
    @Test
@@ -156,7 +269,7 @@ public class GradleSourceUtilTest
    }
 
    @Test
-   public void testRemoveDirectDependency() throws UnremovableElementException
+   public void testRemoveDirectDependency()
    {
       String source = "" +
                "dependencies {\n" +
@@ -180,7 +293,7 @@ public class GradleSourceUtilTest
                "}";
       GradleSourceUtil.removeDirectDependency(source, "x", "y");
    }
-   
+
    @Test
    public void testGetDirectDependencies()
    {
@@ -222,7 +335,7 @@ public class GradleSourceUtilTest
    }
 
    @Test
-   public void testRemoveManagedDependency() throws UnremovableElementException
+   public void testRemoveManagedDependency()
    {
       String source = "" +
                "dependencies {\n" +
@@ -244,7 +357,7 @@ public class GradleSourceUtilTest
       String result = GradleSourceUtil.removeManagedDependency(source, "xx", "yy", "vv", "compile");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testGetManagedDependencies()
    {
@@ -257,14 +370,14 @@ public class GradleSourceUtilTest
                "        managed configuration: 'compile', group: \"xx\", name: 'yy', version: 'vv'\n" +
                "    }\n" +
                "}\n";
-      
+
       List<GradleDependency> deps = GradleSourceUtil.getManagedDependencies(source);
-      
+
       assertEquals(1, deps.size());
       assertContainsDependency(deps, GradleDependencyBuilder.create()
                .setConfigurationName("compile").setGroup("xx").setName("yy").setVersion("vv"));
    }
-   
+
    @Test
    public void testGetPlugins()
    {
@@ -275,7 +388,7 @@ public class GradleSourceUtilTest
                "\n" +
                "repositories {}\n";
       List<GradlePlugin> plugins = GradleSourceUtil.getPlugins(source);
-      
+
       assertEquals(1, plugins.size());
       GradlePlugin plugin = plugins.get(0);
       assertEquals("java", plugin.getType().getShortName());
@@ -302,7 +415,7 @@ public class GradleSourceUtilTest
    }
 
    @Test
-   public void testRemovePluginDefinedByApply() throws UnremovableElementException
+   public void testRemovePluginDefinedByApply()
    {
       String source = "" +
                "version = '4.0'\n" +
@@ -318,7 +431,7 @@ public class GradleSourceUtilTest
    }
 
    @Test
-   public void testRemovePluginDefinedByProjectApply() throws UnremovableElementException
+   public void testRemovePluginDefinedByProjectApply()
    {
       String source = "" +
                "version = '4.0'\n" +
@@ -343,7 +456,7 @@ public class GradleSourceUtilTest
                "repositories {}\n";
       GradleSourceUtil.removePlugin(source, "scala");
    }
-   
+
    @Test
    public void testGetRepositories()
    {
@@ -354,7 +467,7 @@ public class GradleSourceUtilTest
                "    }\n" +
                "}";
       List<GradleRepository> repos = GradleSourceUtil.getRepositories(source);
-      
+
       assertEquals(1, repos.size());
       GradleRepository repo = repos.get(0);
       assertEquals("http://repo.com", repo.getUrl());
@@ -377,7 +490,7 @@ public class GradleSourceUtilTest
    }
 
    @Test
-   public void testRemoveRepository() throws UnremovableElementException
+   public void testRemoveRepository()
    {
       String source = "" +
                "repositories {\n" +
@@ -395,7 +508,7 @@ public class GradleSourceUtilTest
    }
 
    @Test(expected = UnremovableElementException.class)
-   public void testRemoveRepositoryForException() throws UnremovableElementException
+   public void testRemoveRepositoryForException()
    {
       String source = "" +
                "repositories {\n" +
@@ -437,7 +550,7 @@ public class GradleSourceUtilTest
    }
 
    @Test
-   public void testRemoveProperty() throws UnremovableElementException
+   public void testRemoveProperty()
    {
       String source = "" +
                "dependencies {\n" +
@@ -455,7 +568,7 @@ public class GradleSourceUtilTest
    }
 
    @Test(expected = UnremovableElementException.class)
-   public void testRemovePropertyForException() throws UnremovableElementException
+   public void testRemovePropertyForException()
    {
       String source = "" +
                "dependencies {\n" +
