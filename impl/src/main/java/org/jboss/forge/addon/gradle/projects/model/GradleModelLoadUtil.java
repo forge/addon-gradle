@@ -26,7 +26,7 @@ public class GradleModelLoadUtil
    private GradleModelLoadUtil()
    {
    }
-   
+
    /**
     * Loads only direct model from given script.
     */
@@ -257,11 +257,41 @@ public class GradleModelLoadUtil
       String version = depNode.getSingle("version").getText().trim();
       String config = depNode.getSingle("configuration").getText().trim();
 
-      return GradleDependencyBuilder.create()
+      GradleDependencyBuilder depBuilder = GradleDependencyBuilder.create()
                .setGroup(group)
                .setName(name)
                .setVersion(version)
                .setConfigurationName(config);
+      
+      depBuilder = loadClassifierAndPackagingFromNode(depBuilder, depNode);
+
+      return depBuilder;
+   }
+
+   private static GradleDependencyBuilder loadClassifierAndPackagingFromNode(
+            GradleDependencyBuilder depBuilder,
+            Node depNode)
+   {
+      Node artifactsNode = depNode.getSingle("artifacts");
+      Node artifactNode = artifactsNode != null ? artifactsNode.getSingle("artifact") : null;
+      
+      if (artifactNode != null)
+      {
+         String classifier = artifactNode.getSingle("classifier").getText().trim();
+         String type = artifactNode.getSingle("type").getText().trim();
+         
+         if (!Strings.isNullOrEmpty(classifier))
+         {
+            depBuilder = depBuilder.setClassifier(classifier);
+         }
+         
+         if (!Strings.isNullOrEmpty(type))
+         {
+            depBuilder = depBuilder.setPackaging(type);
+         }
+      }
+
+      return depBuilder;
    }
 
    private static List<GradlePlugin> pluginsFromNode(Node projectNode)

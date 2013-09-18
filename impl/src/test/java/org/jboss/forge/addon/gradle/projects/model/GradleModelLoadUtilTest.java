@@ -124,14 +124,26 @@ public class GradleModelLoadUtilTest
    public void testEffectiveDependencies()
    {
       assertTrue(model.hasEffectiveDependency(GradleDependencyBuilder.create()
-               .setGroup("org.gradle").setName("gradle-tooling-api").setVersion("1.6")
-               .setConfiguration(GradleDependencyConfiguration.COMPILE)));
+               .setGroup("org.gradle")
+               .setName("gradle-tooling-api")
+               .setVersion("1.6")
+               .setConfiguration(GradleDependencyConfiguration.COMPILE)
+               .setClassifier("cl")
+               .setPackaging("ear")));
+      
       assertTrue(model.hasEffectiveDependency(GradleDependencyBuilder.create()
-               .setGroup("junit").setName("junit").setVersion("4.11")
-               .setConfiguration(GradleDependencyConfiguration.TEST_COMPILE)));
+               .setGroup("junit")
+               .setName("junit")
+               .setVersion("4.11")
+               .setConfiguration(GradleDependencyConfiguration.TEST_COMPILE)
+               .setPackaging("pom")));
+      
       assertTrue(model.hasEffectiveDependency(GradleDependencyBuilder.create()
-               .setGroup("x").setName("y").setVersion("z")
-               .setConfiguration(GradleDependencyConfiguration.TEST_RUNTIME)));
+               .setGroup("x")
+               .setName("y")
+               .setVersion("z")
+               .setConfiguration(GradleDependencyConfiguration.TEST_RUNTIME)
+               .setClassifier("clas")));
 
       boolean gradleToolingSet = false, junitSet = false, xSet = false;
       for (GradleDependency dep : model.getEffectiveDependencies())
