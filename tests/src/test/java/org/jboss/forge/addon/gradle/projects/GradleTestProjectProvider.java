@@ -22,7 +22,6 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 /**
  * @author Adam Wyłuda
  */
-@Exported
 public class GradleTestProjectProvider
 {
    static final String[] RESOURCES = new String[] {

@@ -13,7 +13,6 @@ import org.jboss.forge.furnace.services.Exported;
  * 
  * @author Adam Wyłuda
  */
-@Exported
 public interface GradleManager
 {
    /**
