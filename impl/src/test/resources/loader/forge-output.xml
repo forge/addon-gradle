@@ -125,13 +125,13 @@
             </name>
             <dependsOn>
                <task>
-                  cleanEclipseClasspath
+                  cleanEclipseJdt
                </task>
                <task>
                   cleanEclipseProject
                </task>
                <task>
-                  cleanEclipseJdt
+                  cleanEclipseClasspath
                </task>
             </dependsOn>
          </task>
@@ -212,10 +212,10 @@
             </name>
             <dependsOn>
                <task>
-                  compileTestJava
+                  classes
                </task>
                <task>
-                  classes
+                  compileTestJava
                </task>
             </dependsOn>
          </task>
@@ -225,13 +225,13 @@
             </name>
             <dependsOn>
                <task>
+                  eclipseJdt
+               </task>
+               <task>
                   eclipseClasspath
                </task>
                <task>
                   eclipseProject
-               </task>
-               <task>
-                  eclipseJdt
                </task>
             </dependsOn>
          </task>
@@ -359,16 +359,16 @@
             </name>
             <dependsOn>
                <task>
-                  processTestResources
-               </task>
-               <task>
-                  compileTestJava
-               </task>
-               <task>
                   compileTestScala
                </task>
                <task>
                   compileTestGroovy
+               </task>
+               <task>
+                  processTestResources
+               </task>
+               <task>
+                  compileTestJava
                </task>
             </dependsOn>
          </task>
@@ -397,6 +397,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                compile
             </configuration>
@@ -411,6 +413,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                compile
             </configuration>
@@ -425,6 +429,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                compile
             </configuration>
@@ -439,6 +445,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                compile
             </configuration>
@@ -453,6 +461,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                default
             </configuration>
@@ -467,6 +477,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                default
             </configuration>
@@ -481,6 +493,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                default
             </configuration>
@@ -495,6 +509,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                default
             </configuration>
@@ -509,6 +525,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                runtime
             </configuration>
@@ -523,6 +541,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                runtime
             </configuration>
@@ -537,6 +557,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                runtime
             </configuration>
@@ -551,6 +573,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                runtime
             </configuration>
@@ -565,6 +589,8 @@
             <version>
                4.11
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testCompile
             </configuration>
@@ -579,6 +605,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testCompile
             </configuration>
@@ -593,6 +621,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testCompile
             </configuration>
@@ -607,6 +637,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testCompile
             </configuration>
@@ -621,6 +653,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testCompile
             </configuration>
@@ -635,6 +669,8 @@
             <version>
                z
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testRuntime
             </configuration>
@@ -649,6 +685,8 @@
             <version>
                4.11
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testRuntime
             </configuration>
@@ -663,6 +701,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testRuntime
             </configuration>
@@ -677,6 +717,8 @@
             <version>
                1.6
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testRuntime
             </configuration>
@@ -691,6 +733,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testRuntime
             </configuration>
@@ -705,6 +749,8 @@
             <version>
                1.7.5
             </version>
+            <artifacts>
+            </artifacts>
             <configuration>
                testRuntime
             </configuration>
@@ -911,6 +957,8 @@
                <version>
                   1.0
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   compile
                </configuration>
@@ -925,6 +973,8 @@
                <version>
                   1.0
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   default
                </configuration>
@@ -939,6 +989,8 @@
                <version>
                   1.0
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   runtime
                </configuration>
@@ -953,6 +1005,8 @@
                <version>
                   1.0
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   testCompile
                </configuration>
@@ -967,6 +1021,8 @@
                <version>
                   1.0
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   testRuntime
                </configuration>
@@ -1046,6 +1102,8 @@
                <version>
                   1.2.17
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   compile
                </configuration>
@@ -1060,6 +1118,8 @@
                <version>
                   1.2.17
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   default
                </configuration>
@@ -1074,6 +1134,8 @@
                <version>
                   1.2.17
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   runtime
                </configuration>
@@ -1088,6 +1150,8 @@
                <version>
                   1.2.17
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   testCompile
                </configuration>
@@ -1102,6 +1166,8 @@
                <version>
                   1.2.17
                </version>
+               <artifacts>
+               </artifacts>
                <configuration>
                   testRuntime
                </configuration>

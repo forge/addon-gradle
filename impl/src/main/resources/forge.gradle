@@ -146,6 +146,20 @@ allprojects {
                         outputInc '<version>'
                         output d.version
                         outputDec '</version>'
+                        outputInc '<artifacts>'
+                        if (d instanceof ModuleDependency) {
+                            d.artifacts.each {
+                                outputInc '<artifact>'
+                                outputInc '<classifier>'
+                                output it.classifier
+                                outputDec '</classifier>'
+                                outputInc '<type>'
+                                output it.type
+                                outputDec '</type>'
+                                outputDec '</artifact>'
+                            }
+                        }
+                        outputDec '</artifacts>'
                         outputInc '<configuration>'
                         output c.name
                         outputDec '</configuration>'
@@ -194,28 +208,28 @@ allprojects {
                 outputDec '</plugins>'
                 outputInc '<sourceSets>'
                 if (p.hasProperty('sourceSets')) {
-	                p.sourceSets.each { set ->
-	                    outputInc '<sourceSet>'
-	                    outputInc '<name>'
-	                    output set.name
-	                    outputDec '</name>'
-	                    outputInc '<java>'
-	                    set.java.srcDirs.each {
-	                        outputInc '<directory>'
-	                        outputRelative(it, project.projectDir)
-	                        outputDec '</directory>'
-	                    }
-	                    outputDec '</java>'
-	                    outputInc '<resources>'
-	                    set.resources.srcDirs.each {
-	                        outputInc '<directory>'
-	                        outputRelative(it, project.projectDir)
-	                        outputDec '</directory>'
-	                    }
-	                    outputDec '</resources>'
-	                    outputDec '</sourceSet>'
-	                }
-	            }
+                    p.sourceSets.each { set ->
+                        outputInc '<sourceSet>'
+                        outputInc '<name>'
+                        output set.name
+                        outputDec '</name>'
+                        outputInc '<java>'
+                        set.java.srcDirs.each {
+                            outputInc '<directory>'
+                            outputRelative(it, project.projectDir)
+                            outputDec '</directory>'
+                        }
+                        outputDec '</java>'
+                        outputInc '<resources>'
+                        set.resources.srcDirs.each {
+                            outputInc '<directory>'
+                            outputRelative(it, project.projectDir)
+                            outputDec '</directory>'
+                        }
+                        outputDec '</resources>'
+                        outputDec '</sourceSet>'
+                    }
+                }
                 outputDec '</sourceSets>'
                 outputDec '</project>'
             }
