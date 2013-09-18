@@ -42,15 +42,15 @@ allprojects {
 }
 
 dependencies {
-    compile 'org.gradle:gradle-tooling-api:1.6'
+    compile 'org.gradle:gradle-tooling-api:1.6:cl@ear'
     compile 'org.gradle:gradle-core:1.6'
 
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'org.slf4j:slf4j-simple:1.7.5'
 
-    testCompile 'junit:junit:4.11'
+    testCompile 'junit:junit:4.11@pom'
     
-    testRuntime 'x:y:z'
+    testRuntime 'x:y:z:clas'
 }
 
 task zxyz(dependsOn: [build, test]) << {

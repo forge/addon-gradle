@@ -151,7 +151,7 @@ allprojects {
                             d.artifacts.each {
                                 outputInc '<artifact>'
                                 outputInc '<classifier>'
-                                output it.classifier
+                                output it.classifier != null ? it.classifier : ''
                                 outputDec '</classifier>'
                                 outputInc '<type>'
                                 output it.type

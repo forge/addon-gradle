@@ -142,6 +142,8 @@ public class GradleModelLoadUtilTest
             assertEquals(GradleDependencyConfiguration.COMPILE, dep.getConfiguration());
             assertEquals("org.gradle", dep.getGroup());
             assertEquals("1.6", dep.getVersion());
+            assertEquals("cl", dep.getClassifier());
+            assertEquals("ear", dep.getPackaging());
          }
          else if (dep.getName().equals("junit"))
          {
@@ -149,6 +151,7 @@ public class GradleModelLoadUtilTest
             assertEquals(GradleDependencyConfiguration.TEST_COMPILE, dep.getConfiguration());
             assertEquals("junit", dep.getGroup());
             assertEquals("4.11", dep.getVersion());
+            assertEquals("pom", dep.getPackaging());
          }
          else if (dep.getName().equals("y"))
          {
@@ -156,6 +159,7 @@ public class GradleModelLoadUtilTest
             assertEquals(GradleDependencyConfiguration.TEST_RUNTIME, dep.getConfiguration());
             assertEquals("x", dep.getGroup());
             assertEquals("z", dep.getVersion());
+            assertEquals("clas", dep.getClassifier());
          }
       }
       assertTrue("gradle-tooling-api dependency not found", gradleToolingSet);

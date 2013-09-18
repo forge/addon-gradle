@@ -102,13 +102,13 @@
                   compileScala
                </task>
                <task>
-                  compileGroovy
+                  processResources
                </task>
                <task>
                   compileJava
                </task>
                <task>
-                  processResources
+                  compileGroovy
                </task>
             </dependsOn>
          </task>
@@ -365,10 +365,10 @@
                   compileTestGroovy
                </task>
                <task>
-                  processTestResources
+                  compileTestJava
                </task>
                <task>
-                  compileTestJava
+                  processTestResources
                </task>
             </dependsOn>
          </task>
@@ -398,6 +398,14 @@
                1.6
             </version>
             <artifacts>
+               <artifact>
+                  <classifier>
+                     cl
+                  </classifier>
+                  <type>
+                     ear
+                  </type>
+               </artifact>
             </artifacts>
             <configuration>
                compile
@@ -462,6 +470,14 @@
                1.6
             </version>
             <artifacts>
+               <artifact>
+                  <classifier>
+                     cl
+                  </classifier>
+                  <type>
+                     ear
+                  </type>
+               </artifact>
             </artifacts>
             <configuration>
                default
@@ -526,6 +542,14 @@
                1.6
             </version>
             <artifacts>
+               <artifact>
+                  <classifier>
+                     cl
+                  </classifier>
+                  <type>
+                     ear
+                  </type>
+               </artifact>
             </artifacts>
             <configuration>
                runtime
@@ -590,6 +614,14 @@
                4.11
             </version>
             <artifacts>
+               <artifact>
+                  <classifier>
+                     
+                  </classifier>
+                  <type>
+                     pom
+                  </type>
+               </artifact>
             </artifacts>
             <configuration>
                testCompile
@@ -606,6 +638,14 @@
                1.6
             </version>
             <artifacts>
+               <artifact>
+                  <classifier>
+                     cl
+                  </classifier>
+                  <type>
+                     ear
+                  </type>
+               </artifact>
             </artifacts>
             <configuration>
                testCompile
@@ -670,6 +710,14 @@
                z
             </version>
             <artifacts>
+               <artifact>
+                  <classifier>
+                     clas
+                  </classifier>
+                  <type>
+                     jar
+                  </type>
+               </artifact>
             </artifacts>
             <configuration>
                testRuntime
@@ -686,6 +734,14 @@
                4.11
             </version>
             <artifacts>
+               <artifact>
+                  <classifier>
+                     
+                  </classifier>
+                  <type>
+                     pom
+                  </type>
+               </artifact>
             </artifacts>
             <configuration>
                testRuntime
@@ -702,6 +758,14 @@
                1.6
             </version>
             <artifacts>
+               <artifact>
+                  <classifier>
+                     cl
+                  </classifier>
+                  <type>
+                     ear
+                  </type>
+               </artifact>
             </artifacts>
             <configuration>
                testRuntime
