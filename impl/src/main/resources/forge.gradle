@@ -26,13 +26,21 @@ allprojects {
         })
 
         project.ext.set('_managedDependencies', [:])
-        project.ext.set('managed', {
+        project.ext.set('managed', { Object[] args ->
+            def _map = args[0]
+            def _closure = null
+            if (args.length == 2) {
+                _closure = args[1]
+            }
             project.ext._managedDependencies[[
-                    group: it.group,
-                    name: it.name
+                    group: _map.group,
+                    name: _map.name
             ]] = [
-                    version: it.version,
-                    configuration: it.configuration
+                    version: _map.version,
+                    configuration: _map.configuration,
+                    classifier: _map.classifier,
+                    ext: _map.ext,
+                    closure: _closure
             ]
         })
         project.ext.set('direct', {
@@ -41,9 +49,17 @@ allprojects {
                     name: it.name
             ]
             project.afterEvaluate {
-                project.dependencies.add(project.ext._managedDependencies[_groupName].configuration,
-                        _groupName.group + ':' + _groupName.name + ':'
-                                + project.ext._managedDependencies[_groupName].version)
+                def _depMap = project.ext._managedDependencies[_groupName]
+                def _coords =
+                    _groupName.group + ':' +
+                            _groupName.name + ':' +
+                            _depMap.version +
+                            (_depMap.classifier != null ? ':' + _depMap.classifier : '') +
+                            (_depMap.ext != null ? '@' + _depMap.ext : '')
+                project.dependencies.add(
+                        _depMap.configuration,
+                        _coords,
+                        _depMap['closure'] != null ? _depMap.closure : {})
             }
         })
 
