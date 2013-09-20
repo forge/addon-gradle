@@ -110,7 +110,7 @@ public class GradleSourceUtil
                .setPackaging(!Strings.isNullOrEmpty(packaging) ? packaging : "jar");
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      for (InvocationWithClosure deps : parser.allInvocationsAtPath("dependencies"))
+      for (InvocationWithClosure deps : allDependencyInvocations(parser))
       {
          // Search in string invocations
          for (InvocationWithString invocation : deps.getInvocationsWithString())
@@ -151,7 +151,7 @@ public class GradleSourceUtil
       List<GradleDependency> result = Lists.newArrayList();
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      for (InvocationWithClosure deps : parser.allInvocationsAtPath("dependencies"))
+      for (InvocationWithClosure deps : allDependencyInvocations(parser))
       {
          // Search in string invocations
          for (InvocationWithString invocation : deps.getInvocationsWithString())
@@ -222,7 +222,7 @@ public class GradleSourceUtil
       List<GradleDependency> deps = Lists.newArrayList();
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      for (InvocationWithClosure invocation : parser.allInvocationsAtPath("dependencies"))
+      for (InvocationWithClosure invocation : allDependencyInvocations(parser))
       {
          for (InvocationWithMap mapInvocation : invocation.getInvocationsWithMap())
          {
@@ -254,25 +254,9 @@ public class GradleSourceUtil
    }
 
    public static String removeManagedDependency(String source, String group, String name, String version,
-            String configuration) throws UnremovableElementException
+            String configuration, String classifier, String packaging) throws UnremovableElementException
    {
-      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      for (InvocationWithClosure deps : parser.allInvocationsAtPath("allprojects", "dependencies"))
-      {
-         for (InvocationWithMap invocation : deps.getInvocationsWithMap())
-         {
-            Map<String, String> params = invocation.getParameters();
-            if (invocation.getMethodName().equals(MANAGED_CONFIG) &&
-                     params.get("group").equals(group) &&
-                     params.get("name").equals(name) &&
-                     params.get("version").equals(version))
-            {
-               return SourceUtil.removeSourceFragmentWithLine(source, invocation);
-            }
-         }
-      }
-
-      throw new UnremovableElementException();
+      return removeDependency(source, MANAGED_CONFIG, group, name, version, classifier, packaging);
    }
 
    /**
@@ -283,19 +267,13 @@ public class GradleSourceUtil
       List<GradleDependency> deps = Lists.newArrayList();
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      for (InvocationWithClosure invocation : parser.allInvocationsAtPath("allprojects", "dependencies"))
+      for (InvocationWithClosure invocation : allDependencyInvocations(parser))
       {
          for (InvocationWithMap mapInvocation : invocation.getInvocationsWithMap())
          {
             if (mapInvocation.getMethodName().equals(MANAGED_CONFIG))
             {
-               Map<String, String> params = mapInvocation.getParameters();
-               GradleDependencyBuilder dep = GradleDependencyBuilder.create()
-                        .setConfigurationName(params.get("configuration"))
-                        .setGroup(params.get("group"))
-                        .setName(params.get("name"))
-                        .setVersion(params.get("version"));
-               deps.add(dep);
+               deps.add(managedDependencyFromInvocation(mapInvocation));
             }
          }
       }
@@ -547,10 +525,24 @@ public class GradleSourceUtil
       }
       return properties;
    }
+   
+   private static List<InvocationWithClosure> allDependencyInvocations(SimpleGroovyParser parser) {
+      List<InvocationWithClosure> depsInvocations = Lists.newArrayList();
+      depsInvocations.addAll(parser.allInvocationsAtPath("dependencies"));
+      depsInvocations.addAll(parser.allInvocationsAtPath("allprojects", "dependencies"));
+      return depsInvocations;
+   }
 
    private static GradleDependency dependencyFromInvocation(InvocationWithString invocation)
    {
       return dependencyFromString(invocation.getMethodName(), invocation.getString());
+   }
+   
+   private static GradleDependency managedDependencyFromInvocation(InvocationWithMap invocation) 
+   {
+      Map<String, String> map = Maps.newHashMap(invocation.getParameters());
+      String config = map.remove("configuration");
+      return dependencyFromMap(config, map);
    }
 
    private static GradleDependency dependencyFromInvocation(InvocationWithMap invocation)
@@ -640,6 +632,12 @@ public class GradleSourceUtil
             return true;
          }
       }
+      
+      if (MANAGED_CONFIG.equals(configName))
+      {
+         return true;
+      }
+         
       return false;
    }
 

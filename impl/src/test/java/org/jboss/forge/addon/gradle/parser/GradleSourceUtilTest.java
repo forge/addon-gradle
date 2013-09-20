@@ -379,7 +379,32 @@ public class GradleSourceUtilTest
                "    dependencies {\n" +
                "    }\n" +
                "}\n";
-      String result = GradleSourceUtil.removeManagedDependency(source, "xx", "yy", "vv", "compile");
+      String result = GradleSourceUtil.removeManagedDependency(source, "xx", "yy", "vv", "compile", "", "");
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testRemoveManagedDependencyWithClassifierAndPackaging()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "        managed configuration: \"compile\", group: 'xx', name: 'yy', version: 'vv'" +
+               ", classifier: \"clas\", ext: \"pom\"\n" +
+               "    }\n" +
+               "}\n";
+      String expected = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "    }\n" +
+               "}\n";
+      String result = GradleSourceUtil.removeManagedDependency(source, "xx", "yy", "vv", "compile", "clas", "pom");
       assertEquals(expected, result);
    }
 
@@ -401,6 +426,28 @@ public class GradleSourceUtilTest
       assertEquals(1, deps.size());
       assertContainsDependency(deps, GradleDependencyBuilder.create()
                .setConfigurationName("compile").setGroup("xx").setName("yy").setVersion("vv"));
+   }
+
+   @Test
+   public void testGetManagedDependenciesWithClassifierAndPackaging()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "        managed configuration: 'compile', group: \"xx\", name: 'yy', version: 'vv'" +
+               ", classifier: 'clas', ext: 'pom'\n" +
+               "    }\n" +
+               "}\n";
+
+      List<GradleDependency> deps = GradleSourceUtil.getManagedDependencies(source);
+
+      assertEquals(1, deps.size());
+      assertContainsDependency(deps, GradleDependencyBuilder.create()
+               .setConfigurationName("compile").setGroup("xx").setName("yy").setVersion("vv")
+               .setClassifier("clas").setPackaging("pom"));
    }
 
    @Test
