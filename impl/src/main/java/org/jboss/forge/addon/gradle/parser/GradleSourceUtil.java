@@ -180,7 +180,7 @@ public class GradleSourceUtil
             }
          }
       }
-      
+
       return result;
    }
 
@@ -242,11 +242,13 @@ public class GradleSourceUtil
    }
 
    public static String insertManagedDependency(String source, String group, String name, String version,
-            String configuration)
+            String configuration, String classifier, String packaging)
    {
-      String depString = String.format("%s configuration: \"%s\", group: \"%s\", name: \"%s\", version: \"%s\"",
+      String depString = String.format("%s configuration: \"%s\", group: \"%s\", name: \"%s\", version: \"%s\"%s%s",
                MANAGED_CONFIG,
-               configuration, group, name, version);
+               configuration, group, name, version,
+               !Strings.isNullOrEmpty(classifier) ? ", classifier: \"" + classifier + "\"" : "",
+               !Strings.isNullOrEmpty(packaging) && !packaging.equals("jar") ? ", ext: \"" + packaging + "\"" : "");
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "allprojects", "dependencies");
       return source;
    }
@@ -564,12 +566,12 @@ public class GradleSourceUtil
       }
       return dependencyFromMap(invocation.getMethodName(), invocation.getMapParameter());
    }
-   
+
    private static GradleDependency dependencyFromString(String configurationName, String gradleString)
    {
       return GradleDependencyBuilder.create(configurationName, gradleString);
    }
-   
+
    private static GradleDependency dependencyFromMap(String configurationName, Map<String, String> params)
    {
       String group = params.get("group");
@@ -587,7 +589,7 @@ public class GradleSourceUtil
       {
          packaging = "jar";
       }
-      
+
       return GradleDependencyBuilder.create().setConfigurationName(configurationName)
                .setGroup(group).setName(name).setVersion(version)
                .setClassifier(classifier).setPackaging(packaging);

@@ -330,7 +330,32 @@ public class GradleSourceUtilTest
                "        managed configuration: \"compile\", group: \"xx\", name: \"yy\", version: \"vv\"\n" +
                "    }  \t\n" +
                "}\n";
-      String result = GradleSourceUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile");
+      String result = GradleSourceUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile", "", "");
+      assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testInsertManagedDependencyWithClassifierAndPackaging()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "    }  \t\n" +
+               "}\n";
+      String expected = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "        managed configuration: \"compile\", group: \"xx\", name: \"yy\", version: \"vv\"" +
+               ", classifier: \"clas\", ext: \"pom\"\n" +
+               "    }  \t\n" +
+               "}\n";
+      String result = GradleSourceUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile", "clas", "pom");
       assertEquals(expected, result);
    }
 

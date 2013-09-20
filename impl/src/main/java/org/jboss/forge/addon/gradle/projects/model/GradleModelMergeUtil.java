@@ -162,7 +162,7 @@ public class GradleModelMergeUtil
       for (GradleDependency dep : deps)
       {
          source = GradleSourceUtil.insertManagedDependency(source, dep.getGroup(), dep.getName(),
-                  dep.getVersion(), dep.getConfigurationName());
+                  dep.getVersion(), dep.getConfigurationName(), dep.getClassifier(), dep.getPackaging());
       }
       return source;
    }
