@@ -16,7 +16,6 @@ import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
-import org.jboss.forge.furnace.services.Exported;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 
 /**

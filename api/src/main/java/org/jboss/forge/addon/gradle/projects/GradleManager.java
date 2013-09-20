@@ -6,8 +6,6 @@
  */
 package org.jboss.forge.addon.gradle.projects;
 
-import org.jboss.forge.furnace.services.Exported;
-
 /**
  * Manages Gradle build system.
  * 
