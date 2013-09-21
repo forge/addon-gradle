@@ -97,8 +97,8 @@ allprojects {
                 outputInc '<version>'
                 output d.version
                 outputDec '</version>'
-                outputInc '<artifacts>'
                 if (d instanceof ModuleDependency) {
+                    outputInc '<artifacts>'
                     d.artifacts.each {
                         outputInc '<artifact>'
                         outputInc '<classifier>'
@@ -109,8 +109,20 @@ allprojects {
                         outputDec '</type>'
                         outputDec '</artifact>'
                     }
+                    outputDec '</artifacts>'
+                    outputInc '<excludeRules>'
+                    d.excludeRules.each {
+                        outputInc '<excludeRule>'
+                        outputInc '<group>'
+                        output it.group
+                        outputDec'</group>'
+                        outputInc '<module>'
+                        output it.module
+                        outputDec '</module>'
+                        outputDec '</excludeRule>'
+                    }
+                    outputDec '</excludeRules>'
                 }
-                outputDec '</artifacts>'
                 outputInc '<configuration>'
                 output configName
                 outputDec '</configuration>'
