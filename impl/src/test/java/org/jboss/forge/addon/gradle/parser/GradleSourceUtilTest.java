@@ -70,7 +70,7 @@ public class GradleSourceUtilTest
                "    compile 'a:b:1.0'\n" +
                "    testRuntime \"x:$y:3.0\"\n" +
                "}";
-      String result = GradleSourceUtil.insertDependency(source, 
+      String result = GradleSourceUtil.insertDependency(source,
                GradleDependencyBuilder.create("testRuntime", "x:$y:3.0"));
       assertEquals(expected, result);
    }
@@ -88,11 +88,11 @@ public class GradleSourceUtilTest
                "    compile 'a:b:1.0'\n" +
                "    testRuntime \"x:$y:3.0:cl@pom\"\n" +
                "}";
-      String result = GradleSourceUtil.insertDependency(source, 
+      String result = GradleSourceUtil.insertDependency(source,
                GradleDependencyBuilder.create("testRuntime", "x:$y:3.0:cl@pom"));
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testInsertDependencyWithExcludes()
    {
@@ -109,8 +109,11 @@ public class GradleSourceUtilTest
                "    }\n" +
                "}";
       String result = GradleSourceUtil.insertDependency(source,
-               GradleDependencyBuilder.create("testRuntime", "x:y:3.0"));
-      // TODO Complete test
+               GradleDependencyBuilder.create("testRuntime", "x:y:3.0")
+                        .setExcludedDependencies(Lists.<GradleDependency> newArrayList(
+                                 GradleDependencyBuilder.create("", "x:m:"),
+                                 GradleDependencyBuilder.create("", "g:n:")
+                                 )));
       assertEquals(expected, result);
    }
 
@@ -126,7 +129,7 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, 
+      String result = GradleSourceUtil.removeDependency(source,
                GradleDependencyBuilder.create("compile", "a:b:1.0"));
       assertEquals(expected, result);
    }
@@ -143,7 +146,7 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, 
+      String result = GradleSourceUtil.removeDependency(source,
                GradleDependencyBuilder.create("compile", "a:b:1.0:cl@pom"));
       assertEquals(expected, result);
    }
@@ -163,7 +166,7 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, 
+      String result = GradleSourceUtil.removeDependency(source,
                GradleDependencyBuilder.create("compile", "a:b:1.0"));
       assertEquals(expected, result);
    }
@@ -180,7 +183,7 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, 
+      String result = GradleSourceUtil.removeDependency(source,
                GradleDependencyBuilder.create("compile", "a:b:1.0"));
       assertEquals(expected, result);
    }
@@ -197,7 +200,7 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, 
+      String result = GradleSourceUtil.removeDependency(source,
                GradleDependencyBuilder.create("compile", "a:b:1.0:cl@pom"));
       assertEquals(expected, result);
    }
@@ -216,7 +219,7 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, 
+      String result = GradleSourceUtil.removeDependency(source,
                GradleDependencyBuilder.create("compile", "a:b:1.0"));
       assertEquals(expected, result);
    }
@@ -229,7 +232,7 @@ public class GradleSourceUtilTest
                "    def alias = compile" +
                "    alias 'a:b:1.0'\n" +
                "}";
-      GradleSourceUtil.removeDependency(source, 
+      GradleSourceUtil.removeDependency(source,
                GradleDependencyBuilder.create("compile", "a:b:1.0"));
    }
 
@@ -265,12 +268,12 @@ public class GradleSourceUtilTest
                "    compile group: 'x', name: 'y', version: 'v', classifier: 'c', ext: 'pom'\n" +
                "}\n" +
                "def y = {it / it}\n" +
-               "dependencies {\n" + 
+               "dependencies {\n" +
                "    runtime 'd:e:f:xx@ear'\n" +
                "}\n// dependencies { compile 'a:b:c' }";
-      
+
       List<GradleDependency> deps = GradleSourceUtil.getDependencies(source);
-      
+
       assertEquals(2, deps.size());
       assertContainsDependency(deps, GradleDependencyBuilder.create()
                .setConfigurationName("compile").setGroup("x").setName("y").setVersion("v")
@@ -279,7 +282,7 @@ public class GradleSourceUtilTest
                .setConfigurationName("runtime").setGroup("d").setName("e").setVersion("f")
                .setClassifier("xx").setPackaging("ear"));
    }
-   
+
    @Test
    public void testGetDependenciesWithExcludes()
    {
@@ -292,16 +295,16 @@ public class GradleSourceUtilTest
                "        exclude group: 'b', module: 'c'\n" +
                "    }\n" +
                "}\n";
-      
+
       List<GradleDependency> deps = GradleSourceUtil.getDependencies(source);
-      
+
       assertEquals(1, deps.size());
       assertContainsDependency(deps, GradleDependencyBuilder.create()
                .setConfigurationName("compile").setGroup("x").setName("y").setVersion("v"));
-      
+
       GradleDependency dep = deps.get(0);
       List<GradleDependency> excludes = dep.getExcludedDependencies();
-      
+
       assertEquals(2, excludes.size());
       assertContainsDirectDependency(excludes, GradleDependencyBuilder.create()
                .setGroup("x").setName("qwerty"));
@@ -389,11 +392,11 @@ public class GradleSourceUtilTest
                "        managed configuration: \"compile\", group: \"xx\", name: \"yy\", version: \"vv\"\n" +
                "    }  \t\n" +
                "}\n";
-      String result = GradleSourceUtil.insertManagedDependency(source, 
+      String result = GradleSourceUtil.insertManagedDependency(source,
                GradleDependencyBuilder.create("compile", "xx:yy:vv"));
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testInsertManagedDependencyWithClassifierAndPackaging()
    {
@@ -415,8 +418,32 @@ public class GradleSourceUtilTest
                ", classifier: \"clas\", ext: \"pom\"\n" +
                "    }  \t\n" +
                "}\n";
-      String result = GradleSourceUtil.insertManagedDependency(source, 
+      String result = GradleSourceUtil.insertManagedDependency(source,
                GradleDependencyBuilder.create("compile", "xx:yy:vv:clas@pom"));
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testInsertManagedDependencyWithExcludes()
+   {
+      String source = "" +
+               "allprojects {\n" +
+               "}\n";
+      String expected = "" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "        managed(configuration: \"testRuntime\", group: \"x\", name: \"y\", version: \"3.0\") {\n" +
+               "            exclude module: \"m\"\n" +
+               "            exclude group: \"g\", module: \"n\"\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
+      String result = GradleSourceUtil.insertManagedDependency(source,
+               GradleDependencyBuilder.create("testRuntime", "x:y:3.0")
+                        .setExcludedDependencies(Lists.<GradleDependency> newArrayList(
+                                 GradleDependencyBuilder.create("", "x:m:"),
+                                 GradleDependencyBuilder.create("", "g:n:")
+                                 )));
       assertEquals(expected, result);
    }
 
@@ -440,7 +467,7 @@ public class GradleSourceUtilTest
                "    dependencies {\n" +
                "    }\n" +
                "}\n";
-      String result = GradleSourceUtil.removeManagedDependency(source, 
+      String result = GradleSourceUtil.removeManagedDependency(source,
                GradleDependencyBuilder.create("compile", "xx:yy:vv"));
       assertEquals(expected, result);
    }
@@ -466,7 +493,7 @@ public class GradleSourceUtilTest
                "    dependencies {\n" +
                "    }\n" +
                "}\n";
-      String result = GradleSourceUtil.removeManagedDependency(source, 
+      String result = GradleSourceUtil.removeManagedDependency(source,
                GradleDependencyBuilder.create("compile", "xx:yy:vv:clas@pom"));
       assertEquals(expected, result);
    }
@@ -512,7 +539,7 @@ public class GradleSourceUtilTest
                .setConfigurationName("compile").setGroup("xx").setName("yy").setVersion("vv")
                .setClassifier("clas").setPackaging("pom"));
    }
-   
+
    @Test
    public void testGetManagedDependenciesWithExcludes()
    {
@@ -533,10 +560,10 @@ public class GradleSourceUtilTest
       assertEquals(1, deps.size());
       assertContainsDependency(deps, GradleDependencyBuilder.create()
                .setConfigurationName("compile").setGroup("xx").setName("yy").setVersion("vv"));
-      
+
       GradleDependency dep = deps.get(0);
       List<GradleDependency> excludes = dep.getExcludedDependencies();
-      
+
       assertEquals(1, excludes.size());
       assertContainsDirectDependency(excludes, GradleDependencyBuilder.create()
                .setGroup("g").setName("m"));

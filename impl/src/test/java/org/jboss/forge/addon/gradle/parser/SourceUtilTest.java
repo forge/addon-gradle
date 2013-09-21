@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class SourceUtilTest
 {
-
    @Test
    public void testInsertLine()
    {
@@ -67,36 +66,36 @@ public class SourceUtilTest
       String output = SourceUtil.removeSourceFragment(source, 1, 8, 1, 13);
       assertEquals(expectedOutput, output);
    }
-   
+
    @Test
    public void testRemoveSourceFragmentWithLine()
    {
       String source =
                "subprojects {\n" +
-               "    println 'abcdef'\n" +
-               "    abcdef\n" +
-               "}\n";
+                        "    println 'abcdef'\n" +
+                        "    abcdef\n" +
+                        "}\n";
       String expected =
                "subprojects {\n" +
-               "    println 'abcdef'\n" +
-               "}\n";
+                        "    println 'abcdef'\n" +
+                        "}\n";
       String result = SourceUtil.removeSourceFragmentWithLine(source, 3, 5, 3, 11);
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testRemoveSourceFragmentWithLineNested()
    {
       String source = "" +
-            "a {\n" +
-            "    b {\n" +
-            "        c {\n" +
-            "            println AAA\n" +
-            "            println BBB\n" +
-            "            println CCC\n" +
-            "        }\n" +
-            "    }\n" +
-            "}\n";
+               "a {\n" +
+               "    b {\n" +
+               "        c {\n" +
+               "            println AAA\n" +
+               "            println BBB\n" +
+               "            println CCC\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
       String expected = "" +
                "a {\n" +
                "    b {\n" +
@@ -111,7 +110,7 @@ public class SourceUtilTest
    }
 
    @Test
-   public void testAppendLineToClosure()
+   public void testAppendCodeToClosure()
    {
       String source = "" +
                "abc\n" +
@@ -127,20 +126,36 @@ public class SourceUtilTest
                "invo {\n" +
                "    cation {\n" +
                "        very important stuff\n" +
-               "        something new\n" +
+               "        something\n" +
+               "        new\n" +
                "    }  \n" +
                "}\n" +
                "\n" +
                "println xyz\n";
       String codeToBeInserted = "" +
-               "something new\n";
-      
+               "something\nnew\n";
+
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       InvocationWithClosure invocation;
       invocation = parser.invocationWithClosureByName("invo").get();
       invocation = invocation.invocationWithClosureByName("cation").get();
-      
-      String result = SourceUtil.appendLineToClosure(source, invocation, codeToBeInserted);
+
+      String result = SourceUtil.appendCodeToClosure(source, invocation, codeToBeInserted);
+      assertEquals(expected, result);
+   }
+
+   @Test
+   public void testIndentCode()
+   {
+      String source = "" +
+               "x {\n" +
+               "    yz\n" +
+               "}\n";
+      String expected = "" +
+               "       x {\n" +
+               "           yz\n" +
+               "       }\n";
+      String result = SourceUtil.indentCode(source, 7);
       assertEquals(expected, result);
    }
 
@@ -165,7 +180,8 @@ public class SourceUtilTest
                "    b {\n" +
                "        c {\n" +
                "            compile 'x:y:z'\n" +
-               "            configName xyzABC\n" +
+               "            configName\n" +
+               "            xyzABC\n" +
                "        }\n" +
                "        d {\n" +
                "            e {\n" +
@@ -174,7 +190,7 @@ public class SourceUtilTest
                "        }\n" +
                "    }\n" +
                "}\n";
-      String result = SourceUtil.insertIntoInvocationAtPath(source, "configName xyzABC", "a", "b", "c");
+      String result = SourceUtil.insertIntoInvocationAtPath(source, "configName\nxyzABC", "a", "b", "c");
       assertEquals(expected, result);
    }
 
@@ -195,7 +211,7 @@ public class SourceUtilTest
       String result = SourceUtil.insertIntoInvocationAtPath(source, "println x", "a", "b", "c");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testInsertIntoInvocationAtPathPartiallyCreatePath()
    {
@@ -228,17 +244,18 @@ public class SourceUtilTest
    public void testCreateInvocationPath()
    {
       String expected = "" +
-               "        x {\n" +
-               "            y {\n" +
-               "                z {\n" +
-               "                    content\n" +
-               "                }\n" +
-               "            }\n" +
-               "        }\n";
-      String result = SourceUtil.createInvocationPath(2, "content", "x", "y", "z");
+               "x {\n" +
+               "    y {\n" +
+               "        z {\n" +
+               "            con\n" +
+               "            tent\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
+      String result = SourceUtil.createInvocationPath("con\ntent", "x", "y", "z");
       assertEquals(expected, result);
    }
-   
+
    @Test
    public void testFixClosureColumn()
    {

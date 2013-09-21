@@ -63,8 +63,8 @@ public class GradleDependencyBuilder implements GradleDependency
     */
    public static GradleDependencyBuilder create(String configuration, String gradleString)
    {
-      String[] packagingSplit = gradleString.split("@");
-      String[] split = packagingSplit[0].split(":");
+      String[] packagingSplit = gradleString.split("@", -1);
+      String[] split = packagingSplit[0].split(":", -1);
 
       String group = split[0];
       String name = split[1];
@@ -199,7 +199,7 @@ public class GradleDependencyBuilder implements GradleDependency
    public GradleDependencyBuilder setExcludedDependencies(List<GradleDependency> excludedDependencies)
    {
       this.excludedDependencies = excludedDependencies;
-      return null;
+      return this;
    }
 
    @Override

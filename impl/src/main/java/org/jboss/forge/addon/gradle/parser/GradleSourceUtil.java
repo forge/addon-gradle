@@ -87,14 +87,22 @@ public class GradleSourceUtil
 
    public static String insertDependency(String source, GradleDependency dep)
    {
-      String depString = dependencyInvocationString(dep);
+      String depString;
+      List<GradleDependency> excludes = dep.getExcludedDependencies();
+
+      if (excludes.size() == 0)
+      {
+         depString = String.format("%s \"%s\"", dep.getConfigurationName(), dep.toGradleString());
+      }
+      else
+      {
+         depString = dependencyDeclaration(
+                  String.format("%s(\"%s\")", dep.getConfigurationName(), dep.toGradleString()),
+                  dep.getGroup(), dep.getExcludedDependencies());
+      }
+
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "dependencies");
       return source;
-   }
-   
-   private static String dependencyInvocationString(GradleDependency dep)
-   {
-      return String.format("%s \"%s\"", dep.getConfigurationName(), dep.toGradleString());
    }
 
    public static String removeDependency(String source, GradleDependency dep)
@@ -234,10 +242,22 @@ public class GradleSourceUtil
 
    public static String insertManagedDependency(String source, GradleDependency dep)
    {
-      String depString = String.format("%s configuration: \"%s\", %s",
-               MANAGED_CONFIG,
-               dep.getConfigurationName(),
-               dep.toGradleMapString());
+      String depString;
+      List<GradleDependency> excludes = dep.getExcludedDependencies();
+
+      if (excludes.size() == 0)
+      {
+         depString = String.format("%s configuration: \"%s\", %s", MANAGED_CONFIG,
+                  dep.getConfigurationName(), dep.toGradleMapString());
+      }
+      else
+      {
+         depString = dependencyDeclaration(
+                  String.format("%s(configuration: \"%s\", %s)",
+                           MANAGED_CONFIG, dep.getConfigurationName(), dep.toGradleMapString()),
+                  dep.getGroup(), dep.getExcludedDependencies());
+      }
+
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "allprojects", "dependencies");
       return source;
    }
@@ -720,5 +740,22 @@ public class GradleSourceUtil
       {
          return false;
       }
+   }
+
+   private static String dependencyDeclaration(String declaration, String depGroup,
+            List<GradleDependency> excludes)
+   {
+      StringBuilder sb = new StringBuilder(String.format("%s {\n", declaration));
+      for (GradleDependency exclude : excludes)
+      {
+         sb.append("    exclude ");
+         if (!exclude.getGroup().equals(depGroup))
+         {
+            sb.append(String.format("group: \"%s\", ", exclude.getGroup()));
+         }
+         sb.append(String.format("module: \"%s\"\n", exclude.getName()));
+      }
+      sb.append("}\n");
+      return sb.toString();
    }
 }

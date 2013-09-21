@@ -138,28 +138,48 @@ public class SourceUtil
    /**
     * Appends given code as the last line of the closure.
     */
-   public static String appendLineToClosure(String source, InvocationWithClosure invocation, String codeToBeInserted)
+   public static String appendCodeToClosure(String source, InvocationWithClosure invocation, String codeToBeInserted)
    {
-      codeToBeInserted = codeToBeInserted.trim();
-
       String sourceToInvocation = source.substring(0,
                positionInSource(source, invocation.getLineNumber(), invocation.getColumnNumber()));
       String invocationIndentation = sourceToInvocation.substring(sourceToInvocation.lastIndexOf("\n") + 1);
-      StringBuilder indent = new StringBuilder(invocationIndentation.length());
-      for (int i = 0; i < invocationIndentation.length(); i++)
-      {
-         indent.append(' ');
-      }
-      invocationIndentation = indent.toString();
 
-      /*
-       * TODO Fix a bug of not calculating last column properly. For example when there is a space after invocation
-       * closure it inserts line after it's closing bracket, not one character before.
-       */
+      String insertedCode = INDENT;
+      insertedCode += indentCode(codeToBeInserted, invocationIndentation.length() + INDENT.length()).trim();
+      insertedCode = addNewLineAtEnd(insertedCode);
+      insertedCode += invocationIndentation;
 
-      return insertString(source, addNewLineAtEnd(INDENT + codeToBeInserted) + invocationIndentation,
+      return insertString(source,
+               insertedCode,
                invocation.getLastLineNumber(),
                fixClosureColumn(source, invocation.getLastLineNumber(), invocation.getLastColumnNumber()) - 1);
+   }
+
+   /**
+    * Adds indentLevel spaces to every line of code.
+    */
+   public static String indentCode(String code, int indentLevel)
+   {
+      StringBuilder sb = new StringBuilder();
+
+      for (int i = 0; i < indentLevel; i++)
+      {
+         sb.append(' ');
+      }
+
+      String indent = sb.toString();
+
+      sb = new StringBuilder();
+      String[] lines = code.split("\n");
+
+      for (String line : lines)
+      {
+         sb.append(indent);
+         sb.append(line);
+         sb.append('\n');
+      }
+
+      return sb.toString();
    }
 
    /**
@@ -184,7 +204,7 @@ public class SourceUtil
       if (!invocationOptional.isPresent())
       {
          source = addNewLineAtEnd(source);
-         source += createInvocationPath(0, codeToBeInserted, path);
+         source += createInvocationPath(codeToBeInserted, path);
          return source;
       }
 
@@ -194,15 +214,15 @@ public class SourceUtil
          invocationOptional = previousInvocation.invocationWithClosureByName(path[level]);
          if (!invocationOptional.isPresent())
          {
-            String invocationPath = createInvocationPath(level, codeToBeInserted,
+            String invocationPath = createInvocationPath(codeToBeInserted,
                      Arrays.copyOfRange(path, level, path.length));
-            source = appendLineToClosure(source, previousInvocation, invocationPath);
+            source = appendCodeToClosure(source, previousInvocation, invocationPath);
             return source;
          }
       }
 
       InvocationWithClosure invocation = invocationOptional.get();
-      source = appendLineToClosure(source, invocation, codeToBeInserted);
+      source = appendCodeToClosure(source, invocation, codeToBeInserted);
 
       return source;
    }
@@ -210,28 +230,26 @@ public class SourceUtil
    /**
     * Creates an empty invocation path like described in {@link #insertIntoInvocationAtPath(String, String, String...)}.
     * 
-    * @param indentLevel base indent level for each line in generated path
     * @see #indent(int)
     */
-   public static String createInvocationPath(int indentLevel, String content, String... path)
+   public static String createInvocationPath(String content, String... path)
    {
       StringBuilder builder = new StringBuilder();
 
       // What goes up...
       for (int level = 0; level < path.length; level++)
       {
-         indent(builder, indentLevel + level);
+         indent(builder, level);
          builder.append(path[level]);
          builder.append(" {\n");
       }
 
-      indent(builder, indentLevel + path.length);
-      builder.append(addNewLineAtEnd(content));
+      builder.append(addNewLineAtEnd(indentCode(content, path.length * INDENT.length())));
 
       // ...must come down
       for (int level = path.length - 1; level >= 0; level--)
       {
-         indent(builder, indentLevel + level);
+         indent(builder, level);
          builder.append("}\n");
       }
 
