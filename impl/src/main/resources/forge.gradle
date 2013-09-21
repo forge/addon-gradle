@@ -86,6 +86,36 @@ allprojects {
             def outputRelative = { file, to ->
                 output file.absolutePath.substring(to.absolutePath.length() + 1).replace("\\", "/")
             }
+            def outputDependency = { configName, d ->
+                outputInc '<dependency>'
+                outputInc '<name>'
+                output d.name
+                outputDec '</name>'
+                outputInc '<group>'
+                output d.group
+                outputDec '</group>'
+                outputInc '<version>'
+                output d.version
+                outputDec '</version>'
+                outputInc '<artifacts>'
+                if (d instanceof ModuleDependency) {
+                    d.artifacts.each {
+                        outputInc '<artifact>'
+                        outputInc '<classifier>'
+                        output it.classifier != null ? it.classifier : ''
+                        outputDec '</classifier>'
+                        outputInc '<type>'
+                        output it.type
+                        outputDec '</type>'
+                        outputDec '</artifact>'
+                    }
+                }
+                outputDec '</artifacts>'
+                outputInc '<configuration>'
+                output configName
+                outputDec '</configuration>'
+                outputDec '</dependency>'
+            }
             def outputProject = { p ->
                 outputInc '<project>'
                 outputInc '<group>'
@@ -152,53 +182,26 @@ allprojects {
                 outputInc '<dependencies>'
                 p.configurations.each { c ->
                     c.allDependencies.each { d ->
-                        outputInc '<dependency>'
-                        outputInc '<name>'
-                        output d.name
-                        outputDec '</name>'
-                        outputInc '<group>'
-                        output d.group
-                        outputDec '</group>'
-                        outputInc '<version>'
-                        output d.version
-                        outputDec '</version>'
-                        outputInc '<artifacts>'
-                        if (d instanceof ModuleDependency) {
-                            d.artifacts.each {
-                                outputInc '<artifact>'
-                                outputInc '<classifier>'
-                                output it.classifier != null ? it.classifier : ''
-                                outputDec '</classifier>'
-                                outputInc '<type>'
-                                output it.type
-                                outputDec '</type>'
-                                outputDec '</artifact>'
-                            }
-                        }
-                        outputDec '</artifacts>'
-                        outputInc '<configuration>'
-                        output c.name
-                        outputDec '</configuration>'
-                        outputDec '</dependency>'
+                        outputDependency(c.name, d)
                     }
                 }
                 outputDec '</dependencies>'
                 outputInc '<managedDependencies>'
                 p.ext._managedDependencies.each { groupName, configVersion ->
-                    outputInc '<dependency>'
-                    outputInc '<name>'
-                    output groupName.name
-                    outputDec '</name>'
-                    outputInc '<group>'
-                    output groupName.group
-                    outputDec '</group>'
-                    outputInc '<version>'
-                    output configVersion.version
-                    outputDec '</version>'
-                    outputInc '<configuration>'
-                    output configVersion.configuration
-                    outputDec '</configuration>'
-                    outputDec '</dependency>'
+                    def _notation = [
+                            group: groupName.group,
+                            name: groupName.name,
+                            version: configVersion.version,
+                            classifier: configVersion.classifier,
+                            ext: configVersion.ext
+                    ]
+                    def d
+                    if (configVersion.closure != null) {
+                        d = p.dependencies.create(_notation, configVersion.closure)
+                    } else {
+                        d = p.dependencies.create(_notation)
+                    }
+                    outputDependency(configVersion.configuration, d)
                 }
                 outputDec '</managedDependencies>'
                 outputInc '<repositories>'
