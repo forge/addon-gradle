@@ -183,7 +183,8 @@ public class GradleModelLoadUtilTest
    public void testEffectiveManagedDependencies()
    {
       assertTrue(model.hasEffectiveManagedDependency(GradleDependencyBuilder.create()
-               .setGroup("com.google.guava").setName("guava").setVersion("14.0.1").setConfigurationName("compile")));
+               .setGroup("com.google.guava").setName("guava").setVersion("14.0.1").setConfigurationName("compile")
+               .setClassifier("forge").setPackaging("dll")));
 
       assertEquals(1, model.getEffectiveManagedDependencies().size());
       GradleDependency dep = model.getEffectiveManagedDependencies().get(0);
@@ -192,6 +193,8 @@ public class GradleModelLoadUtilTest
       assertEquals("14.0.1", dep.getVersion());
       assertEquals("compile", dep.getConfigurationName());
       assertEquals(GradleDependencyConfiguration.COMPILE, dep.getConfiguration());
+      assertEquals("forge", dep.getClassifier());
+      assertEquals("dll", dep.getPackaging());
    }
 
    @Test

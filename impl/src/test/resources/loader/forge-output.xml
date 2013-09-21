@@ -99,13 +99,13 @@
             </name>
             <dependsOn>
                <task>
-                  compileScala
-               </task>
-               <task>
                   processResources
                </task>
                <task>
                   compileJava
+               </task>
+               <task>
+                  compileScala
                </task>
                <task>
                   compileGroovy
@@ -125,13 +125,13 @@
             </name>
             <dependsOn>
                <task>
+                  cleanEclipseClasspath
+               </task>
+               <task>
                   cleanEclipseJdt
                </task>
                <task>
                   cleanEclipseProject
-               </task>
-               <task>
-                  cleanEclipseClasspath
                </task>
             </dependsOn>
          </task>
@@ -212,10 +212,10 @@
             </name>
             <dependsOn>
                <task>
-                  classes
+                  compileTestJava
                </task>
                <task>
-                  compileTestJava
+                  classes
                </task>
             </dependsOn>
          </task>
@@ -228,10 +228,10 @@
                   eclipseJdt
                </task>
                <task>
-                  eclipseClasspath
+                  eclipseProject
                </task>
                <task>
-                  eclipseProject
+                  eclipseClasspath
                </task>
             </dependsOn>
          </task>
@@ -365,10 +365,10 @@
                   compileTestGroovy
                </task>
                <task>
-                  compileTestJava
+                  processTestResources
                </task>
                <task>
-                  processTestResources
+                  compileTestJava
                </task>
             </dependsOn>
          </task>
@@ -831,6 +831,16 @@
             <version>
                14.0.1
             </version>
+            <artifacts>
+               <artifact>
+                  <classifier>
+                     forge
+                  </classifier>
+                  <type>
+                     dll
+                  </type>
+               </artifact>
+            </artifacts>
             <configuration>
                compile
             </configuration>

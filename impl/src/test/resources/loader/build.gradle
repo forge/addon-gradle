@@ -37,7 +37,8 @@ repositories {
 
 allprojects {
     dependencies {
-        managed group: 'com.google.guava', name: 'guava', version: '14.0.1', configuration: 'compile'
+        managed group: 'com.google.guava', name: 'guava', version: '14.0.1', configuration: 'compile',
+                classifier: 'forge', ext: 'dll'
     }
 }
 
