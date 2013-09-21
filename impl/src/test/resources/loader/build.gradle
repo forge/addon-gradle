@@ -37,13 +37,17 @@ repositories {
 
 allprojects {
     dependencies {
-        managed group: 'com.google.guava', name: 'guava', version: '14.0.1', configuration: 'compile',
-                classifier: 'forge', ext: 'dll'
+        managed(group: 'com.google.guava', name: 'guava', version: '14.0.1', configuration: 'compile',
+                classifier: 'forge', ext: 'dll') {
+            exclude module: 'xyz', group: 'org.abc'
+        }
     }
 }
 
 dependencies {
-    compile 'org.gradle:gradle-tooling-api:1.6:cl@ear'
+    compile('org.gradle:gradle-tooling-api:1.6:cl@ear') {
+       exclude module: 'gradle-core'
+    }
     compile 'org.gradle:gradle-core:1.6'
 
     compile 'org.slf4j:slf4j-api:1.7.5'

@@ -264,6 +264,7 @@ public class GradleModelLoadUtil
                .setConfigurationName(config);
       
       depBuilder = loadClassifierAndPackagingFromNode(depBuilder, depNode);
+      depBuilder = loadExcludedDependenciesFromNode(depBuilder, depNode);
 
       return depBuilder;
    }
@@ -290,6 +291,30 @@ public class GradleModelLoadUtil
             depBuilder = depBuilder.setPackaging(type);
          }
       }
+
+      return depBuilder;
+   }
+   
+   private static GradleDependencyBuilder loadExcludedDependenciesFromNode(
+            GradleDependencyBuilder depBuilder,
+            Node depNode)
+   {
+      Node excludeRulesNode = depNode.getSingle("excludeRules");
+      
+      if (excludeRulesNode == null)
+      {
+         return depBuilder;
+      }
+      
+      List<GradleDependency> excludedDependencies = Lists.newArrayList();
+      for (Node excludeRuleNode : excludeRulesNode.get("excludeRule"))
+      {
+         String group = excludeRuleNode.getSingle("group").getText().trim();
+         String module = excludeRuleNode.getSingle("module").getText().trim();
+         excludedDependencies.add(GradleDependencyBuilder.create()
+                  .setGroup(group).setName(module));
+      }
+      depBuilder.setExcludedDependencies(excludedDependencies);
 
       return depBuilder;
    }

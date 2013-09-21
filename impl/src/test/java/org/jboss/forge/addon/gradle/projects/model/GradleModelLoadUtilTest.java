@@ -156,6 +156,10 @@ public class GradleModelLoadUtilTest
             assertEquals("1.6", dep.getVersion());
             assertEquals("cl", dep.getClassifier());
             assertEquals("ear", dep.getPackaging());
+            assertEquals(1, dep.getExcludedDependencies().size());
+            GradleDependency excludedDep = dep.getExcludedDependencies().get(0);
+            assertEquals("org.gradle", excludedDep.getGroup());
+            assertEquals("gradle-core", excludedDep.getName());
          }
          else if (dep.getName().equals("junit"))
          {
@@ -195,6 +199,12 @@ public class GradleModelLoadUtilTest
       assertEquals(GradleDependencyConfiguration.COMPILE, dep.getConfiguration());
       assertEquals("forge", dep.getClassifier());
       assertEquals("dll", dep.getPackaging());
+      
+      List<GradleDependency> exclusions = dep.getExcludedDependencies();
+      assertEquals(1, exclusions.size());
+      GradleDependency excludedDep = exclusions.get(0);
+      assertEquals("org.abc", excludedDep.getGroup());
+      assertEquals("xyz", excludedDep.getName());
    }
 
    @Test

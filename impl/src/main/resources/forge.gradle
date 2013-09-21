@@ -68,7 +68,7 @@ allprojects {
             def outputFile = new File("$projectDir.path/forge-output.xml").newPrintWriter()
             def indent = {
                 indentLevel.times {
-                    outputFile.print '   '
+                    outputFile.print '    '
                 }
             }
             def output = {
@@ -114,7 +114,7 @@ allprojects {
                     d.excludeRules.each {
                         outputInc '<excludeRule>'
                         outputInc '<group>'
-                        output it.group
+                        output it.group != null ? it.group : d.group
                         outputDec'</group>'
                         outputInc '<module>'
                         output it.module
