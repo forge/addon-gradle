@@ -249,6 +249,35 @@ public class GradleSourceUtilTest
                .setConfigurationName("runtime").setGroup("d").setName("e").setVersion("f")
                .setClassifier("xx").setPackaging("ear"));
    }
+   
+   @Test
+   public void testGetDependenciesWithExcludes()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile(group: 'x', name: 'y', version: 'v') {\n" +
+               "        transitive = true\n" +
+               "        force = false\n" +
+               "        exclude module: 'qwerty'\n" +
+               "        exclude group: 'b', module: 'c'\n" +
+               "    }\n" +
+               "}\n";
+      
+      List<GradleDependency> deps = GradleSourceUtil.getDependencies(source);
+      
+      assertEquals(1, deps.size());
+      assertContainsDependency(deps, GradleDependencyBuilder.create()
+               .setConfigurationName("compile").setGroup("x").setName("y").setVersion("v"));
+      
+      GradleDependency dep = deps.get(0);
+      List<GradleDependency> excludes = dep.getExcludedDependencies();
+      
+      assertEquals(2, excludes.size());
+      assertContainsDirectDependency(excludes, GradleDependencyBuilder.create()
+               .setGroup("x").setName("qwerty"));
+      assertContainsDirectDependency(excludes, GradleDependencyBuilder.create()
+               .setGroup("b").setName("c"));
+   }
 
    @Test
    public void testInsertDirectDependency()

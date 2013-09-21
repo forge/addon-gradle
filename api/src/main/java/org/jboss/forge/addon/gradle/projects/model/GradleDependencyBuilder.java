@@ -22,12 +22,13 @@ public class GradleDependencyBuilder implements GradleDependency
 {
    static final String DEFAULT_PACKAGING = "jar";
 
+   private String configurationName = "";
    private String group = "";
    private String name = "";
    private String version = "";
    private String classifier = "";
-   private String configurationName = "";
    private String packaging = DEFAULT_PACKAGING;
+   private List<GradleDependency> excludedDependencies = new ArrayList<GradleDependency>();
 
    private GradleDependencyBuilder()
    {
@@ -45,12 +46,13 @@ public class GradleDependencyBuilder implements GradleDependency
    {
       GradleDependencyBuilder builder = new GradleDependencyBuilder();
 
-      builder.name = dependency.getName();
+      builder.configurationName = dependency.getConfigurationName();
       builder.group = dependency.getGroup();
+      builder.name = dependency.getName();
       builder.version = dependency.getVersion();
       builder.classifier = dependency.getClassifier();
-      builder.configurationName = dependency.getConfigurationName();
       builder.packaging = dependency.getPackaging();
+      builder.excludedDependencies = dependency.getExcludedDependencies();
 
       return builder;
    }
@@ -186,6 +188,18 @@ public class GradleDependencyBuilder implements GradleDependency
    {
       this.configurationName = configuration.getName();
       return this;
+   }
+
+   @Override
+   public List<GradleDependency> getExcludedDependencies()
+   {
+      return excludedDependencies;
+   }
+   
+   public GradleDependencyBuilder setExcludedDependencies(List<GradleDependency> excludedDependencies)
+   {
+      this.excludedDependencies = excludedDependencies;
+      return null;
    }
 
    @Override

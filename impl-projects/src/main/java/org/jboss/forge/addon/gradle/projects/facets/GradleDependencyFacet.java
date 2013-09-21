@@ -351,7 +351,9 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
                .setScopeType(gradleDep.getConfiguration().toMavenScope())
                .setGroupId(gradleDep.getGroup())
                .setArtifactId(gradleDep.getName())
-               .setVersion(gradleDep.getVersion());
+               .setVersion(gradleDep.getVersion())
+               .setClassifier(gradleDep.getClassifier())
+               .setPackaging(gradleDep.getPackaging());
       return forgeDep;
    }
 
@@ -363,6 +365,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
                .setGroup(forgeDep.getCoordinate().getGroupId())
                .setName(forgeDep.getCoordinate().getArtifactId())
                .setVersion(forgeDep.getCoordinate().getVersion())
+               .setClassifier(forgeDep.getCoordinate().getClassifier())
                .setPackaging(forgeDep.getCoordinate().getPackaging());
    }
 

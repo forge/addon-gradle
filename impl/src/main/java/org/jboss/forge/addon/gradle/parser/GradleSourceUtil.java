@@ -266,7 +266,7 @@ public class GradleSourceUtil
                return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
          }
-         
+
          // Search in invocations with closure
          for (InvocationWithClosure invocation : deps.getInvocationsWithClosure())
          {
@@ -587,11 +587,46 @@ public class GradleSourceUtil
 
    private static GradleDependency dependencyFromInvocation(InvocationWithClosure invocation)
    {
+      GradleDependency gradleDep = null;
       if (!Strings.isNullOrEmpty(invocation.getStringParameter()))
       {
-         return dependencyFromString(invocation.getMethodName(), invocation.getStringParameter());
+         gradleDep = dependencyFromString(invocation.getMethodName(), invocation.getStringParameter());
       }
-      return dependencyFromMap(invocation.getMethodName(), invocation.getMapParameter());
+      else
+      {
+         gradleDep = dependencyFromMap(invocation.getMethodName(), invocation.getMapParameter());
+      }
+      
+      gradleDep = loadDependencyConfiguration(gradleDep, invocation);
+      
+      return gradleDep;
+   }
+   
+   private static GradleDependency loadDependencyConfiguration(GradleDependency dep, InvocationWithClosure invocation)
+   {
+      GradleDependencyBuilder builder = GradleDependencyBuilder.create(dep);
+      
+      // Search for excludes
+      List<GradleDependency> excludes = Lists.newArrayList();
+      for (InvocationWithMap mapInvocation : invocation.getInvocationsWithMap())
+      {
+         if (mapInvocation.getMethodName().equals("exclude"))
+         {
+            String group = mapInvocation.getParameters().get("group");
+            String module = mapInvocation.getParameters().get("module");
+            
+            // If group is not set then by default it uses dep group
+            if (Strings.isNullOrEmpty(group))
+            {
+               group = dep.getGroup();
+            }
+            
+            excludes.add(GradleDependencyBuilder.create().setGroup(group).setName(module));
+         }
+      }
+      builder.setExcludedDependencies(excludes);
+      
+      return builder;
    }
 
    private static GradleDependency dependencyFromString(String configurationName, String gradleString)

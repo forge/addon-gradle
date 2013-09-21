@@ -6,6 +6,8 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
+import java.util.List;
+
 /**
  * Project dependency defined in <i>project.dependencies</i>.
  * 
@@ -49,6 +51,11 @@ public interface GradleDependency
     * Returns dependency packaging.
     */
    String getPackaging();
+   
+   /**
+    * Returns excluded dependencies. 
+    */
+   List<GradleDependency> getExcludedDependencies();
 
    /**
     * Returns Gradle string in format: <br/>
