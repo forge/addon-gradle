@@ -103,11 +103,7 @@ public class GradleSourceUtil
             String classifier, String packaging)
             throws UnremovableElementException
    {
-      GradleDependencyBuilder dep = GradleDependencyBuilder.create()
-               .setConfigurationName(configuration)
-               .setGroup(group).setName(name).setVersion(version)
-               .setClassifier(classifier)
-               .setPackaging(!Strings.isNullOrEmpty(packaging) ? packaging : "jar");
+      GradleDependencyBuilder dep = createDependencyBuilder(configuration, group, name, version, classifier, packaging);
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithClosure deps : allDependencyInvocations(parser))
@@ -256,7 +252,33 @@ public class GradleSourceUtil
    public static String removeManagedDependency(String source, String group, String name, String version,
             String configuration, String classifier, String packaging) throws UnremovableElementException
    {
-      return removeDependency(source, MANAGED_CONFIG, group, name, version, classifier, packaging);
+      GradleDependencyBuilder dep = createDependencyBuilder(MANAGED_CONFIG, group, name, version, classifier, packaging);
+
+      SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
+      for (InvocationWithClosure deps : allDependencyInvocations(parser))
+      {
+         // Search in map invocations
+         for (InvocationWithMap invocation : deps.getInvocationsWithMap())
+         {
+            if (invocation.getMethodName().equals(MANAGED_CONFIG) &&
+                     dep.equalsToDependency(dependencyFromInvocation(invocation)))
+            {
+               return SourceUtil.removeSourceFragmentWithLine(source, invocation);
+            }
+         }
+         
+         // Search in invocations with closure
+         for (InvocationWithClosure invocation : deps.getInvocationsWithClosure())
+         {
+            if (invocation.getMethodName().equals(MANAGED_CONFIG) &&
+                     dep.equalsToDependency(dependencyFromInvocation(invocation)))
+            {
+               return SourceUtil.removeSourceFragmentWithLine(source, invocation);
+            }
+         }
+      }
+
+      throw new UnremovableElementException();
    }
 
    /**
@@ -525,8 +547,21 @@ public class GradleSourceUtil
       }
       return properties;
    }
-   
-   private static List<InvocationWithClosure> allDependencyInvocations(SimpleGroovyParser parser) {
+
+   private static GradleDependencyBuilder createDependencyBuilder(
+            String configuration,
+            String group, String name, String version,
+            String classifier, String packaging)
+   {
+      return GradleDependencyBuilder.create()
+               .setConfigurationName(configuration)
+               .setGroup(group).setName(name).setVersion(version)
+               .setClassifier(classifier)
+               .setPackaging(!Strings.isNullOrEmpty(packaging) ? packaging : "jar");
+   }
+
+   private static List<InvocationWithClosure> allDependencyInvocations(SimpleGroovyParser parser)
+   {
       List<InvocationWithClosure> depsInvocations = Lists.newArrayList();
       depsInvocations.addAll(parser.allInvocationsAtPath("dependencies"));
       depsInvocations.addAll(parser.allInvocationsAtPath("allprojects", "dependencies"));
@@ -537,8 +572,8 @@ public class GradleSourceUtil
    {
       return dependencyFromString(invocation.getMethodName(), invocation.getString());
    }
-   
-   private static GradleDependency managedDependencyFromInvocation(InvocationWithMap invocation) 
+
+   private static GradleDependency managedDependencyFromInvocation(InvocationWithMap invocation)
    {
       Map<String, String> map = Maps.newHashMap(invocation.getParameters());
       String config = map.remove("configuration");
@@ -632,12 +667,7 @@ public class GradleSourceUtil
             return true;
          }
       }
-      
-      if (MANAGED_CONFIG.equals(configName))
-      {
-         return true;
-      }
-         
+
       return false;
    }
 

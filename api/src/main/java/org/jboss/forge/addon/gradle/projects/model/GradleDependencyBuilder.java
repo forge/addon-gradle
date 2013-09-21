@@ -238,4 +238,9 @@ public class GradleDependencyBuilder implements GradleDependency
    {
       return String.format("%s '%s'", configurationName, toGradleString());
    }
+   
+   @Override
+   public boolean equals(Object other) {
+      return equalsToDependency((GradleDependency) other);
+   }
 }

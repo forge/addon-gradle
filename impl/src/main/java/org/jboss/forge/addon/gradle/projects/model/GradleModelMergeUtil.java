@@ -127,7 +127,7 @@ public class GradleModelMergeUtil
       {
          if (!Strings.isNullOrEmpty(dep.getVersion()) && !Strings.isNullOrEmpty(dep.getConfigurationName()))
          {
-            source = GradleSourceUtil.insertDependency(source, dep.getConfigurationName(), 
+            source = GradleSourceUtil.insertDependency(source, dep.getConfigurationName(),
                      dep.getGroup(), dep.getName(), dep.getVersion(),
                      dep.getClassifier(), dep.getPackaging());
          }
@@ -145,7 +145,7 @@ public class GradleModelMergeUtil
       {
          if (!Strings.isNullOrEmpty(dep.getVersion()) && !Strings.isNullOrEmpty(dep.getConfigurationName()))
          {
-            source = GradleSourceUtil.removeDependency(source, dep.getConfigurationName(), 
+            source = GradleSourceUtil.removeDependency(source, dep.getConfigurationName(),
                      dep.getGroup(), dep.getName(), dep.getVersion(),
                      dep.getClassifier(), dep.getPackaging());
          }
@@ -172,7 +172,7 @@ public class GradleModelMergeUtil
       for (GradleDependency dep : deps)
       {
          source = GradleSourceUtil.removeManagedDependency(source, dep.getGroup(), dep.getName(),
-                  dep.getVersion(), dep.getConfigurationName(), dep.getClassifier(), dep.getConfigurationName());
+                  dep.getVersion(), dep.getConfigurationName(), dep.getClassifier(), dep.getPackaging());
       }
       return source;
    }

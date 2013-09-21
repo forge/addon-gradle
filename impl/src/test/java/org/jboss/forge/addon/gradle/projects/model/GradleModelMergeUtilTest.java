@@ -73,7 +73,7 @@ public class GradleModelMergeUtilTest
    @Test
    public void testRemoveDependency()
    {
-      GradleModelBuilder builder = GradleModelBuilder.create();
+      GradleModelBuilder builder = GradleModelBuilder.create(model);
       builder.removeDependency(GradleDependencyBuilder.create("compile", "x:y:z"));
       
       source = GradleModelMergeUtil.merge(source, model, builder);
@@ -110,13 +110,13 @@ public class GradleModelMergeUtilTest
    @Test
    public void testRemoveManagedDependency()
    {
-      GradleModelBuilder builder = GradleModelBuilder.create();
-      builder.removeDependency(GradleDependencyBuilder.create("compile", "a:b:c"));
+      GradleModelBuilder builder = GradleModelBuilder.create(model);
+      builder.removeManagedDependency(GradleDependencyBuilder.create("compile", "a:b:c"));
       
       source = GradleModelMergeUtil.merge(source, model, builder);
       GradleModel result = GradleModelLoadUtil.load(source);
       
-      assertEquals(0, result.getDependencies().size());
+      assertEquals(0, result.getManagedDependencies().size());
    }
 
    @Test
