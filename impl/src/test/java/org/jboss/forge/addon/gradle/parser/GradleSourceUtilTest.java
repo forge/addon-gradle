@@ -478,6 +478,35 @@ public class GradleSourceUtilTest
                .setConfigurationName("compile").setGroup("xx").setName("yy").setVersion("vv")
                .setClassifier("clas").setPackaging("pom"));
    }
+   
+   @Test
+   public void testGetManagedDependenciesWithExcludes()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}\n" +
+               "allprojects {\n" +
+               "    dependencies {\n" +
+               "        managed(configuration: 'compile', group: \"xx\", name: 'yy', version: 'vv') {\n" +
+               "            exclude module: 'm', group: 'g'\n" +
+               "        }\n" +
+               "    }\n" +
+               "}\n";
+
+      List<GradleDependency> deps = GradleSourceUtil.getManagedDependencies(source);
+
+      assertEquals(1, deps.size());
+      assertContainsDependency(deps, GradleDependencyBuilder.create()
+               .setConfigurationName("compile").setGroup("xx").setName("yy").setVersion("vv"));
+      
+      GradleDependency dep = deps.get(0);
+      List<GradleDependency> excludes = dep.getExcludedDependencies();
+      
+      assertEquals(1, excludes.size());
+      assertContainsDirectDependency(excludes, GradleDependencyBuilder.create()
+               .setGroup("g").setName("m"));
+   }
 
    @Test
    public void testGetPlugins()

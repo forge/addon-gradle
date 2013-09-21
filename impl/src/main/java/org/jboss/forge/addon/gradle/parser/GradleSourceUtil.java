@@ -286,21 +286,31 @@ public class GradleSourceUtil
     */
    public static List<GradleDependency> getManagedDependencies(String source)
    {
-      List<GradleDependency> deps = Lists.newArrayList();
+      List<GradleDependency> list = Lists.newArrayList();
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
-      for (InvocationWithClosure invocation : allDependencyInvocations(parser))
+      for (InvocationWithClosure deps : allDependencyInvocations(parser))
       {
-         for (InvocationWithMap mapInvocation : invocation.getInvocationsWithMap())
+         // Search in map invocations
+         for (InvocationWithMap invocation : deps.getInvocationsWithMap())
          {
-            if (mapInvocation.getMethodName().equals(MANAGED_CONFIG))
+            if (invocation.getMethodName().equals(MANAGED_CONFIG))
             {
-               deps.add(managedDependencyFromInvocation(mapInvocation));
+               list.add(managedDependencyFromInvocation(invocation));
+            }
+         }
+
+         // Search in invocations with closure
+         for (InvocationWithClosure invocation : deps.getInvocationsWithClosure())
+         {
+            if (invocation.getMethodName().equals(MANAGED_CONFIG))
+            {
+               list.add(managedDependencyFromInvocation(invocation));
             }
          }
       }
 
-      return deps;
+      return list;
    }
 
    public static List<GradlePlugin> getPlugins(String source)
@@ -573,13 +583,6 @@ public class GradleSourceUtil
       return dependencyFromString(invocation.getMethodName(), invocation.getString());
    }
 
-   private static GradleDependency managedDependencyFromInvocation(InvocationWithMap invocation)
-   {
-      Map<String, String> map = Maps.newHashMap(invocation.getParameters());
-      String config = map.remove("configuration");
-      return dependencyFromMap(config, map);
-   }
-
    private static GradleDependency dependencyFromInvocation(InvocationWithMap invocation)
    {
       return dependencyFromMap(invocation.getMethodName(), invocation.getParameters());
@@ -597,6 +600,24 @@ public class GradleSourceUtil
          gradleDep = dependencyFromMap(invocation.getMethodName(), invocation.getMapParameter());
       }
       
+      gradleDep = loadDependencyConfiguration(gradleDep, invocation);
+      
+      return gradleDep;
+   }
+
+   private static GradleDependency managedDependencyFromInvocation(InvocationWithMap invocation)
+   {
+      Map<String, String> map = Maps.newHashMap(invocation.getParameters());
+      String config = map.remove("configuration");
+      return dependencyFromMap(config, map);
+   }
+   
+   private static GradleDependency managedDependencyFromInvocation(InvocationWithClosure invocation)
+   {
+      Map<String, String> map = Maps.newHashMap(invocation.getMapParameter());
+      String config = map.remove("configuration");
+      
+      GradleDependency gradleDep = dependencyFromMap(config, map);
       gradleDep = loadDependencyConfiguration(gradleDep, invocation);
       
       return gradleDep;
