@@ -209,6 +209,14 @@ public class GradleDependencyBuilder implements GradleDependency
                !Strings.isNullOrEmpty(classifier) ? ":" + classifier : "",
                !Strings.isNullOrEmpty(packaging) && !packaging.equals(DEFAULT_PACKAGING) ? "@" + packaging : "");
    }
+   
+   @Override
+   public String toGradleMapString() {
+      return String.format("group: \"%s\", name: \"%s\", version: \"%s\"%s%s",
+               group, name, version,
+               !Strings.isNullOrEmpty(classifier) ? ", classifier: \"" + classifier + "\"" : "",
+               !Strings.isNullOrEmpty(packaging) && !packaging.equals("jar") ? ", ext: \"" + packaging + "\"" : "");
+   }
 
    /**
     * Compares this builder to given {@link GradleDependency}.
@@ -217,12 +225,6 @@ public class GradleDependencyBuilder implements GradleDependency
    {
       boolean coordsEquals = group.equals(dep.getGroup()) && name.equals(dep.getName())
                && version.equals(dep.getVersion());
-
-      boolean configEquals = true;
-      if (!Strings.isNullOrEmpty(dep.getConfigurationName()))
-      {
-         configEquals = dep.getConfigurationName().equals(configurationName);
-      }
 
       boolean classifierEquals = true;
       if (!Strings.isNullOrEmpty(dep.getClassifier()))
@@ -236,7 +238,7 @@ public class GradleDependencyBuilder implements GradleDependency
          packagingEquals = dep.getPackaging().equals(packaging);
       }
 
-      return coordsEquals && configEquals && classifierEquals && packagingEquals;
+      return coordsEquals && classifierEquals && packagingEquals;
    }
 
    /**

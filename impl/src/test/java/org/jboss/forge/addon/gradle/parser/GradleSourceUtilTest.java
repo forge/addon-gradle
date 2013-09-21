@@ -70,7 +70,8 @@ public class GradleSourceUtilTest
                "    compile 'a:b:1.0'\n" +
                "    testRuntime \"x:$y:3.0\"\n" +
                "}";
-      String result = GradleSourceUtil.insertDependency(source, "testRuntime", "x", "$y", "3.0", "", "");
+      String result = GradleSourceUtil.insertDependency(source, 
+               GradleDependencyBuilder.create("testRuntime", "x:$y:3.0"));
       assertEquals(expected, result);
    }
 
@@ -87,7 +88,29 @@ public class GradleSourceUtilTest
                "    compile 'a:b:1.0'\n" +
                "    testRuntime \"x:$y:3.0:cl@pom\"\n" +
                "}";
-      String result = GradleSourceUtil.insertDependency(source, "testRuntime", "x", "$y", "3.0", "cl", "pom");
+      String result = GradleSourceUtil.insertDependency(source, 
+               GradleDependencyBuilder.create("testRuntime", "x:$y:3.0:cl@pom"));
+      assertEquals(expected, result);
+   }
+   
+   @Test
+   public void testInsertDependencyWithExcludes()
+   {
+      String source = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "}";
+      String expected = "" +
+               "dependencies {\n" +
+               "    compile 'a:b:1.0'\n" +
+               "    testRuntime(\"x:y:3.0\") {\n" +
+               "        exclude module: \"m\"\n" +
+               "        exclude group: \"g\", module: \"n\"\n" +
+               "    }\n" +
+               "}";
+      String result = GradleSourceUtil.insertDependency(source,
+               GradleDependencyBuilder.create("testRuntime", "x:y:3.0"));
+      // TODO Complete test
       assertEquals(expected, result);
    }
 
@@ -103,7 +126,8 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
+      String result = GradleSourceUtil.removeDependency(source, 
+               GradleDependencyBuilder.create("compile", "a:b:1.0"));
       assertEquals(expected, result);
    }
 
@@ -119,7 +143,8 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "cl", "pom");
+      String result = GradleSourceUtil.removeDependency(source, 
+               GradleDependencyBuilder.create("compile", "a:b:1.0:cl@pom"));
       assertEquals(expected, result);
    }
 
@@ -138,7 +163,8 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
+      String result = GradleSourceUtil.removeDependency(source, 
+               GradleDependencyBuilder.create("compile", "a:b:1.0"));
       assertEquals(expected, result);
    }
 
@@ -154,7 +180,8 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
+      String result = GradleSourceUtil.removeDependency(source, 
+               GradleDependencyBuilder.create("compile", "a:b:1.0"));
       assertEquals(expected, result);
    }
 
@@ -170,7 +197,8 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "cl", "pom");
+      String result = GradleSourceUtil.removeDependency(source, 
+               GradleDependencyBuilder.create("compile", "a:b:1.0:cl@pom"));
       assertEquals(expected, result);
    }
 
@@ -188,7 +216,8 @@ public class GradleSourceUtilTest
                "dependencies {\n" +
                "    testRuntime 'x:z:4.0'\n" +
                "}";
-      String result = GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
+      String result = GradleSourceUtil.removeDependency(source, 
+               GradleDependencyBuilder.create("compile", "a:b:1.0"));
       assertEquals(expected, result);
    }
 
@@ -200,7 +229,8 @@ public class GradleSourceUtilTest
                "    def alias = compile" +
                "    alias 'a:b:1.0'\n" +
                "}";
-      GradleSourceUtil.removeDependency(source, "compile", "a", "b", "1.0", "", "");
+      GradleSourceUtil.removeDependency(source, 
+               GradleDependencyBuilder.create("compile", "a:b:1.0"));
    }
 
    @Test
@@ -359,7 +389,8 @@ public class GradleSourceUtilTest
                "        managed configuration: \"compile\", group: \"xx\", name: \"yy\", version: \"vv\"\n" +
                "    }  \t\n" +
                "}\n";
-      String result = GradleSourceUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile", "", "");
+      String result = GradleSourceUtil.insertManagedDependency(source, 
+               GradleDependencyBuilder.create("compile", "xx:yy:vv"));
       assertEquals(expected, result);
    }
    
@@ -384,7 +415,8 @@ public class GradleSourceUtilTest
                ", classifier: \"clas\", ext: \"pom\"\n" +
                "    }  \t\n" +
                "}\n";
-      String result = GradleSourceUtil.insertManagedDependency(source, "xx", "yy", "vv", "compile", "clas", "pom");
+      String result = GradleSourceUtil.insertManagedDependency(source, 
+               GradleDependencyBuilder.create("compile", "xx:yy:vv:clas@pom"));
       assertEquals(expected, result);
    }
 
@@ -408,7 +440,8 @@ public class GradleSourceUtilTest
                "    dependencies {\n" +
                "    }\n" +
                "}\n";
-      String result = GradleSourceUtil.removeManagedDependency(source, "xx", "yy", "vv", "compile", "", "");
+      String result = GradleSourceUtil.removeManagedDependency(source, 
+               GradleDependencyBuilder.create("compile", "xx:yy:vv"));
       assertEquals(expected, result);
    }
 
@@ -433,7 +466,8 @@ public class GradleSourceUtilTest
                "    dependencies {\n" +
                "    }\n" +
                "}\n";
-      String result = GradleSourceUtil.removeManagedDependency(source, "xx", "yy", "vv", "compile", "clas", "pom");
+      String result = GradleSourceUtil.removeManagedDependency(source, 
+               GradleDependencyBuilder.create("compile", "xx:yy:vv:clas@pom"));
       assertEquals(expected, result);
    }
 

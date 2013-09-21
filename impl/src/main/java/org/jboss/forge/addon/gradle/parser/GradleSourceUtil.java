@@ -85,33 +85,28 @@ public class GradleSourceUtil
       return String.format("%s '%s'", ARCHIVE_NAME_METHOD, archiveName);
    }
 
-   public static String insertDependency(String source,
-            String configuration,
-            String group, String name, String version,
-            String classifier, String packaging)
+   public static String insertDependency(String source, GradleDependency dep)
    {
-      String depString = String.format("%s \"%s:%s:%s%s%s\"", configuration, group, name, version,
-               !Strings.isNullOrEmpty(classifier) ? ":" + classifier : "",
-               !Strings.isNullOrEmpty(packaging) ? "@" + packaging : "");
+      String depString = dependencyInvocationString(dep);
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "dependencies");
       return source;
    }
+   
+   private static String dependencyInvocationString(GradleDependency dep)
+   {
+      return String.format("%s \"%s\"", dep.getConfigurationName(), dep.toGradleString());
+   }
 
-   public static String removeDependency(String source,
-            String configuration,
-            String group, String name, String version,
-            String classifier, String packaging)
+   public static String removeDependency(String source, GradleDependency dep)
             throws UnremovableElementException
    {
-      GradleDependencyBuilder dep = createDependencyBuilder(configuration, group, name, version, classifier, packaging);
-
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithClosure deps : allDependencyInvocations(parser))
       {
          // Search in string invocations
          for (InvocationWithString invocation : deps.getInvocationsWithString())
          {
-            if (isDependencyInvocation(invocation) && dep.equalsToDependency(dependencyFromInvocation(invocation)))
+            if (isDependencyInvocation(invocation) && dep.equals(dependencyFromInvocation(invocation)))
             {
                return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
@@ -120,7 +115,7 @@ public class GradleSourceUtil
          // Search in map invocations
          for (InvocationWithMap invocation : deps.getInvocationsWithMap())
          {
-            if (isDependencyInvocation(invocation) && dep.equalsToDependency(dependencyFromInvocation(invocation)))
+            if (isDependencyInvocation(invocation) && dep.equals(dependencyFromInvocation(invocation)))
             {
                return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
@@ -129,7 +124,7 @@ public class GradleSourceUtil
          // Search in invocations with closure
          for (InvocationWithClosure invocation : deps.getInvocationsWithClosure())
          {
-            if (isDependencyInvocation(invocation) && dep.equalsToDependency(dependencyFromInvocation(invocation)))
+            if (isDependencyInvocation(invocation) && dep.equals(dependencyFromInvocation(invocation)))
             {
                return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
@@ -237,22 +232,21 @@ public class GradleSourceUtil
       return deps;
    }
 
-   public static String insertManagedDependency(String source, String group, String name, String version,
-            String configuration, String classifier, String packaging)
+   public static String insertManagedDependency(String source, GradleDependency dep)
    {
-      String depString = String.format("%s configuration: \"%s\", group: \"%s\", name: \"%s\", version: \"%s\"%s%s",
+      String depString = String.format("%s configuration: \"%s\", %s",
                MANAGED_CONFIG,
-               configuration, group, name, version,
-               !Strings.isNullOrEmpty(classifier) ? ", classifier: \"" + classifier + "\"" : "",
-               !Strings.isNullOrEmpty(packaging) && !packaging.equals("jar") ? ", ext: \"" + packaging + "\"" : "");
+               dep.getConfigurationName(),
+               dep.toGradleMapString());
       source = SourceUtil.insertIntoInvocationAtPath(source, depString, "allprojects", "dependencies");
       return source;
    }
 
-   public static String removeManagedDependency(String source, String group, String name, String version,
-            String configuration, String classifier, String packaging) throws UnremovableElementException
+   public static String removeManagedDependency(String source, GradleDependency dep)
+            throws UnremovableElementException
    {
-      GradleDependencyBuilder dep = createDependencyBuilder(MANAGED_CONFIG, group, name, version, classifier, packaging);
+      GradleDependencyBuilder builder = GradleDependencyBuilder.create(dep);
+      builder.setConfigurationName(MANAGED_CONFIG);
 
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithClosure deps : allDependencyInvocations(parser))
@@ -261,7 +255,7 @@ public class GradleSourceUtil
          for (InvocationWithMap invocation : deps.getInvocationsWithMap())
          {
             if (invocation.getMethodName().equals(MANAGED_CONFIG) &&
-                     dep.equalsToDependency(dependencyFromInvocation(invocation)))
+                     dep.equals(dependencyFromInvocation(invocation)))
             {
                return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
@@ -271,7 +265,7 @@ public class GradleSourceUtil
          for (InvocationWithClosure invocation : deps.getInvocationsWithClosure())
          {
             if (invocation.getMethodName().equals(MANAGED_CONFIG) &&
-                     dep.equalsToDependency(dependencyFromInvocation(invocation)))
+                     dep.equals(dependencyFromInvocation(invocation)))
             {
                return SourceUtil.removeSourceFragmentWithLine(source, invocation);
             }
@@ -558,18 +552,6 @@ public class GradleSourceUtil
       return properties;
    }
 
-   private static GradleDependencyBuilder createDependencyBuilder(
-            String configuration,
-            String group, String name, String version,
-            String classifier, String packaging)
-   {
-      return GradleDependencyBuilder.create()
-               .setConfigurationName(configuration)
-               .setGroup(group).setName(name).setVersion(version)
-               .setClassifier(classifier)
-               .setPackaging(!Strings.isNullOrEmpty(packaging) ? packaging : "jar");
-   }
-
    private static List<InvocationWithClosure> allDependencyInvocations(SimpleGroovyParser parser)
    {
       List<InvocationWithClosure> depsInvocations = Lists.newArrayList();
@@ -599,9 +581,9 @@ public class GradleSourceUtil
       {
          gradleDep = dependencyFromMap(invocation.getMethodName(), invocation.getMapParameter());
       }
-      
+
       gradleDep = loadDependencyConfiguration(gradleDep, invocation);
-      
+
       return gradleDep;
    }
 
@@ -611,22 +593,22 @@ public class GradleSourceUtil
       String config = map.remove("configuration");
       return dependencyFromMap(config, map);
    }
-   
+
    private static GradleDependency managedDependencyFromInvocation(InvocationWithClosure invocation)
    {
       Map<String, String> map = Maps.newHashMap(invocation.getMapParameter());
       String config = map.remove("configuration");
-      
+
       GradleDependency gradleDep = dependencyFromMap(config, map);
       gradleDep = loadDependencyConfiguration(gradleDep, invocation);
-      
+
       return gradleDep;
    }
-   
+
    private static GradleDependency loadDependencyConfiguration(GradleDependency dep, InvocationWithClosure invocation)
    {
       GradleDependencyBuilder builder = GradleDependencyBuilder.create(dep);
-      
+
       // Search for excludes
       List<GradleDependency> excludes = Lists.newArrayList();
       for (InvocationWithMap mapInvocation : invocation.getInvocationsWithMap())
@@ -635,18 +617,18 @@ public class GradleSourceUtil
          {
             String group = mapInvocation.getParameters().get("group");
             String module = mapInvocation.getParameters().get("module");
-            
+
             // If group is not set then by default it uses dep group
             if (Strings.isNullOrEmpty(group))
             {
                group = dep.getGroup();
             }
-            
+
             excludes.add(GradleDependencyBuilder.create().setGroup(group).setName(module));
          }
       }
       builder.setExcludedDependencies(excludes);
-      
+
       return builder;
    }
 

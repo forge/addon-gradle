@@ -62,4 +62,9 @@ public interface GradleDependency
     * <i>group:name:version</i>
     */
    String toGradleString();
+
+   /**
+    * Returns Gradle string in map format.
+    */
+   String toGradleMapString();
 }
