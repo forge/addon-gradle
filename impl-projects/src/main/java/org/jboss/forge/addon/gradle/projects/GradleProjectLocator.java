@@ -31,7 +31,7 @@ public class GradleProjectLocator implements ProjectLocator
    {
       Project project = new GradleProject(targetDir);
 
-      facetFactory.install(project, GradleFacet.class);
+      facetFactory.install(project, GradleFacetImpl.class);
       facetFactory.install(project, GradleMetadataFacet.class);
       facetFactory.install(project, GradlePackagingFacet.class);
       facetFactory.install(project, GradleDependencyFacet.class);
