@@ -1,0 +1,3 @@
+include 'subproject'
+
+project(':subproject').name = 'x'

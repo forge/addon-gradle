@@ -49,7 +49,9 @@ public class GradleFacetTest
    })
    public static ForgeArchive getDeployment()
    {
-      return GradleTestProjectProvider.getDeployment();
+      return GradleTestProjectProvider.getDeployment(
+               GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
+               GradleTestProjectProvider.SIMPLE_RESOURCES);
    }
 
    @Inject
@@ -63,7 +65,9 @@ public class GradleFacetTest
    @Before
    public void setUp()
    {
-      project = projectProvider.create();
+      project = projectProvider.create("",
+                        GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
+                        GradleTestProjectProvider.SIMPLE_RESOURCES);
       facet = project.getFacet(GradleFacet.class);
    }
 

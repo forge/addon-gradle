@@ -1,0 +1,5 @@
+// Subproject
+
+dependencies {
+   direct group: "org.x", name: 'xyz'
+}

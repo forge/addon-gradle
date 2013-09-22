@@ -1,0 +1,17 @@
+group = 'org.complexproject'
+apply plugin: 'application'
+
+apply from: 'forge.gradle'
+
+allprojects {
+    apply plugin: 'java'
+
+    ext.someProperty = 'org.x'
+    
+    dependencies {
+        managed(group: 'org.x', name: 'xyz', version: 'SNAPSHOT', configuration: 'compile') {
+            transitive = true
+            exclude module: 'abc'
+        }
+    } 
+}

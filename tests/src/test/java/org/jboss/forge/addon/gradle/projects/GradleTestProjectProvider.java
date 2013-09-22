@@ -18,14 +18,16 @@ import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 
+import com.google.common.base.Strings;
+
 /**
  * @author Adam Wyłuda
  */
 public class GradleTestProjectProvider
 {
-   static final String[] RESOURCES = new String[] {
+   public static final String SIMPLE_RESOURCES_PATH = "simple/";
+   public static final String[] SIMPLE_RESOURCES = new String[] {
             "build.gradle",
-            "forge.gradle",
             "test-profile.gradle",
             "settings.gradle",
             "src/main/interfaces/org/testproject/Service.java",
@@ -33,8 +35,15 @@ public class GradleTestProjectProvider
             "src/test/mocks/org/testproject/TestMainClass.java",
             "src/test/templates/pom.xml"
    };
-   
-   public static ForgeArchive getDeployment()
+
+   public static final String COMPLEX_RESOURCES_PATH = "complex/";
+   public static final String[] COMPLEX_RESOURCES = new String[] {
+            "build.gradle",
+            "settings.gradle",
+            "subproject/build.gradle"
+   };
+
+   public static ForgeArchive getDeployment(String resourcesPath, String... resources)
    {
       ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
                .addBeansXML()
@@ -48,10 +57,11 @@ public class GradleTestProjectProvider
                         AddonDependencyEntry.create("org.jboss.forge.addon:parser-java", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:maven", "2.0.0-SNAPSHOT")
                );
-      for (String resource : RESOURCES)
+      for (String resource : resources)
       {
-         archive = archive.addAsResource(resource);
+         archive = archive.addAsResource(resourcesPath + resource);
       }
+      archive = archive.addAsResource("forge.gradle");
       return archive;
    }
 
@@ -64,13 +74,19 @@ public class GradleTestProjectProvider
 
    private DirectoryResource projectDir;
 
-   public Project create()
+   public Project create(String projectPath, String resourcesPath, String... resources)
    {
       DirectoryResource addonDir = resourceFactory.create(furnace.getRepositories().get(0).getRootDirectory()).reify(
                DirectoryResource.class);
+         
       projectDir = addonDir.createTempResource();
 
-      initFiles(RESOURCES);
+      initResources(resourcesPath, resources);
+      
+      if (!Strings.isNullOrEmpty(projectPath))
+      {
+         projectDir = projectDir.getChildDirectory(projectPath);
+      }
 
       return findProject();
    }
@@ -85,13 +101,16 @@ public class GradleTestProjectProvider
       projectDir.delete(true);
    }
 
-   private void initFiles(String... files)
+   private void initResources(String resourcesPath, String... resources)
    {
-      for (String file : files)
+      for (String resource : resources)
       {
-         FileResource<?> res = projectDir.getChild(file).reify(FileResource.class);
-         res.createNewFile();
-         res.setContents(getClass().getResourceAsStream("/" + file));
+         FileResource<?> resourceFile = projectDir.getChild(resource).reify(FileResource.class);
+         resourceFile.createNewFile();
+         resourceFile.setContents(getClass().getResourceAsStream("/" + resourcesPath + resource));
       }
+      FileResource<?> resourceFile = projectDir.getChild("forge.gradle").reify(FileResource.class);
+      resourceFile.createNewFile();
+      resourceFile.setContents(getClass().getResourceAsStream("/forge.gradle"));
    }
 }

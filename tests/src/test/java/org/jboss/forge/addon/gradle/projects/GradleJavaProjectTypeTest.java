@@ -41,7 +41,7 @@ public class GradleJavaProjectTypeTest
    })
    public static ForgeArchive getDeployment()
    {
-      return GradleTestProjectProvider.getDeployment();
+      return GradleTestProjectProvider.getDeployment("");
    }
    
    @Inject
