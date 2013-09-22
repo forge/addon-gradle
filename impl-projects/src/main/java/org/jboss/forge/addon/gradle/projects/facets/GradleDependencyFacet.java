@@ -21,6 +21,7 @@ import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.DependencyQuery;
 import org.jboss.forge.addon.dependencies.DependencyRepository;
 import org.jboss.forge.addon.dependencies.DependencyResolver;
+import org.jboss.forge.addon.dependencies.builder.CoordinateBuilder;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.dependencies.util.NonSnapshotDependencyFilter;
@@ -353,8 +354,23 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
                .setArtifactId(gradleDep.getName())
                .setVersion(gradleDep.getVersion())
                .setClassifier(gradleDep.getClassifier())
-               .setPackaging(gradleDep.getPackaging());
+               .setPackaging(gradleDep.getPackaging())
+               .setExcludedCoordinates(gradleExclusionsToForge(gradleDep.getExcludedDependencies()));
       return forgeDep;
+   }
+   
+   private List<Coordinate> gradleExclusionsToForge(List<GradleDependency> exclusions)
+   {
+      List<Coordinate> list = Lists.newArrayList();
+      
+      for (GradleDependency dep : exclusions)
+      {
+         list.add(CoordinateBuilder.create()
+                  .setGroupId(dep.getGroup())
+                  .setArtifactId(dep.getName()));
+      }
+      
+      return list;
    }
 
    private GradleDependency forgeDepToGradleDep(Dependency forgeDep)
@@ -366,7 +382,27 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
                .setName(forgeDep.getCoordinate().getArtifactId())
                .setVersion(forgeDep.getCoordinate().getVersion())
                .setClassifier(forgeDep.getCoordinate().getClassifier())
-               .setPackaging(forgeDep.getCoordinate().getPackaging());
+               .setPackaging(forgeDep.getCoordinate().getPackaging())
+               .setExcludedDependencies(forgeExclusionsToGradle(forgeDep.getExcludedCoordinates()));
+   }
+   
+   private List<GradleDependency> forgeExclusionsToGradle(List<Coordinate> exclusions)
+   {
+      List<GradleDependency> list = Lists.newArrayList();
+      
+      if (exclusions == null)
+      {
+         return list;
+      }
+      
+      for (Coordinate coord : exclusions)
+      {
+         list.add(GradleDependencyBuilder.create()
+                  .setGroup(coord.getGroupId())
+                  .setName(coord.getArtifactId()));
+      }
+      
+      return list;
    }
 
    private List<Dependency> filterDependenciesFromScopes(List<Dependency> deps, String... scopes)

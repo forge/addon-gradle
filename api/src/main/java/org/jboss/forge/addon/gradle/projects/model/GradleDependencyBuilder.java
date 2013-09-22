@@ -174,7 +174,14 @@ public class GradleDependencyBuilder implements GradleDependency
 
    public GradleDependencyBuilder setPackaging(String packaging)
    {
-      this.packaging = packaging;
+      if (!Strings.isNullOrEmpty(packaging))
+      {
+         this.packaging = packaging;
+      }
+      else
+      {
+         this.packaging = DEFAULT_PACKAGING;
+      }
       return this;
    }
 
