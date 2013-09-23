@@ -80,4 +80,10 @@ public class GradleRepositoryBuilder implements GradleRepository
       this.url = url;
       return this;
    }
+   
+   @Override
+   public String toString()
+   {
+      return String.format("url '%s'", url);
+   }
 }

@@ -67,4 +67,10 @@ public class GradleSourceDirectoryBuilder implements GradleSourceDirectory
       this.path = path;
       return this;
    }
+   
+   @Override
+   public String toString()
+   {
+      return String.format("srcDir '%s'", path);
+   }
 }

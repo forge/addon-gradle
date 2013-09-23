@@ -96,4 +96,10 @@ public class GradleSourceSetBuilder implements GradleSourceSet
       this.resourceDirs = dirs;
       return this;
    }
+
+   @Override
+   public String toString()
+   {
+      return "GradleSourceSetBuilder [name=" + name + ", javaDirs=" + javaDirs + ", resourceDirs=" + resourceDirs + "]";
+   }
 }

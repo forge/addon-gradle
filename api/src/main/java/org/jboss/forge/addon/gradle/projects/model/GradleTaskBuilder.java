@@ -115,4 +115,10 @@ public class GradleTaskBuilder implements GradleTask
       this.code = code;
       return this;
    }
+   
+   @Override
+   public String toString()
+   {
+      return String.format("%s(type: '%s', dependsOn: %s) {\n%s\n}", name, type, dependsOn, code);
+   }
 }

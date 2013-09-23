@@ -547,4 +547,18 @@ public class GradleModelBuilder implements GradleModel
       }
       return null;
    }
+
+   @Override
+   public String toString()
+   {
+      return "GradleModelBuilder [group=" + group + ", name=" + name + ", version=" + version + ", packaging="
+               + packaging + ", archiveName=" + archiveName + ", projectPath=" + projectPath + ", rootProjectPath="
+               + rootProjectPath + ", archivePath=" + archivePath + ", tasks=" + tasks + ", effectiveTasks="
+               + effectiveTasks + ", dependencies=" + dependencies + ", effectiveDependencies=" + effectiveDependencies
+               + ", managedDependencies=" + managedDependencies + ", effectiveManagedDependencies="
+               + effectiveManagedDependencies + ", profiles=" + profiles + ", plugins=" + plugins
+               + ", effectivePlugins=" + effectivePlugins + ", repositories=" + repositories
+               + ", effectiveRepositories=" + effectiveRepositories + ", properties=" + properties
+               + ", effectiveProperties=" + effectiveProperties + ", effectiveSourceSets=" + effectiveSourceSets + "]";
+   }
 }

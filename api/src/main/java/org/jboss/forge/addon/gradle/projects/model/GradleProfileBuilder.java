@@ -81,4 +81,10 @@ public class GradleProfileBuilder implements GradleProfile
       this.model = GradleModelBuilder.create(model);
       return this;
    }
+
+   @Override
+   public String toString()
+   {
+      return "GradleProfileBuilder [name=" + name + ", model=" + model + "]";
+   }
 }

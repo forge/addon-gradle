@@ -19,40 +19,40 @@ import java.util.List;
 public class GradlePluginBuilder implements GradlePlugin
 {
    private String clazz = "";
-   
+
    private GradlePluginBuilder()
    {
    }
-   
+
    public static GradlePluginBuilder create()
    {
       return new GradlePluginBuilder();
    }
 
    /**
-    * Creates a copy of given plugin. 
+    * Creates a copy of given plugin.
     */
    public static GradlePluginBuilder create(GradlePlugin plugin)
    {
       GradlePluginBuilder builder = new GradlePluginBuilder();
-      
+
       builder.clazz = plugin.getClazz();
-      
+
       return builder;
    }
-   
+
    /**
     * Performs a deep copy of given plugins.
     */
    public static List<GradlePlugin> deepCopy(List<GradlePlugin> plugins)
    {
       List<GradlePlugin> list = new ArrayList<GradlePlugin>();
-      
+
       for (GradlePlugin plugin : plugins)
       {
          list.add(create(plugin));
       }
-      
+
       return list;
    }
 
@@ -61,7 +61,7 @@ public class GradlePluginBuilder implements GradlePlugin
    {
       return clazz;
    }
-   
+
    public GradlePluginBuilder setClazz(String clazz)
    {
       this.clazz = clazz;
@@ -73,11 +73,17 @@ public class GradlePluginBuilder implements GradlePlugin
    {
       return GradlePluginType.typeByClazz(clazz);
    }
-   
+
    public GradlePluginBuilder setType(GradlePluginType type)
    {
       this.clazz = type.getClazz();
       return this;
    }
 
+   @Override
+   public String toString()
+   {
+      return String.format("apply plugin: '%s'", 
+               getType() != GradlePluginType.OTHER ? getType().getShortName() : getClazz());
+   }
 }
