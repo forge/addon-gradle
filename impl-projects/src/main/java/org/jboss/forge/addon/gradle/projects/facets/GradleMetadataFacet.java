@@ -12,7 +12,6 @@ import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
-import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
@@ -43,17 +42,9 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    @Override
    public void setProjectName(String name)
    {
-      try
-      {
-         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-         model.setName(name);
-         getGradleFacet().setModel(model);
-      }
-      catch (UnremovableElementException e)
-      {
-         // TODO Handle Gradle exceptions
-         e.printStackTrace();
-      }
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.setName(name);
+      getGradleFacet().setModel(model);
    }
 
    @Override
@@ -65,17 +56,9 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    @Override
    public void setTopLevelPackage(String groupId)
    {
-      try
-      {
-         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-         model.setGroup(groupId);
-         getGradleFacet().setModel(model);
-      }
-      catch (UnremovableElementException e)
-      {
-         // TODO Handle Gradle exceptions
-         e.printStackTrace();
-      }
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.setGroup(groupId);
+      getGradleFacet().setModel(model);
    }
 
    @Override
@@ -87,17 +70,9 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    @Override
    public void setProjectVersion(String version)
    {
-      try
-      {
-         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-         model.setVersion(version);
-         getGradleFacet().setModel(model);
-      }
-      catch (UnremovableElementException e)
-      {
-         // TODO Handle Gradle exceptions
-         e.printStackTrace();
-      }
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.setVersion(version);
+      getGradleFacet().setModel(model);
    }
 
    @Override
@@ -143,21 +118,15 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    public String removeDirectProperty(String name)
    {
       String property = null;
-      try
-      {
-         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-         property = model.getProperties().get(name);
-         model.removeProperty(name);
-         getGradleFacet().setModel(model);
-      }
-      catch (UnremovableElementException e)
-      {
-         // TODO Handle Gradle exceptions
-         e.printStackTrace();
-      }
+
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      property = model.getProperties().get(name);
+      model.removeProperty(name);
+      getGradleFacet().setModel(model);
+
       return property;
    }
-   
+
    private GradleFacet getGradleFacet()
    {
       return getFaceted().getFacet(GradleFacet.class);

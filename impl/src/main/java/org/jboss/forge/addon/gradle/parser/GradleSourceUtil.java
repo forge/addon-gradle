@@ -139,7 +139,7 @@ public class GradleSourceUtil
          }
       }
 
-      throw new UnremovableElementException();
+      throw new UnremovableElementException("Couldn't remove dependency: " + dep.toString());
    }
 
    /**
@@ -210,7 +210,8 @@ public class GradleSourceUtil
          }
       }
 
-      throw new UnremovableElementException();
+      throw new UnremovableElementException("Couldn't remove direct dependency with group: " + group +
+               ", name: " + name);
    }
 
    /**
@@ -292,7 +293,7 @@ public class GradleSourceUtil
          }
       }
 
-      throw new UnremovableElementException();
+      throw new UnremovableElementException("Couldn't remove managed dependency: " + dep.toString());
    }
 
    /**
@@ -384,7 +385,7 @@ public class GradleSourceUtil
          }
       }
 
-      throw new UnremovableElementException();
+      throw new UnremovableElementException("Couldn't remove plugin: " + clazz);
    }
 
    public static List<GradleRepository> getRepositories(String source)
@@ -430,7 +431,7 @@ public class GradleSourceUtil
          }
       }
 
-      throw new UnremovableElementException();
+      throw new UnremovableElementException("Couldn't remove repository: " + url);
    }
 
    /**
@@ -480,7 +481,7 @@ public class GradleSourceUtil
          }
       }
 
-      throw new UnremovableElementException();
+      throw new UnremovableElementException("Couldn't remove property: " + key);
    }
 
    // There is no way to remove a task because tasks are composed of many actions

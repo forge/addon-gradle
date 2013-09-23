@@ -29,7 +29,6 @@ import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
-import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependency;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyConfiguration;
@@ -44,7 +43,7 @@ import org.jboss.forge.addon.projects.facets.DependencyFacet;
  * @author Adam Wyłuda
  */
 @FacetConstraints({
-   @FacetConstraint(GradleFacet.class)
+         @FacetConstraint(GradleFacet.class)
 })
 public class GradleDependencyFacet extends AbstractFacet<Project> implements DependencyFacet
 {
@@ -203,51 +202,29 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    @Override
    public void removeDependency(Dependency dependency)
    {
-      try
-      {
-         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-         model.removeDependency(forgeDepToGradleDep(dependency));
-         getGradleFacet().setModel(model);
-      }
-      catch (UnremovableElementException e)
-      {
-         // TODO Handle Gradle exceptions
-         e.printStackTrace();
-      }
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.removeDependency(forgeDepToGradleDep(dependency));
+      getGradleFacet().setModel(model);
    }
 
    @Override
    public void removeManagedDependency(Dependency managedDependency)
    {
-      try
-      {
-         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-         model.removeManagedDependency(forgeDepToGradleDep(managedDependency));
-         getGradleFacet().setModel(model);
-      }
-      catch (UnremovableElementException e)
-      {
-         // TODO Handle Gradle exceptions
-         e.printStackTrace();
-      }
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.removeManagedDependency(forgeDepToGradleDep(managedDependency));
+      getGradleFacet().setModel(model);
    }
 
    @Override
    public DependencyRepository removeRepository(String url)
    {
       DependencyRepository repo = null;
-      try
-      {
-         GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-         repo = findRepositoryByUrl(getRepositories(), url);
-         model.removeRepository(GradleRepositoryBuilder.create().setUrl(url));
-         getGradleFacet().setModel(model);
-      }
-      catch (UnremovableElementException e)
-      {
-         // TODO Handle Gradle exceptions
-         e.printStackTrace();
-      }
+
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      repo = findRepositoryByUrl(getRepositories(), url);
+      model.removeRepository(GradleRepositoryBuilder.create().setUrl(url));
+      getGradleFacet().setModel(model);
+
       return repo;
    }
 
@@ -293,19 +270,20 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
 
       return builder;
    }
-   
+
    /**
     * Returns a list of dependencies and their transitive dependencies.
     */
    public List<Dependency> resolveDependencies(List<Dependency> deps)
    {
       Map<String, Dependency> depByString = new HashMap<String, Dependency>();
-      
+
       for (Dependency dep : deps)
       {
          depByString.put(dep.toString(), dep);
-         
-         try {
+
+         try
+         {
             Set<Dependency> depDeps = dependencyResolver.resolveDependencies(
                      DependencyQueryBuilder.create(dep.getCoordinate()).setRepositories(getRepositories()));
             for (Dependency depDep : depDeps)
@@ -316,12 +294,13 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
                   depByString.put(depDepString, depDep);
                }
             }
-         } catch (RuntimeException ex)
+         }
+         catch (RuntimeException ex)
          {
             // If dependency couldn't be resolved we just add only it
          }
       }
-      
+
       return new ArrayList<Dependency>(depByString.values());
    }
 
@@ -363,18 +342,18 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
                .setExcludedCoordinates(gradleExclusionsToForge(gradleDep.getExcludedDependencies()));
       return forgeDep;
    }
-   
+
    private List<Coordinate> gradleExclusionsToForge(List<GradleDependency> exclusions)
    {
       List<Coordinate> list = Lists.newArrayList();
-      
+
       for (GradleDependency dep : exclusions)
       {
          list.add(CoordinateBuilder.create()
                   .setGroupId(dep.getGroup())
                   .setArtifactId(dep.getName()));
       }
-      
+
       return list;
    }
 
@@ -390,23 +369,23 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
                .setPackaging(forgeDep.getCoordinate().getPackaging())
                .setExcludedDependencies(forgeExclusionsToGradle(forgeDep.getExcludedCoordinates()));
    }
-   
+
    private List<GradleDependency> forgeExclusionsToGradle(List<Coordinate> exclusions)
    {
       List<GradleDependency> list = Lists.newArrayList();
-      
+
       if (exclusions == null)
       {
          return list;
       }
-      
+
       for (Coordinate coord : exclusions)
       {
          list.add(GradleDependencyBuilder.create()
                   .setGroup(coord.getGroupId())
                   .setName(coord.getArtifactId()));
       }
-      
+
       return list;
    }
 
@@ -468,7 +447,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       }
       return null;
    }
-   
+
    private String resolveProperties(Map<String, String> properties, String value)
    {
       if (value != null)
@@ -481,7 +460,6 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       }
       return value;
    }
-
 
    private GradleFacet getGradleFacet()
    {
