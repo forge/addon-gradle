@@ -305,15 +305,20 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       {
          depByString.put(dep.toString(), dep);
          
-         Set<Dependency> depDeps = dependencyResolver.resolveDependencies(
-                  DependencyQueryBuilder.create(dep.getCoordinate()).setRepositories(getRepositories()));
-         for (Dependency depDep : depDeps)
-         {
-            String depDepString = depDep.toString();
-            if (!depByString.containsKey(depDepString))
+         try {
+            Set<Dependency> depDeps = dependencyResolver.resolveDependencies(
+                     DependencyQueryBuilder.create(dep.getCoordinate()).setRepositories(getRepositories()));
+            for (Dependency depDep : depDeps)
             {
-               depByString.put(depDepString, depDep);
+               String depDepString = depDep.toString();
+               if (!depByString.containsKey(depDepString))
+               {
+                  depByString.put(depDepString, depDep);
+               }
             }
+         } catch (RuntimeException ex)
+         {
+            // If dependency couldn't be resolved we just add only it
          }
       }
       

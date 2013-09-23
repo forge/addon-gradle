@@ -1,9 +1,10 @@
-group = 'org.complexproject'
 apply plugin: 'application'
 
 apply from: 'forge.gradle'
 
 allprojects {
+    group = 'org.complexproject'
+
     apply plugin: 'java'
 
     ext.someProperty = 'org.x'
