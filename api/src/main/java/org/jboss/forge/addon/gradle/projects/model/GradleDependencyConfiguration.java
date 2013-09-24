@@ -28,6 +28,11 @@ public enum GradleDependencyConfiguration
    TEST_RUNTIME("testRuntime", "test"),
 
    /**
+    * Simulates Maven imported dependency scope. Should be used only for managed dependencies.
+    */
+   IMPORT("import", "import"),
+
+   /**
     * Direct dependency configuration (which doesn't have defined version and config).
     */
    DIRECT("direct", null),
@@ -63,7 +68,7 @@ public enum GradleDependencyConfiguration
    }
 
    /**
-    * Returns configuration name. 
+    * Returns configuration name.
     */
    public String getName()
    {
@@ -71,7 +76,7 @@ public enum GradleDependencyConfiguration
    }
 
    /**
-    * Translates this configuration to Maven scope. 
+    * Translates this configuration to Maven scope.
     */
    public String toMavenScope()
    {
@@ -125,7 +130,7 @@ public enum GradleDependencyConfiguration
       ConfigContainer.BY_MAVEN_SCOPE_MAP.put("runtime", RUNTIME);
       ConfigContainer.BY_MAVEN_SCOPE_MAP.put("test", TEST_COMPILE);
       ConfigContainer.BY_MAVEN_SCOPE_MAP.put("system", COMPILE);
-      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("import", COMPILE);
+      ConfigContainer.BY_MAVEN_SCOPE_MAP.put("import", IMPORT);
    }
 
    private static void configureExtends()

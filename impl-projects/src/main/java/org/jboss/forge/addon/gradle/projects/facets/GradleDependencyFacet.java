@@ -66,7 +66,39 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    public void addDirectDependency(Dependency dep)
    {
       GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-      model.addDependency(forgeDepToGradleDep(dep));
+
+      // In case version was set we just add new dependency
+      if (dep.getCoordinate().getVersion() != null)
+      {
+         model.addDependency(forgeDepToGradleDep(dep));
+      }
+      // If version was not set then we will search in imported dependencies
+      else
+      {
+         List<Dependency> importedEffectiveManagedDeps =
+                  resolveDependencies(filterDependenciesFromScopes(getEvaluatedManagedDependencies(), "import"));
+
+         Dependency newDep = null;
+
+         for (Dependency importedDep : importedEffectiveManagedDeps)
+         {
+            if (dep.getCoordinate().getGroupId().equals(importedDep.getCoordinate().getGroupId()) &&
+                     dep.getCoordinate().getArtifactId().equals(importedDep.getCoordinate().getArtifactId()))
+            {
+               newDep = DependencyBuilder.create(dep).setVersion(importedDep.getCoordinate().getVersion());
+               break;
+            }
+         }
+
+         // In case we didn't found corresponding dependency in imported deps we add it normally
+         if (newDep == null)
+         {
+            newDep = dep;
+         }
+
+         model.addDependency(forgeDepToGradleDep(newDep));
+      }
+
       getGradleFacet().setModel(model);
    }
 

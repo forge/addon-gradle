@@ -22,7 +22,7 @@ public class GradleDependencyBuilder implements GradleDependency
 {
    static final String DEFAULT_PACKAGING = "jar";
 
-   private String configurationName = "";
+   private String configurationName = GradleDependencyConfiguration.COMPILE.getName();
    private String group = "";
    private String name = "";
    private String version = "";
@@ -162,7 +162,14 @@ public class GradleDependencyBuilder implements GradleDependency
 
    public GradleDependencyBuilder setConfigurationName(String configuration)
    {
-      this.configurationName = configuration;
+      if (!Strings.isNullOrEmpty(configuration))
+      {
+         this.configurationName = configuration;
+      }
+      else
+      {
+         this.configurationName = GradleDependencyConfiguration.COMPILE.getName();
+      }
       return this;
    }
 
