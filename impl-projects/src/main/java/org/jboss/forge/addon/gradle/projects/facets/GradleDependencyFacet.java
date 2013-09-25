@@ -67,37 +67,19 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    {
       GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
 
-      // In case version was set we just add new dependency
-      if (dep.getCoordinate().getVersion() != null)
+      Dependency newDep = null;
+      // If dependency has no version set, and there is no corresponding dep in managed list
+      if (dep.getCoordinate().getVersion() == null &&
+               resolveVersionIn(getEffectiveManagedDependencies(), dep) == null)
       {
-         model.addDependency(forgeDepToGradleDep(dep));
+         // Then try to resolve version in imports
+         newDep = resolveVersionIn(getEffectiveImports(), dep);
       }
-      // If version was not set then we will search in imported dependencies
-      else
+      if (newDep == null)
       {
-         List<Dependency> importedEffectiveManagedDeps =
-                  resolveDependencies(filterDependenciesFromScopes(getEvaluatedManagedDependencies(), "import"));
-
-         Dependency newDep = null;
-
-         for (Dependency importedDep : importedEffectiveManagedDeps)
-         {
-            if (dep.getCoordinate().getGroupId().equals(importedDep.getCoordinate().getGroupId()) &&
-                     dep.getCoordinate().getArtifactId().equals(importedDep.getCoordinate().getArtifactId()))
-            {
-               newDep = DependencyBuilder.create(dep).setVersion(importedDep.getCoordinate().getVersion());
-               break;
-            }
-         }
-
-         // In case we didn't found corresponding dependency in imported deps we add it normally
-         if (newDep == null)
-         {
-            newDep = dep;
-         }
-
-         model.addDependency(forgeDepToGradleDep(newDep));
+         newDep = dep;
       }
+      model.addDependency(forgeDepToGradleDep(newDep));
 
       getGradleFacet().setModel(model);
    }
@@ -115,7 +97,16 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    public void addDirectManagedDependency(Dependency dep)
    {
       GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-      model.addManagedDependency(forgeDepToGradleDep(dep));
+
+      Dependency newDep = null;
+      // First try to enforce version using imported dependencies (like Maven do)
+      newDep = resolveVersionIn(getEffectiveImports(), dep);
+      if (newDep == null)
+      {
+         newDep = dep;
+      }
+      model.addManagedDependency(forgeDepToGradleDep(newDep));
+
       getGradleFacet().setModel(model);
    }
 
@@ -148,7 +139,8 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    @Override
    public List<Dependency> getEffectiveDependencies()
    {
-      return resolveDependencies(getEvaluatedDependencies());
+      // Actually there shouldn't be any imported dependencies
+      return resolveDependencies(getEvaluatedDependencies(), false);
    }
 
    @Override
@@ -303,10 +295,29 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       return builder;
    }
 
+   private Dependency resolveVersionIn(List<Dependency> list, Dependency dep)
+   {
+      for (Dependency importedDep : list)
+      {
+         if (dep.getCoordinate().getGroupId().equals(importedDep.getCoordinate().getGroupId()) &&
+                  dep.getCoordinate().getArtifactId().equals(importedDep.getCoordinate().getArtifactId()))
+         {
+            return DependencyBuilder.create(dep).setVersion(importedDep.getCoordinate().getVersion());
+         }
+      }
+
+      return null;
+   }
+
+   private List<Dependency> getEffectiveImports()
+   {
+      return resolveDependencies(filterDependenciesFromScopes(getEvaluatedManagedDependencies(), "import"), true);
+   }
+
    /**
     * Returns a list of dependencies and their transitive dependencies.
     */
-   public List<Dependency> resolveDependencies(List<Dependency> deps)
+   private List<Dependency> resolveDependencies(List<Dependency> deps, boolean resolveImported)
    {
       Map<String, Dependency> depByString = new HashMap<String, Dependency>();
 
@@ -314,22 +325,25 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       {
          depByString.put(dep.toString(), dep);
 
-         try
+         if (resolveImported || !dep.getScopeType().equals("import"))
          {
-            Set<Dependency> depDeps = dependencyResolver.resolveDependencies(
-                     DependencyQueryBuilder.create(dep.getCoordinate()).setRepositories(getRepositories()));
-            for (Dependency depDep : depDeps)
+            try
             {
-               String depDepString = depDep.toString();
-               if (!depByString.containsKey(depDepString))
+               Set<Dependency> depDeps = dependencyResolver.resolveDependencies(
+                        DependencyQueryBuilder.create(dep.getCoordinate()).setRepositories(getRepositories()));
+               for (Dependency depDep : depDeps)
                {
-                  depByString.put(depDepString, depDep);
+                  String depDepString = depDep.toString();
+                  if (!depByString.containsKey(depDepString))
+                  {
+                     depByString.put(depDepString, depDep);
+                  }
                }
             }
-         }
-         catch (RuntimeException ex)
-         {
-            // If dependency couldn't be resolved we just add only it
+            catch (RuntimeException ex)
+            {
+               // If dependency couldn't be resolved we just add only it
+            }
          }
       }
 
@@ -338,7 +352,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
 
    public List<Dependency> getEffectiveManagedDependencies()
    {
-      return resolveDependencies(getEvaluatedManagedDependencies());
+      return resolveDependencies(getEvaluatedManagedDependencies(), false);
    }
 
    public List<Dependency> getEvaluatedDependencies()
