@@ -12,6 +12,7 @@ import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.Furnace;
@@ -76,13 +77,15 @@ public class GradleTestProjectProvider
 
    public Project create(String projectPath, String resourcesPath, String... resources)
    {
-      DirectoryResource addonDir = resourceFactory.create(furnace.getRepositories().get(0).getRootDirectory()).reify(
-               DirectoryResource.class);
-         
-      projectDir = addonDir.createTempResource();
-
-      initResources(resourcesPath, resources);
+      if (projectDir == null) {
+         DirectoryResource addonDir = resourceFactory.create(furnace.getRepositories().get(0).getRootDirectory()).reify(
+                  DirectoryResource.class);
+   
+         projectDir = addonDir.createTempResource();
+      }
       
+      initResources(resourcesPath, resources);
+
       if (!Strings.isNullOrEmpty(projectPath))
       {
          projectDir = projectDir.getChildDirectory(projectPath);
@@ -98,7 +101,10 @@ public class GradleTestProjectProvider
 
    public void clean()
    {
-      projectDir.delete(true);
+      for (Resource<?> fileResource : projectDir.listResources())
+      {
+         fileResource.delete(true);
+      }
    }
 
    private void initResources(String resourcesPath, String... resources)

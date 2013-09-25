@@ -51,15 +51,21 @@ public class GradleResourceFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
    }
+   
+   private static GradleTestProjectProvider projectProvider;
 
    @Inject
-   private GradleTestProjectProvider projectProvider;
+   private GradleTestProjectProvider injectedProjectProvider;
    private Project project;
    private ResourcesFacet facet;
 
    @Before
    public void setUp()
    {
+      if (projectProvider == null)
+      {
+         projectProvider = injectedProjectProvider;
+      }
       project = projectProvider.create("",
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
