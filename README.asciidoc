@@ -1,0 +1,95 @@
+== gradle
+:idprefix: id_ 
+
+This addon *exports services* for use in other addons. The Gradle addon implements extension points in several addons, enabling them to function using Gradle (in fact Maven or Ivy) dependency resolution, project building, and additionally provides Gradle build script manipulation services.
+
+=== Depends on
+
+[options="header"]
+|===
+|Addon |Exported |Optional
+
+|dependencies
+|yes
+|no
+
+|resources
+|yes
+|no
+
+|projects
+|yes
+|no
+
+|parser-java
+|yes
+|no
+
+|ui
+|no
+|yes
+
+|org.jboss.forge.furnace.container:cdi
+|no
+|no
+
+|===
+
+== Setup
+
+This Addon requires the following installation steps.
+
+=== Add configuration to pom.xml 
+
+To use this addon, you must add it as a dependency in the *pom.xml* of your `forge-addon` classified artifact:
+
+[source,xml]
+----
+<dependency>
+   <groupId>org.jboss.forge.addon</groupId>
+   <artifactId>gradle</artifactId>
+   <classifier>forge-addon</classifier>
+   <version>${version}</version>
+</dependency>
+----
+
+== Features
+
+Gradle DSL API mapping::
+This addon provides model for Gradle build script elements such as tasks, dependencies, source sets, plugins, etc.
++
+[source,java]
+----
+GradleModelBuilder builder = GradleModelBuilder.create();
+
+model.addTask(GradleTaskBuilder.create()
+		.setName("newTask")
+		.setDependendsOn(GradleTaskBuilder.create().setName("otherTask"))
+		.setCode("println 'Hello!'"));
+----
+
+
+Forge-Gradle library::
+During setup, addon creates and installs forge.gradle library in the project directory. It adds few enhancements to build script which are not currently supported in default Gradle installation:
++
+* dependency management - implementation of Maven dependencyManagement, performed by two pseudoconfigurations named `managed` and `direct`
+* profiles - equivalent of Maven profiles, each profile is represented by `name-profile.gradle` script in project directory, profile is chosen by setting `profile` project build property
+* setting output archive name - changes output artifact name of the default build task (such as jar) 
++
+In future, forge.gradle will probably be replaced with forge Gradle plugin or other alternative which won't require adding anything to the project.
+
+
+Project facets implementation:: 
+Gradle addon implements basic project facets from projects and parser-java addon, and adds a `GradleFacet` which is entry point for Gradle addon API:
++
+* `GradleFacet`
+* `MetadataFacet`
+* `DependencyFacet`
+* `PackagingFacet`
+* `ResourcesFacet`
+* `JavaSourceFacet`
++
+
+
+Gradle manager::
+`GradleManager` service allows other addons to run Gradle builds using Gradle tooling API. It takes care of downloading Gradle installation if `GRADLE_HOME` environment property is not set, and makes Gradle builds synchronous.
