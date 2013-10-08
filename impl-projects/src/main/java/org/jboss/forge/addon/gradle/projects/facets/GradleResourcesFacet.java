@@ -27,7 +27,7 @@ import org.jboss.forge.addon.resource.FileResource;
 @FacetConstraints({
          @FacetConstraint(GradleFacet.class)
 })
-public class GradleResourceFacet extends AbstractFacet<Project> implements ResourcesFacet
+public class GradleResourcesFacet extends AbstractFacet<Project> implements ResourcesFacet
 {
    @Override
    public boolean install()

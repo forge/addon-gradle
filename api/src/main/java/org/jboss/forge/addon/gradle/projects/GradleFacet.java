@@ -7,8 +7,9 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
+import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
-import org.jboss.forge.addon.projects.ProjectFacet;
+import org.jboss.forge.addon.projects.BuildSystemFacet;
 import org.jboss.forge.addon.resource.FileResource;
 
 /**
@@ -17,9 +18,10 @@ import org.jboss.forge.addon.resource.FileResource;
  * <p>
  * 
  * Example of usage (adding a dependency):
+ * 
  * <pre>
  * GradleModelBuilder builder = GradleModelBuilder.create(gradleFacet.getModel());
- * builder.addDependency(GradleDependencyBuilder.create("compile", "org.x:y:1.0"));
+ * builder.addDependency(GradleDependencyBuilder.create(&quot;compile&quot;, &quot;org.x:y:1.0&quot;));
  * gradleFacet.setModel(builder);
  * </pre>
  * 
@@ -28,7 +30,7 @@ import org.jboss.forge.addon.resource.FileResource;
  * 
  * @author Adam Wyłuda
  */
-public interface GradleFacet extends ProjectFacet
+public interface GradleFacet extends BuildSystemFacet
 {
    /**
     * Executes Gradle build with specified task.
@@ -43,22 +45,22 @@ public interface GradleFacet extends ProjectFacet
    boolean executeTask(String task, String profile, String... arguments);
 
    /**
-    * Returns evaluated Gradle project model. 
+    * Returns evaluated Gradle project model.
     */
    GradleModel getModel();
-   
+
    /**
     * Merges all changes with the old model and persists them to the build script.
     */
    void setModel(GradleModel model);
 
    /**
-    * Returns file resource pointing to the build.gradle script of the project. 
+    * Returns file resource pointing to the build.gradle script of the project.
     */
    FileResource<?> getBuildScriptResource();
-   
+
    /**
-    * Returns file resource pointing to the build.gradle script of the root project. 
+    * Returns file resource pointing to the build.gradle script of the root project.
     */
    FileResource<?> getSettingsScriptResource();
 }

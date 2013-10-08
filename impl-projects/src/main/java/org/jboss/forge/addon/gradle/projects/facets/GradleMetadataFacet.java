@@ -8,19 +8,37 @@ package org.jboss.forge.addon.gradle.projects.facets;
 
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
+import org.jboss.forge.addon.facets.constraints.FacetConstraint;
+import org.jboss.forge.addon.facets.constraints.FacetConstraints;
+import org.jboss.forge.addon.gradle.projects.GradleBuildSystem;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
+import org.jboss.forge.addon.projects.BuildSystem;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 
 /**
  * @author Adam Wyłuda
  */
+@FacetConstraints({
+         @FacetConstraint(GradleFacet.class)
+})
 public class GradleMetadataFacet extends AbstractFacet<Project> implements MetadataFacet
 {
+   @Inject
+   private GradleBuildSystem buildSystem;
+
+   @Override
+   public BuildSystem getBuildSystem()
+   {
+      return buildSystem;
+   }
+
    @Override
    public boolean install()
    {

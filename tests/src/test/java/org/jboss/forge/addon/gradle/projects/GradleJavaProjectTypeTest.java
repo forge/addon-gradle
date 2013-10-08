@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.parser.java.projects.JavaProjectType;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
@@ -43,22 +44,25 @@ public class GradleJavaProjectTypeTest
    {
       return GradleTestProjectProvider.getDeployment("");
    }
-   
+
    @Inject
    private ProjectFactory projectLocator;
    @Inject
    private ResourceFactory resourceFactory;
    @Inject
    private Furnace furnace;
-   
+   @Inject
+   private GradleBuildSystem buildSystem;
+
    @Test
    public void testCreateProject()
    {
       DirectoryResource addonDir = resourceFactory.create(furnace.getRepositories().get(0).getRootDirectory()).reify(
                DirectoryResource.class);
       DirectoryResource projectDir = addonDir.createTempResource();
-      Project project = projectLocator.createProject(projectDir, new GradleJavaProjectType().getRequiredFacets());
-      
+      Project project = projectLocator
+               .createProject(projectDir, buildSystem, new JavaProjectType().getRequiredFacets());
+
       assertEquals(projectDir, project.getProjectRoot());
       assertTrue(projectDir.getChild("build.gradle").exists());
       assertFalse(projectDir.getChild("pom.xml").exists());

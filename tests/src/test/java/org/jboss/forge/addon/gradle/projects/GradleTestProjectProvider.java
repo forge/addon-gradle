@@ -12,11 +12,10 @@ import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
+import org.jboss.forge.furnace.util.OperatingSystemUtils;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 
 import com.google.common.base.Strings;
@@ -67,8 +66,6 @@ public class GradleTestProjectProvider
    }
 
    @Inject
-   private Furnace furnace;
-   @Inject
    private ProjectFactory projectFactory;
    @Inject
    private ResourceFactory resourceFactory;
@@ -77,13 +74,11 @@ public class GradleTestProjectProvider
 
    public Project create(String projectPath, String resourcesPath, String... resources)
    {
-      if (projectDir == null) {
-         DirectoryResource addonDir = resourceFactory.create(furnace.getRepositories().get(0).getRootDirectory()).reify(
-                  DirectoryResource.class);
-   
-         projectDir = addonDir.createTempResource();
+      if (projectDir == null)
+      {
+         projectDir = (DirectoryResource) resourceFactory.create(OperatingSystemUtils.createTempDir());
       }
-      
+
       initResources(resourcesPath, resources);
 
       if (!Strings.isNullOrEmpty(projectPath))
@@ -101,10 +96,8 @@ public class GradleTestProjectProvider
 
    public void clean()
    {
-      for (Resource<?> fileResource : projectDir.listResources())
-      {
-         fileResource.delete(true);
-      }
+      projectDir.delete(true);
+      projectDir = null;
    }
 
    private void initResources(String resourcesPath, String... resources)
