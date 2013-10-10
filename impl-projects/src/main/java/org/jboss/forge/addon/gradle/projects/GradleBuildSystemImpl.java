@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.gradle.projects.facets.GradleDependencyFacet;
+import org.jboss.forge.addon.gradle.projects.facets.GradleJavaCompilerFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleJavaSourceFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleMetadataFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradlePackagingFacet;
@@ -51,6 +52,7 @@ public class GradleBuildSystemImpl implements GradleBuildSystem
       facetFactory.install(project, GradlePackagingFacet.class);
       facetFactory.install(project, GradleDependencyFacet.class);
       facetFactory.install(project, GradleResourcesFacet.class);
+      facetFactory.install(project, GradleJavaCompilerFacet.class);
       facetFactory.install(project, GradleJavaSourceFacet.class);
 
       return project;

@@ -15,11 +15,9 @@ import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
-import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
-import org.jboss.forge.addon.gradle.projects.model.GradlePluginBuilder;
-import org.jboss.forge.addon.gradle.projects.model.GradlePluginType;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceDirectory;
 import org.jboss.forge.addon.gradle.projects.model.GradleSourceSet;
+import org.jboss.forge.addon.parser.java.facets.JavaCompilerFacet;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.parser.java.resources.JavaResource;
 import org.jboss.forge.addon.parser.java.resources.JavaResourceVisitor;
@@ -32,14 +30,13 @@ import org.jboss.forge.parser.java.JavaSource;
 
 /**
  * @author Adam Wyłuda
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
 @FacetConstraints({
-         @FacetConstraint(GradleFacet.class)
+         @FacetConstraint({ GradleFacet.class })
 })
 public class GradleJavaSourceFacet extends AbstractFacet<Project> implements JavaSourceFacet
 {
-   // TODO Base facet for Maven and Gradle?
-
    @Override
    public boolean install()
    {
@@ -48,13 +45,6 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
          for (DirectoryResource folder : this.getSourceFolders())
          {
             folder.mkdirs();
-         }
-
-         GradleModelBuilder model = GradleModelBuilder.create(getFaceted().getFacet(GradleFacet.class).getModel());
-         if (!model.hasPlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.JAVA.getClazz())))
-         {
-            model.addPlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.JAVA.getShortName()));
-            getFaceted().getFacet(GradleFacet.class).setModel(model);
          }
       }
       return isInstalled();
