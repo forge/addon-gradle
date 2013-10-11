@@ -102,4 +102,10 @@ public class GradleBuildSystemImpl implements GradleBuildSystem
          throw new RuntimeException(e);
       }
    }
+
+   @Override
+   public int priority()
+   {
+      return 100;
+   }
 }
