@@ -6,6 +6,7 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
+import java.io.PrintStream;
 import java.util.List;
 
 import org.gradle.jarjar.com.google.common.collect.Lists;
@@ -24,7 +25,7 @@ import org.jboss.forge.addon.resource.Resource;
  * @author Adam Wyłuda
  */
 @FacetConstraints({
-   @FacetConstraint(GradleFacet.class)
+         @FacetConstraint(GradleFacet.class)
 })
 public class GradlePackagingFacet extends AbstractFacet<Project> implements PackagingFacet
 {
@@ -95,9 +96,16 @@ public class GradlePackagingFacet extends AbstractFacet<Project> implements Pack
                // build is assemble + test
                arguments.add(runTests ? "build" : "assemble");
             }
-            getGradleFacet().executeTask(runTests ? "test" : "", "", 
+            getGradleFacet().executeTask(runTests ? "test" : "", "",
                      (String[]) arguments.toArray(new String[arguments.size()]));
             return getFinalArtifact();
+         }
+
+         @Override
+         public Resource<?> build(PrintStream out, PrintStream err) throws BuildException
+         {
+            // TODO: Redirect to provided out and err
+            return build();
          }
       };
    }
