@@ -25,7 +25,6 @@ import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
-import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
 
 /**
@@ -72,7 +71,6 @@ public class GradleBuildSystemImpl implements GradleBuildSystem
       result.add(MetadataFacet.class);
       result.add(DependencyFacet.class);
       result.add(PackagingFacet.class);
-      result.add(ResourcesFacet.class);
 
       return Collections.unmodifiableSet(result);
    }
