@@ -111,7 +111,7 @@ public class GradleJavaSourceFacetTest
    @Test
    public void testGetBasePackageResource()
    {
-      DirectoryResource res = facet.getBasePackageResource();
+      DirectoryResource res = facet.getBasePackageDirectory();
       assertEquals("testproject", res.getName());
       assertEquals("org", res.getParent().getName());
    }
@@ -119,7 +119,7 @@ public class GradleJavaSourceFacetTest
    @Test
    public void testGetSourceFolders()
    {
-      List<DirectoryResource> folders = facet.getSourceFolders();
+      List<DirectoryResource> folders = facet.getSourceDirectories();
       assertEquals(4, folders.size());
       ProjectAssert.assertContainsDirectoryNamed(folders, "src/main/java");
       ProjectAssert.assertContainsDirectoryNamed(folders, "src/main/interfaces");
@@ -130,14 +130,14 @@ public class GradleJavaSourceFacetTest
    @Test
    public void testGetSourceFolder()
    {
-      DirectoryResource folder = facet.getSourceFolder();
+      DirectoryResource folder = facet.getSourceDirectory();
       ProjectAssert.assertDirectoryIsOneOf(folder, "src/main/java", "src/main/interfaces");
    }
 
    @Test
    public void testGetTestSourceFolder()
    {
-      DirectoryResource folder = facet.getTestSourceFolder();
+      DirectoryResource folder = facet.getTestSourceDirectory();
       ProjectAssert.assertDirectoryIsOneOf(folder, "src/test/java", "src/test/mocks");
    }
 

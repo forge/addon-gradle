@@ -41,7 +41,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    {
       if (!this.isInstalled())
       {
-         for (DirectoryResource folder : this.getSourceFolders())
+         for (DirectoryResource folder : this.getSourceDirectories())
          {
             folder.mkdirs();
          }
@@ -52,7 +52,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    @Override
    public boolean isInstalled()
    {
-      return getSourceFolder().exists();
+      return getSourceDirectory().exists();
    }
 
    @Override
@@ -68,7 +68,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    @Override
    public String calculatePackage(JavaResource resource)
    {
-      List<DirectoryResource> folders = getSourceFolders();
+      List<DirectoryResource> folders = getSourceDirectories();
       String pkg = null;
       for (DirectoryResource folder : folders)
       {
@@ -92,13 +92,13 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    }
 
    @Override
-   public DirectoryResource getBasePackageResource()
+   public DirectoryResource getBasePackageDirectory()
    {
-      return getSourceFolder().getChildDirectory(Packages.toFileSyntax(getBasePackage()));
+      return getSourceDirectory().getChildDirectory(Packages.toFileSyntax(getBasePackage()));
    }
 
    @Override
-   public List<DirectoryResource> getSourceFolders()
+   public List<DirectoryResource> getSourceDirectories()
    {
       List<DirectoryResource> resources = Lists.newArrayList();
       GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
@@ -115,7 +115,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    }
 
    @Override
-   public DirectoryResource getSourceFolder()
+   public DirectoryResource getSourceDirectory()
    {
       GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
       GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "main")
@@ -124,7 +124,7 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    }
 
    @Override
-   public DirectoryResource getTestSourceFolder()
+   public DirectoryResource getTestSourceDirectory()
    {
       GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
       GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "test")

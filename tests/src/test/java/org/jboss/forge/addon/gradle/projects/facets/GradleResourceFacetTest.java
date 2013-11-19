@@ -81,7 +81,7 @@ public class GradleResourceFacetTest
    @Test
    public void testGetResourceFolders()
    {
-      List<DirectoryResource> resources = facet.getResourceFolders();
+      List<DirectoryResource> resources = facet.getResourceDirectories();
       assertEquals(4, resources.size());
       ProjectAssert.assertContainsDirectoryNamed(resources, "src/main/resources");
       ProjectAssert.assertContainsDirectoryNamed(resources, "src/main/images");
@@ -92,21 +92,21 @@ public class GradleResourceFacetTest
    @Test
    public void testGetResourceFolder()
    {
-      DirectoryResource dir = facet.getResourceFolder();
+      DirectoryResource dir = facet.getResourceDirectory();
       ProjectAssert.assertDirectoryIsOneOf(dir, "src/main/resources", "src/main/images");
    }
 
    @Test
    public void testGetTestResourceFolder()
    {
-      DirectoryResource dir = facet.getTestResourceFolder();
+      DirectoryResource dir = facet.getTestResourceDirectory();
       ProjectAssert.assertDirectoryIsOneOf(dir, "src/test/resources", "src/test/templates");
    }
 
    @Test
    public void testCreateResource()
    {
-      DirectoryResource dir = facet.getResourceFolder();
+      DirectoryResource dir = facet.getResourceDirectory();
       facet.createResource("RESOURCE".toCharArray(), "test/resource.txt");
       FileResource<?> res = (FileResource<?>) dir.getChildDirectory("test").getChild("resource.txt");
       assertEquals("RESOURCE", res.getContents());
@@ -115,7 +115,7 @@ public class GradleResourceFacetTest
    @Test
    public void testCreateTestResource()
    {
-      DirectoryResource dir = facet.getTestResourceFolder();
+      DirectoryResource dir = facet.getTestResourceDirectory();
       facet.createTestResource("TESTRESOURCE".toCharArray(), "test/resource.txt");
       FileResource<?> res = (FileResource<?>) dir.getChildDirectory("test").getChild("resource.txt");
       assertEquals("TESTRESOURCE", res.getContents());

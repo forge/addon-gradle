@@ -42,7 +42,7 @@ public class GradleResourcesFacet extends AbstractFacet<Project> implements Reso
    }
 
    @Override
-   public List<DirectoryResource> getResourceFolders()
+   public List<DirectoryResource> getResourceDirectories()
    {
       List<DirectoryResource> resources = Lists.newArrayList();
       GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
@@ -59,7 +59,7 @@ public class GradleResourcesFacet extends AbstractFacet<Project> implements Reso
    }
 
    @Override
-   public DirectoryResource getResourceFolder()
+   public DirectoryResource getResourceDirectory()
    {
       GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
       GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "main")
@@ -68,7 +68,7 @@ public class GradleResourcesFacet extends AbstractFacet<Project> implements Reso
    }
 
    @Override
-   public DirectoryResource getTestResourceFolder()
+   public DirectoryResource getTestResourceDirectory()
    {
       GradleModel model = getFaceted().getFacet(GradleFacet.class).getModel();
       GradleSourceDirectory dir = GradleResourceUtil.findSourceSetNamed(model.getEffectiveSourceSets(), "test")
@@ -79,7 +79,7 @@ public class GradleResourcesFacet extends AbstractFacet<Project> implements Reso
    @Override
    public FileResource<?> createResource(char[] bytes, String relativeFilename)
    {
-      FileResource<?> resource = (FileResource<?>) getResourceFolder().getChild(relativeFilename);
+      FileResource<?> resource = (FileResource<?>) getResourceDirectory().getChild(relativeFilename);
       resource.setContents(bytes);
       return resource;
    }
@@ -87,7 +87,7 @@ public class GradleResourcesFacet extends AbstractFacet<Project> implements Reso
    @Override
    public FileResource<?> createTestResource(char[] bytes, String relativeFilename)
    {
-      FileResource<?> resource = (FileResource<?>) getTestResourceFolder().getChild(relativeFilename);
+      FileResource<?> resource = (FileResource<?>) getTestResourceDirectory().getChild(relativeFilename);
       resource.setContents(bytes);
       return resource;
    }
