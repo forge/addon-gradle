@@ -20,6 +20,10 @@ import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.addon.resource.Resource;
+import org.jboss.forge.addon.resource.ResourceFilter;
+import org.jboss.forge.addon.resource.visit.ResourceVisit;
+import org.jboss.forge.addon.resource.visit.ResourceVisitor;
 
 /**
  * @author Adam Wyłuda
@@ -133,5 +137,45 @@ public class GradleResourcesFacet extends AbstractFacet<Project> implements Reso
    {
       return getFaceted().getFacet(GradleFacet.class).getBuildScriptResource().getParent()
                .getChildDirectory(path);
+   }
+
+   @Override
+   public void visitResources(ResourceVisitor visitor)
+   {
+      new ResourceVisit(getResourceDirectory()).perform(visitor, new ResourceFilter()
+      {
+         @Override
+         public boolean accept(Resource<?> resource)
+         {
+            return resource instanceof DirectoryResource;
+         }
+      }, new ResourceFilter()
+      {
+         @Override
+         public boolean accept(Resource<?> type)
+         {
+            return true;
+         }
+      });
+   }
+
+   @Override
+   public void visitTestResources(ResourceVisitor visitor)
+   {
+      new ResourceVisit(getTestResourceDirectory()).perform(visitor, new ResourceFilter()
+      {
+         @Override
+         public boolean accept(Resource<?> resource)
+         {
+            return resource instanceof DirectoryResource;
+         }
+      }, new ResourceFilter()
+      {
+         @Override
+         public boolean accept(Resource<?> type)
+         {
+            return true;
+         }
+      });
    }
 }

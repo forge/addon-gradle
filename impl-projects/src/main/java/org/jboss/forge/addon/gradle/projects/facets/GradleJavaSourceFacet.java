@@ -24,6 +24,7 @@ import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFilter;
+import org.jboss.forge.addon.resource.visit.ResourceVisit;
 import org.jboss.forge.furnace.util.Strings;
 import org.jboss.forge.parser.java.JavaSource;
 
@@ -190,27 +191,21 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
 
    private void visitSources(final Resource<?> searchFolder, final JavaResourceVisitor visitor)
    {
-      if (searchFolder instanceof DirectoryResource)
+      new ResourceVisit(searchFolder).perform(visitor, new ResourceFilter()
       {
-
-         searchFolder.listResources(new ResourceFilter()
+         @Override
+         public boolean accept(Resource<?> type)
          {
-            @Override
-            public boolean accept(Resource<?> resource)
-            {
-               if (resource instanceof DirectoryResource)
-               {
-                  visitSources(resource, visitor);
-               }
-               else if (resource instanceof JavaResource)
-               {
-                  visitor.visit((JavaResource) resource);
-               }
-
-               return false;
-            }
-         });
-      }
+            return type instanceof DirectoryResource;
+         }
+      }, new ResourceFilter()
+      {
+         @Override
+         public boolean accept(Resource<?> type)
+         {
+            return type instanceof JavaResource;
+         }
+      });
    }
 
    private List<DirectoryResource> getMainJavaSources()

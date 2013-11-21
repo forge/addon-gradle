@@ -25,6 +25,7 @@ import org.jboss.forge.addon.parser.java.resources.JavaResource;
 import org.jboss.forge.addon.parser.java.resources.JavaResourceVisitor;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.DirectoryResource;
+import org.jboss.forge.addon.resource.visit.VisitContext;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
@@ -55,7 +56,7 @@ public class GradleJavaSourceFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
    }
-   
+
    private static GradleTestProjectProvider projectProvider;
 
    @Inject
@@ -203,7 +204,7 @@ public class GradleJavaSourceFacetTest
       {
 
          @Override
-         public void visit(JavaResource javaResource)
+         public void visit(VisitContext context, JavaResource javaResource)
          {
             try
             {
@@ -237,7 +238,7 @@ public class GradleJavaSourceFacetTest
       {
 
          @Override
-         public void visit(JavaResource javaResource)
+         public void visit(VisitContext context, JavaResource javaResource)
          {
             try
             {
