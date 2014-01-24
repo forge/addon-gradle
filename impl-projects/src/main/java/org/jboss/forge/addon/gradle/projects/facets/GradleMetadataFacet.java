@@ -26,131 +26,148 @@ import org.jboss.forge.addon.projects.facets.MetadataFacet;
  * @author Adam Wyłuda
  */
 @FacetConstraints({
-    @FacetConstraint(GradleFacet.class)
+         @FacetConstraint(GradleFacet.class)
 })
 public class GradleMetadataFacet extends AbstractFacet<Project> implements MetadataFacet
 {
-    @Inject
-    private GradleBuildSystem buildSystem;
+   @Inject
+   private GradleBuildSystem buildSystem;
 
-    @Override
-    public BuildSystem getBuildSystem()
-    {
-        return buildSystem;
-    }
+   @Override
+   public BuildSystem getBuildSystem()
+   {
+      return buildSystem;
+   }
 
-    @Override
-    public boolean install()
-    {
-        return true;
-    }
+   @Override
+   public boolean install()
+   {
+      return true;
+   }
 
-    @Override
-    public boolean isInstalled()
-    {
-        return true;
-    }
+   @Override
+   public boolean isInstalled()
+   {
+      return true;
+   }
 
-    @Override
-    public String getProjectName()
-    {
-        return getGradleFacet().getModel().getName();
-    }
+   @Override
+   public String getProjectName()
+   {
+      return getGradleFacet().getModel().getName();
+   }
 
-    @Override
-    public GradleMetadataFacet setProjectName(String name)
-    {
-        GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-        model.setName(name);
-        getGradleFacet().setModel(model);
-        return this;
-    }
+   @Override
+   public GradleMetadataFacet setProjectName(String name)
+   {
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.setName(name);
+      getGradleFacet().setModel(model);
+      return this;
+   }
 
-    @Override
-    public String getTopLevelPackage()
-    {
-        return getGradleFacet().getModel().getGroup();
-    }
+   @Override
+   public String getTopLevelPackage()
+   {
+      return getGradleFacet().getModel().getGroup();
+   }
 
-    @Override
-    public GradleMetadataFacet setTopLevelPackage(String groupId)
-    {
-        GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-        model.setGroup(groupId);
-        getGradleFacet().setModel(model);
-        return this;
-    }
+   @Override
+   public GradleMetadataFacet setTopLevelPackage(String groupId)
+   {
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.setGroup(groupId);
+      getGradleFacet().setModel(model);
+      return this;
+   }
 
-    @Override
-    public String getProjectVersion()
-    {
-        return getGradleFacet().getModel().getVersion();
-    }
+   @Override
+   public String getProjectVersion()
+   {
+      return getGradleFacet().getModel().getVersion();
+   }
 
-    @Override
-    public GradleMetadataFacet setProjectVersion(String version)
-    {
-        GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-        model.setVersion(version);
-        getGradleFacet().setModel(model);
-        return this;
-    }
+   @Override
+   public GradleMetadataFacet setProjectVersion(String version)
+   {
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.setVersion(version);
+      getGradleFacet().setModel(model);
+      return this;
+   }
 
-    @Override
-    public Dependency getOutputDependency()
-    {
-        return DependencyBuilder.create().setGroupId(getTopLevelPackage()).setArtifactId(getProjectName())
-            .setVersion(getProjectVersion());
-    }
+   @Override
+   public Dependency getOutputDependency()
+   {
+      return DependencyBuilder.create().setGroupId(getTopLevelPackage()).setArtifactId(getProjectName())
+               .setVersion(getProjectVersion());
+   }
 
-    @Override
-    public Map<String, String> getEffectiveProperties()
-    {
-        return getGradleFacet().getModel().getEffectiveProperties();
-    }
+   @Override
+   public Map<String, String> getEffectiveProperties()
+   {
+      return getGradleFacet().getModel().getEffectiveProperties();
+   }
 
-    @Override
-    public Map<String, String> getDirectProperties()
-    {
-        return getGradleFacet().getModel().getProperties();
-    }
+   @Override
+   public Map<String, String> getDirectProperties()
+   {
+      return getGradleFacet().getModel().getProperties();
+   }
 
-    @Override
-    public String getEffectiveProperty(String name)
-    {
-        return getEffectiveProperties().get(name);
-    }
+   @Override
+   public String getEffectiveProperty(String name)
+   {
+      return getEffectiveProperties().get(name);
+   }
 
-    @Override
-    public String getDirectProperty(String name)
-    {
-        return getDirectProperties().get(name);
-    }
+   @Override
+   public String getDirectProperty(String name)
+   {
+      return getDirectProperties().get(name);
+   }
 
-    @Override
-    public GradleMetadataFacet setDirectProperty(String name, String value)
-    {
-        GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-        model.setProperty(name, value);
-        getGradleFacet().setModel(model);
-        return this;
-    }
+   @Override
+   public GradleMetadataFacet setDirectProperty(String name, String value)
+   {
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.setProperty(name, value);
+      getGradleFacet().setModel(model);
+      return this;
+   }
 
-    @Override
-    public String removeDirectProperty(String name)
-    {
-        String property = null;
+   @Override
+   public String removeDirectProperty(String name)
+   {
+      String property = null;
 
-        GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
-        property = model.getProperties().get(name);
-        model.removeProperty(name);
-        getGradleFacet().setModel(model);
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      property = model.getProperties().get(name);
+      model.removeProperty(name);
+      getGradleFacet().setModel(model);
 
-        return property;
-    }
+      return property;
+   }
 
-    private GradleFacet getGradleFacet()
-    {
-        return getFaceted().getFacet(GradleFacet.class);
-    }
+   private GradleFacet getGradleFacet()
+   {
+      return getFaceted().getFacet(GradleFacet.class);
+   }
+
+   @Override
+   public boolean isValid()
+   {
+      try
+      {
+         /*
+          * Naive attempt to determine if things are in a valid state.
+          */
+         GradleModelBuilder.create(getGradleFacet().getModel()).getProperties();
+         return true;
+      }
+      catch (Exception e)
+      {
+         return false;
+      }
+   }
 }
