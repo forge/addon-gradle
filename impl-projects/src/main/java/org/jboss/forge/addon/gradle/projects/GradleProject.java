@@ -23,7 +23,7 @@ public class GradleProject extends AbstractProject
    }
 
    @Override
-   public DirectoryResource getProjectRoot()
+   public DirectoryResource getRootDirectory()
    {
       return root;
    }

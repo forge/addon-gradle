@@ -78,7 +78,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public boolean executeTask(String task, String profile, String... arguments)
    {
-      return manager.runGradleBuild(getFaceted().getProjectRoot().getFullyQualifiedName(), task, profile, arguments);
+      return manager.runGradleBuild(getFaceted().getRootDirectory().getFullyQualifiedName(), task, profile, arguments);
    }
 
    @Override
@@ -132,7 +132,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       }
 
       // Remove profile scripts if they are not apparent on the list
-      for (Resource<?> resource : getFaceted().getProjectRoot().listResources(new ResourceFilter()
+      for (Resource<?> resource : getFaceted().getRootDirectory().listResources(new ResourceFilter()
       {
          @Override
          public boolean accept(Resource<?> resource)
@@ -163,7 +163,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public FileResource<?> getBuildScriptResource()
    {
-      return (FileResource<?>) getFaceted().getProjectRoot().getChild("build.gradle");
+      return (FileResource<?>) getFaceted().getRootDirectory().getChild("build.gradle");
    }
 
    @SuppressWarnings("unchecked")
@@ -181,10 +181,10 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       String script = getBuildScriptResource().getContents();
       Map<String, String> profileScripts = getProfileScripts();
 
-      manager.runGradleBuild(getFaceted().getProjectRoot().getFullyQualifiedName(),
+      manager.runGradleBuild(getFaceted().getRootDirectory().getFullyQualifiedName(),
                GradleSourceUtil.FORGE_OUTPUT_TASK, "");
 
-      FileResource<?> forgeOutputfile = (FileResource<?>) getFaceted().getProjectRoot().getChild(
+      FileResource<?> forgeOutputfile = (FileResource<?>) getFaceted().getRootDirectory().getChild(
                GradleSourceUtil.FORGE_OUTPUT_XML);
       String forgeOutput = Streams.toString(forgeOutputfile.getResourceInputStream());
 
@@ -213,7 +213,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          getBuildScriptResource().setContents(newScript);
 
          FileResource<?> forgeLib = (FileResource<?>)
-                  getFaceted().getProjectRoot().getChild(GradleSourceUtil.FORGE_LIBRARY);
+                  getFaceted().getRootDirectory().getChild(GradleSourceUtil.FORGE_LIBRARY);
          forgeLib.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
       }
    }

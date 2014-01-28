@@ -63,7 +63,7 @@ public class GradleJavaProjectTypeTest
       Project project = projectLocator
                .createProject(projectDir, projectProvider, new JavaProjectType().getRequiredFacets());
 
-      assertEquals(projectDir, project.getProjectRoot());
+      assertEquals(projectDir, project.getRootDirectory());
       assertTrue(projectDir.getChild("build.gradle").exists());
       assertFalse(projectDir.getChild("pom.xml").exists());
       assertTrue(projectDir.getChildDirectory("src/main/java").exists());

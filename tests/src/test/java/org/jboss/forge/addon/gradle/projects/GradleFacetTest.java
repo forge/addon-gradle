@@ -141,7 +141,7 @@ public class GradleFacetTest
    public void testExecuteTask() throws IOException
    {
       assertTrue(facet.executeTask("someOutput"));
-      String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot()
+      String output = ((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
                .getFullyQualifiedName(), "output.txt"))).getContents();
       assertEquals("XYZ", output);
    }
@@ -150,7 +150,7 @@ public class GradleFacetTest
    public void testExecuteTaskWithProfile() throws IOException
    {
       assertTrue(facet.executeTask("testProfileOutput", "test"));
-      String output = ((FileResource<?>) resourceFactory.create(new File(project.getProjectRoot()
+      String output = ((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
                .getFullyQualifiedName(), "testOutput.txt"))).getContents();
       assertEquals("TEST", output);
    }

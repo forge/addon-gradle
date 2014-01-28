@@ -58,7 +58,7 @@ public class GradlePackagingFacet extends AbstractFacet<Project> implements Pack
    @Override
    public Resource<?> getFinalArtifact()
    {
-      return getFaceted().getProjectRoot().getChild(getGradleFacet().getModel().getArchivePath());
+      return getFaceted().getRootDirectory().getChild(getGradleFacet().getModel().getArchivePath());
    }
 
    @Override
