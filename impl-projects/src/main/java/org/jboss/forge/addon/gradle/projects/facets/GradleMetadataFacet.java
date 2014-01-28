@@ -18,7 +18,7 @@ import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.gradle.projects.GradleBuildSystem;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
-import org.jboss.forge.addon.projects.BuildSystem;
+import org.jboss.forge.addon.projects.ProjectProvider;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 
@@ -34,7 +34,7 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    private GradleBuildSystem buildSystem;
 
    @Override
-   public BuildSystem getBuildSystem()
+   public ProjectProvider getBuildSystem()
    {
       return buildSystem;
    }

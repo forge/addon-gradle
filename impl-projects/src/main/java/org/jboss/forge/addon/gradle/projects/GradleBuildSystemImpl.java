@@ -20,7 +20,7 @@ import org.jboss.forge.addon.gradle.projects.facets.GradleJavaSourceFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleMetadataFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradlePackagingFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleResourcesFacet;
-import org.jboss.forge.addon.projects.BuildSystemFacet;
+import org.jboss.forge.addon.projects.ProvidedProjectFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
@@ -64,9 +64,9 @@ public class GradleBuildSystemImpl implements GradleBuildSystem
    }
 
    @Override
-   public Set<Class<? extends BuildSystemFacet>> getProvidedFacetTypes()
+   public Set<Class<? extends ProvidedProjectFacet>> getProvidedFacetTypes()
    {
-      Set<Class<? extends BuildSystemFacet>> result = new HashSet<Class<? extends BuildSystemFacet>>();
+      Set<Class<? extends ProvidedProjectFacet>> result = new HashSet<Class<? extends ProvidedProjectFacet>>();
       result.add(GradleFacet.class);
       result.add(MetadataFacet.class);
       result.add(DependencyFacet.class);
@@ -76,12 +76,12 @@ public class GradleBuildSystemImpl implements GradleBuildSystem
    }
 
    @SuppressWarnings("unused")
-   private void addSafe(Set<Class<? extends BuildSystemFacet>> result,
-            Callable<Class<? extends BuildSystemFacet>> callable)
+   private void addSafe(Set<Class<? extends ProvidedProjectFacet>> result,
+            Callable<Class<? extends ProvidedProjectFacet>> callable)
    {
       try
       {
-         Class<? extends BuildSystemFacet> facetType = callable.call();
+         Class<? extends ProvidedProjectFacet> facetType = callable.call();
          if (facetType != null)
             result.add(facetType);
       }

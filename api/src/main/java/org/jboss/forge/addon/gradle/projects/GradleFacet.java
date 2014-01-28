@@ -9,7 +9,7 @@ package org.jboss.forge.addon.gradle.projects;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
-import org.jboss.forge.addon.projects.BuildSystemFacet;
+import org.jboss.forge.addon.projects.ProvidedProjectFacet;
 import org.jboss.forge.addon.resource.FileResource;
 
 /**
@@ -30,7 +30,7 @@ import org.jboss.forge.addon.resource.FileResource;
  * 
  * @author Adam Wyłuda
  */
-public interface GradleFacet extends BuildSystemFacet
+public interface GradleFacet extends ProvidedProjectFacet
 {
    /**
     * Executes Gradle build with specified task.

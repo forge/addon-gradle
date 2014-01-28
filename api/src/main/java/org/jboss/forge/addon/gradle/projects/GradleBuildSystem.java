@@ -6,12 +6,12 @@
  */
 package org.jboss.forge.addon.gradle.projects;
 
-import org.jboss.forge.addon.projects.BuildSystem;
+import org.jboss.forge.addon.projects.ProjectProvider;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
-public interface GradleBuildSystem extends BuildSystem
+public interface GradleBuildSystem extends ProjectProvider
 {
 
 }
