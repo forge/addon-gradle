@@ -52,7 +52,7 @@ public class GradleJavaProjectTypeTest
    @Inject
    private Furnace furnace;
    @Inject
-   private GradleProjectProvider buildSystem;
+   private GradleProjectProvider projectProvider;
 
    @Test
    public void testCreateProject()
@@ -61,7 +61,7 @@ public class GradleJavaProjectTypeTest
                DirectoryResource.class);
       DirectoryResource projectDir = addonDir.createTempResource();
       Project project = projectLocator
-               .createProject(projectDir, buildSystem, new JavaProjectType().getRequiredFacets());
+               .createProject(projectDir, projectProvider, new JavaProjectType().getRequiredFacets());
 
       assertEquals(projectDir, project.getProjectRoot());
       assertTrue(projectDir.getChild("build.gradle").exists());
