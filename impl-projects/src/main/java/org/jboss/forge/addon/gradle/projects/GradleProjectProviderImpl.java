@@ -20,8 +20,8 @@ import org.jboss.forge.addon.gradle.projects.facets.GradleJavaSourceFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleMetadataFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradlePackagingFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleResourcesFacet;
-import org.jboss.forge.addon.projects.ProvidedProjectFacet;
 import org.jboss.forge.addon.projects.Project;
+import org.jboss.forge.addon.projects.ProvidedProjectFacet;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
@@ -30,7 +30,7 @@ import org.jboss.forge.addon.resource.DirectoryResource;
 /**
  * @author Adam Wyłuda
  */
-public class GradleBuildSystemImpl implements GradleBuildSystem
+public class GradleProjectProviderImpl implements GradleProjectProvider
 {
    @Inject
    private FacetFactory facetFactory;

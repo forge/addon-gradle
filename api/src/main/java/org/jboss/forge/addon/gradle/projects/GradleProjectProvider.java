@@ -11,7 +11,7 @@ import org.jboss.forge.addon.projects.ProjectProvider;
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
-public interface GradleBuildSystem extends ProjectProvider
+public interface GradleProjectProvider extends ProjectProvider
 {
 
 }

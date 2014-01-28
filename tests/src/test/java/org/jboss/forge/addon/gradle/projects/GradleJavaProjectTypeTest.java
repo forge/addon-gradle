@@ -52,7 +52,7 @@ public class GradleJavaProjectTypeTest
    @Inject
    private Furnace furnace;
    @Inject
-   private GradleBuildSystem buildSystem;
+   private GradleProjectProvider buildSystem;
 
    @Test
    public void testCreateProject()

@@ -15,11 +15,11 @@ import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;
-import org.jboss.forge.addon.gradle.projects.GradleBuildSystem;
 import org.jboss.forge.addon.gradle.projects.GradleFacet;
+import org.jboss.forge.addon.gradle.projects.GradleProjectProvider;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
-import org.jboss.forge.addon.projects.ProjectProvider;
 import org.jboss.forge.addon.projects.Project;
+import org.jboss.forge.addon.projects.ProjectProvider;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 
 /**
@@ -31,12 +31,12 @@ import org.jboss.forge.addon.projects.facets.MetadataFacet;
 public class GradleMetadataFacet extends AbstractFacet<Project> implements MetadataFacet
 {
    @Inject
-   private GradleBuildSystem buildSystem;
+   private GradleProjectProvider projectProvider;
 
    @Override
-   public ProjectProvider getBuildSystem()
+   public ProjectProvider getProjectProvider()
    {
-      return buildSystem;
+      return projectProvider;
    }
 
    @Override
