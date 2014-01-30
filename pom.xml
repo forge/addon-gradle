@@ -84,8 +84,8 @@
    </dependencies>
 
    <scm>
-      <connection>scm:git:git://github.com/forge/addon-gradle.git</connection>
-      <developerConnection>scm:git:git://github.com/forge/addon-gradle.git</developerConnection>
+      <connection>scm:git:git@github.com:forge/addon-gradle.git</connection>
+      <developerConnection>scm:git:git@github.com:forge/addon-gradle.git</developerConnection>
       <url>http://github.com/forge/addon-gradle</url>
    </scm>
 
