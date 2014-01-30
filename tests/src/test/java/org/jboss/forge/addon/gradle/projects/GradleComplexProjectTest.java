@@ -35,11 +35,11 @@ public class GradleComplexProjectTest
 {
    @Deployment
    @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.addon:resources", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:projects", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:parser-java", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:gradle", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:maven", version = "2.0.0-SNAPSHOT")
+            @AddonDependency(name = "org.jboss.forge.addon:resources"),
+            @AddonDependency(name = "org.jboss.forge.addon:projects"),
+            @AddonDependency(name = "org.jboss.forge.addon:parser-java"),
+            @AddonDependency(name = "org.jboss.forge.addon:gradle"),
+            @AddonDependency(name = "org.jboss.forge.addon:maven")
    })
    public static ForgeArchive getDeployment()
    {
@@ -57,8 +57,8 @@ public class GradleComplexProjectTest
    public void setUp()
    {
       subproject = projectProvider.create("subproject",
-                        GradleTestProjectProvider.COMPLEX_RESOURCES_PATH,
-                        GradleTestProjectProvider.COMPLEX_RESOURCES);
+               GradleTestProjectProvider.COMPLEX_RESOURCES_PATH,
+               GradleTestProjectProvider.COMPLEX_RESOURCES);
    }
 
    @After
@@ -66,38 +66,38 @@ public class GradleComplexProjectTest
    {
       projectProvider.clean();
    }
-   
+
    @Test
    public void testChangeName()
    {
       MetadataFacet facet = subproject.getFacet(MetadataFacet.class);
-      
+
       assertEquals("x", facet.getProjectName());
       facet.setProjectName("newname");
 
       Project sameProject = projectProvider.create("",
-                        GradleTestProjectProvider.COMPLEX_RESOURCES_PATH);
+               GradleTestProjectProvider.COMPLEX_RESOURCES_PATH);
       MetadataFacet sameFacet = sameProject.getFacet(MetadataFacet.class);
-      
+
       assertEquals("newname", sameFacet.getProjectName());
    }
-   
+
    @Test
    public void testReadInheritedProperties()
    {
       MetadataFacet metadataFacet = subproject.getFacet(MetadataFacet.class);
       assertEquals("org.complexproject", metadataFacet.getTopLevelPackage());
       assertEquals("org.x", metadataFacet.getEffectiveProperties().get("someProperty"));
-      
+
       DependencyFacet dependencyFacet = subproject.getFacet(DependencyFacet.class);
       assertTrue(dependencyFacet.hasEffectiveDependency(
                DependencyBuilder.create("org.x:xyz:SNAPSHOT")));
-      
+
       Dependency dep = dependencyFacet.getEffectiveDependency(
                DependencyBuilder.create("org.x:xyz:SNAPSHOT"));
       assertEquals("compile", dep.getScopeType());
       assertEquals(1, dep.getExcludedCoordinates().size());
-      
+
       Coordinate exclusion = dep.getExcludedCoordinates().get(0);
       assertEquals("org.x", exclusion.getGroupId());
       assertEquals("abc", exclusion.getArtifactId());

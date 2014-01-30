@@ -44,11 +44,11 @@ public class GradleJavaSourceFacetTest
 {
    @Deployment
    @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.addon:resources", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:projects", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:parser-java", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:gradle", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:maven", version = "2.0.0-SNAPSHOT")
+            @AddonDependency(name = "org.jboss.forge.addon:resources"),
+            @AddonDependency(name = "org.jboss.forge.addon:projects"),
+            @AddonDependency(name = "org.jboss.forge.addon:parser-java"),
+            @AddonDependency(name = "org.jboss.forge.addon:gradle"),
+            @AddonDependency(name = "org.jboss.forge.addon:maven")
    })
    public static ForgeArchive getDeployment()
    {
@@ -56,8 +56,6 @@ public class GradleJavaSourceFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
    }
-
-   private static GradleTestProjectProvider projectProvider;
 
    @Inject
    private GradleTestProjectProvider injectedProjectProvider;
@@ -70,11 +68,7 @@ public class GradleJavaSourceFacetTest
    @Before
    public void setUp()
    {
-      if (projectProvider == null)
-      {
-         projectProvider = injectedProjectProvider;
-      }
-      project = projectProvider.create("",
+      project = injectedProjectProvider.create("",
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
       facet = project.getFacet(JavaSourceFacet.class);
@@ -83,7 +77,7 @@ public class GradleJavaSourceFacetTest
    @After
    public void cleanUp()
    {
-      projectProvider.clean();
+      injectedProjectProvider.clean();
    }
 
    @Test
