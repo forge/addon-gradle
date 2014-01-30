@@ -52,7 +52,7 @@
          <classifier>forge-addon</classifier>
          <optional>true</optional>
       </dependency>
-      
+
       <dependency>
          <groupId>org.jboss.forge.furnace.container</groupId>
          <artifactId>cdi</artifactId>
@@ -75,6 +75,22 @@
                   <inherited>false</inherited>
                   <configuration>
                      <classifier>forge-addon</classifier>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.jboss.forge.furnace</groupId>
+            <artifactId>furnace-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>generate-dot</id>
+                  <phase>prepare-package</phase>
+                  <goals>
+                     <goal>generate-dot</goal>
+                  </goals>
+                  <configuration>
+                     <attach>true</attach>
                   </configuration>
                </execution>
             </executions>
