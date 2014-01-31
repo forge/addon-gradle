@@ -74,7 +74,17 @@
          </dependency>
       </dependencies>
    </dependencyManagement>
-
+   <build>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>org.jboss.forge.furnace</groupId>
+               <artifactId>furnace-maven-plugin</artifactId>
+               <version>${version.forge}</version>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+   </build>
    <dependencies>
       <dependency>
          <groupId>junit</groupId>
@@ -87,7 +97,7 @@
       <connection>scm:git:git@github.com:forge/addon-gradle.git</connection>
       <developerConnection>scm:git:git@github.com:forge/addon-gradle.git</developerConnection>
       <url>http://github.com/forge/addon-gradle</url>
-     <tag>HEAD</tag>
-  </scm>
+      <tag>HEAD</tag>
+   </scm>
 
 </project>
