@@ -106,7 +106,7 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
          newDep = dep;
       }
       model.addManagedDependency(forgeDepToGradleDep(newDep));
-      
+
       if (listContainsDep(gradleDepsToForgeDeps(model.getDependencies()), dep))
       {
          model.removeDependency(forgeDepToGradleDep(dep));
@@ -280,6 +280,8 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    @Override
    public List<Coordinate> resolveAvailableVersions(DependencyQuery query)
    {
+      query = DependencyQueryBuilder.create(query).setRepositories(
+               getRepositories());
       List<Coordinate> versions = dependencyResolver.resolveVersions(query);
       return versions;
    }
