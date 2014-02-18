@@ -8,6 +8,7 @@ import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.DependencyRepository;
 import org.jboss.forge.addon.resource.DirectoryResource;
+import org.jboss.forge.furnace.util.Strings;
 
 public class ProjectAssert
 {
@@ -42,8 +43,13 @@ public class ProjectAssert
       {
          if (dep.getCoordinate().getArtifactId().equals(artifact) &&
                   dep.getCoordinate().getGroupId().equals(group) &&
-                  dep.getCoordinate().getVersion().equals(version) &&
-                  dep.getScopeType().equals(scope))
+                  Strings.compare(
+                           dep.getCoordinate().getVersion() == null ? "" : dep.getCoordinate().getVersion(),
+                           version == null ? "" : version)
+                  &&
+                  Strings.compare(
+                           dep.getScopeType() == null ? "" : dep.getScopeType(),
+                           scope == null ? "" : scope))
          {
             return;
          }
@@ -65,7 +71,7 @@ public class ProjectAssert
       }
       fail(String.format("Deps doesn't contain dependency '%s:%s:%s'", group, artifact, version));
    }
-   
+
    public static void assertContainsDirectDependency(List<Dependency> deps, String group, String artifact)
    {
       for (Dependency dep : deps)

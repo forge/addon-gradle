@@ -57,7 +57,7 @@ public class GradleDependencyFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
    }
-   
+
    private static GradleTestProjectProvider projectProvider;
 
    @Inject
@@ -138,6 +138,39 @@ public class GradleDependencyFacetTest
                "runtime", "mygroup", "mydep", "myversion");
    }
 
+   /**
+    * If managed dependency is being added and there is already direct dependency that could use this new dependency,
+    * then it should be fixed to use 'direct' dependency closure.
+    */
+   @Test
+   public void testAddDirectThenManagedDependency()
+   {
+      facet.addDirectDependency(
+               DependencyBuilder
+                        .create()
+                        .setArtifactId("mydep")
+                        .setGroupId("mygroup")
+                        .setVersion("myversion")
+                        .setScopeType("runtime"));
+      facet.addDirectManagedDependency(
+               DependencyBuilder
+                        .create()
+                        .setArtifactId("mydep")
+                        .setGroupId("mygroup")
+                        .setVersion("myversion")
+                        .setScopeType("runtime"));
+
+      Project theSameProject = projectProvider.findProject();
+      DependencyFacet theNewFacet = theSameProject.getFacet(DependencyFacet.class);
+
+      ProjectAssert.assertContainsDependency(theNewFacet.getManagedDependencies(),
+               "runtime", "mygroup", "mydep", "myversion");
+      ProjectAssert.assertContainsDependency(theNewFacet.getDependencies(),
+               null, "mygroup", "mydep", null);
+      ProjectAssert.assertNotContainsDependency(theNewFacet.getDependencies(),
+               "runtime", "mygroup", "mydep", "myversion");
+   }
+
    @Test
    public void testAddRepository()
    {
@@ -158,7 +191,7 @@ public class GradleDependencyFacetTest
       ProjectAssert.assertContainsDependency(deps, "compile", "org.slf4j", "slf4j-simple", "1.7.5");
       ProjectAssert.assertContainsDependency(deps, "test", "junit", "junit", "4.11");
       ProjectAssert.assertContainsDependency(deps, "runtime", "com.google.code.guice", "guice", "1.0");
-      
+
       ProjectAssert.assertNotContainsDependency(deps, "runtime", "org.jboss.netty", "netty", "3.2.9.Final");
       ProjectAssert.assertContainsDirectDependency(deps, "org.mockito", "mockito-all");
    }
@@ -208,7 +241,7 @@ public class GradleDependencyFacetTest
       ProjectAssert.assertContainsDependency(deps, "runtime", "org.jboss.netty", "netty", "3.2.9.Final");
       ProjectAssert.assertContainsDependency(deps, "test", "org.mockito", "mockito-all", "1.9.5");
    }
-   
+
    @Test
    public void testGetEffectiveDependenciesTransitive()
    {
@@ -369,7 +402,7 @@ public class GradleDependencyFacetTest
       DependencyFacet sameFacet = sameProject.getFacet(DependencyFacet.class);
       List<Dependency> managedDeps = sameFacet.getManagedDependencies();
 
-      ProjectAssert.assertNotContainsDependency(managedDeps, "compile", 
+      ProjectAssert.assertNotContainsDependency(managedDeps, "compile",
                "org.apache.commons", "commons-exec", "1.1");
    }
 

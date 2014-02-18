@@ -209,7 +209,7 @@ public class GradleDependencyBuilder implements GradleDependency
    {
       return excludedDependencies;
    }
-   
+
    public GradleDependencyBuilder setExcludedDependencies(List<GradleDependency> excludedDependencies)
    {
       this.excludedDependencies = excludedDependencies;
@@ -223,9 +223,10 @@ public class GradleDependencyBuilder implements GradleDependency
                !Strings.isNullOrEmpty(classifier) ? ":" + classifier : "",
                !Strings.isNullOrEmpty(packaging) && !packaging.equals(DEFAULT_PACKAGING) ? "@" + packaging : "");
    }
-   
+
    @Override
-   public String toGradleMapString() {
+   public String toGradleMapString()
+   {
       return String.format("group: \"%s\", name: \"%s\", version: \"%s\"%s%s",
                group, name, version,
                !Strings.isNullOrEmpty(classifier) ? ", classifier: \"" + classifier + "\"" : "",
@@ -238,7 +239,7 @@ public class GradleDependencyBuilder implements GradleDependency
    public boolean equalsToDependency(GradleDependency dep)
    {
       boolean coordsEquals = group.equals(dep.getGroup()) && name.equals(dep.getName())
-               && version.equals(dep.getVersion());
+               && Strings.compare(version == null ? "" : version, dep.getVersion() == null ? "" : dep.getVersion());
 
       boolean classifierEquals = true;
       if (!Strings.isNullOrEmpty(dep.getClassifier()))
@@ -268,9 +269,10 @@ public class GradleDependencyBuilder implements GradleDependency
    {
       return String.format("%s '%s'", configurationName, toGradleString());
    }
-   
+
    @Override
-   public boolean equals(Object other) {
+   public boolean equals(Object other)
+   {
       return equalsToDependency((GradleDependency) other);
    }
 }
