@@ -186,19 +186,10 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       manager.runGradleBuild(getFaceted().getRootDirectory().getFullyQualifiedName(),
                GradleSourceUtil.FORGE_OUTPUT_TASK, "");
 
-      FileResource<?> forgeOutputfile = (FileResource<?>) getFaceted().getRootDirectory().getChild(
+      FileResource<?> forgeOutputFile = (FileResource<?>) getFaceted().getRootDirectory().getChild(
                GradleSourceUtil.FORGE_OUTPUT_XML);
-      String forgeOutput = null;
-      try (InputStream stream = forgeOutputfile.getResourceInputStream())
-      {
-         forgeOutput = Streams.toString(stream);
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
-
-      forgeOutputfile.delete();
+      String forgeOutput = forgeOutputFile.getContents();
+      forgeOutputFile.delete();
 
       GradleModel loadedModel = GradleModelLoadUtil.load(script, profileScripts, forgeOutput);
 
