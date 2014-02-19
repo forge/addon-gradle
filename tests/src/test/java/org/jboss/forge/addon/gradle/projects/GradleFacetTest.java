@@ -7,6 +7,7 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.gradle.projects.model.GradleTask;
 import org.jboss.forge.addon.gradle.projects.model.GradleTaskBuilder;
@@ -75,6 +77,14 @@ public class GradleFacetTest
    public void cleanUp()
    {
       projectProvider.clean();
+   }
+   
+   @Test
+   public void testForgeOutputCleanUp()
+   {
+      facet.getModel();
+      assertFalse(((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
+               .getFullyQualifiedName(), GradleSourceUtil.FORGE_OUTPUT_XML))).exists());
    }
 
    @Test

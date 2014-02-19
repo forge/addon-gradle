@@ -7,6 +7,8 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -186,7 +188,15 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 
       FileResource<?> forgeOutputfile = (FileResource<?>) getFaceted().getRootDirectory().getChild(
                GradleSourceUtil.FORGE_OUTPUT_XML);
-      String forgeOutput = Streams.toString(forgeOutputfile.getResourceInputStream());
+      String forgeOutput = null;
+      try (InputStream stream = forgeOutputfile.getResourceInputStream())
+      {
+         forgeOutput = Streams.toString(stream);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
 
       forgeOutputfile.delete();
 
