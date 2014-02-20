@@ -50,16 +50,18 @@ allprojects {
             ]
             project.afterEvaluate {
                 def _depMap = project.ext._managedDependencies[_groupName]
-                def _coords =
-                    _groupName.group + ':' +
-                            _groupName.name + ':' +
-                            _depMap.version +
-                            (_depMap.classifier != null ? ':' + _depMap.classifier : '') +
-                            (_depMap.ext != null ? '@' + _depMap.ext : '')
-                project.dependencies.add(
-                        _depMap.configuration,
-                        _coords,
-                        _depMap['closure'] != null ? _depMap.closure : {})
+                if (_depMap != null) {
+	                def _coords =
+	                    _groupName.group + ':' +
+	                            _groupName.name + ':' +
+	                            _depMap.version +
+	                            (_depMap.classifier != null ? ':' + _depMap.classifier : '') +
+	                            (_depMap.ext != null ? '@' + _depMap.ext : '')
+	                project.dependencies.add(
+	                        _depMap.configuration,
+	                        _coords,
+	                        _depMap['closure'] != null ? _depMap.closure : {})
+                }
             }
         })
 

@@ -172,6 +172,40 @@ public class GradleDependencyFacetTest
    }
 
    @Test
+   public void testAddDirectWithoutScopeAndVersionThenManagedDependency()
+   {
+      facet.addDirectDependency(
+               DependencyBuilder
+                        .create()
+                        .setArtifactId("mydep")
+                        .setGroupId("mygroup"));
+
+      Project theSameProject = projectProvider.findProject();
+      DependencyFacet theNewFacet = theSameProject.getFacet(DependencyFacet.class);
+
+      ProjectAssert.assertContainsDependency(theNewFacet.getDependencies(),
+               null, "mygroup", "mydep", null);
+      
+      facet.addDirectManagedDependency(
+               DependencyBuilder
+                        .create()
+                        .setArtifactId("mydep")
+                        .setGroupId("mygroup")
+                        .setVersion("myversion")
+                        .setScopeType("runtime"));
+      
+      theSameProject = projectProvider.findProject();
+      theNewFacet = theSameProject.getFacet(DependencyFacet.class);
+
+      ProjectAssert.assertContainsDependency(theNewFacet.getManagedDependencies(),
+               "runtime", "mygroup", "mydep", "myversion");
+      ProjectAssert.assertContainsDependency(theNewFacet.getDependencies(),
+               null, "mygroup", "mydep", null);
+      ProjectAssert.assertNotContainsDependency(theNewFacet.getDependencies(),
+               "runtime", "mygroup", "mydep", "myversion");
+   }
+
+   @Test
    public void testAddRepository()
    {
       facet.addRepository("RepoName", "http://repo.com/");
