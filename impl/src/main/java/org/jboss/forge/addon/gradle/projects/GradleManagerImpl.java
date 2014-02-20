@@ -42,7 +42,7 @@ public class GradleManagerImpl implements GradleManager
       {
          connector = connector.useInstallation(new File(gradleHome));
       }
-      
+
       ProjectConnection connection = connector.connect();
 
       BuildLauncher launcher = connection.newBuild().forTasks(task);
@@ -55,40 +55,39 @@ public class GradleManagerImpl implements GradleManager
       }
 
       launcher = launcher.withArguments(argList.toArray(new String[argList.size()]));
-      
+
       // Workaround to hide Gradle output in shell
       PrintStream originalOut = System.out;
-      System.setOut(new PrintStream(new OutputStream()
-      {
-         
-         @Override
-         public void write(int b) throws IOException
-         {
-         }
-      }));
-
       final ResultHolder holder = new ResultHolder();
       final CountDownLatch latch = new CountDownLatch(1);
-
-      launcher.run(new ResultHandler<Object>()
-      {
-         @Override
-         public void onComplete(Object result)
-         {
-            holder.result = true;
-            latch.countDown();
-         }
-
-         @Override
-         public void onFailure(GradleConnectionException failure)
-         {
-            holder.result = false;
-            latch.countDown();
-         }
-      });
-
       try
       {
+         System.setOut(new PrintStream(new OutputStream()
+         {
+
+            @Override
+            public void write(int b) throws IOException
+            {
+            }
+         }));
+
+         launcher.run(new ResultHandler<Object>()
+         {
+            @Override
+            public void onComplete(Object result)
+            {
+               holder.result = true;
+               latch.countDown();
+            }
+
+            @Override
+            public void onFailure(GradleConnectionException failure)
+            {
+               holder.result = false;
+               latch.countDown();
+            }
+         });
+
          latch.await();
       }
       catch (InterruptedException e)
