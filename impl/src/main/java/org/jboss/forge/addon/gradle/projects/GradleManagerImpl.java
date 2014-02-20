@@ -7,6 +7,9 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -52,6 +55,17 @@ public class GradleManagerImpl implements GradleManager
       }
 
       launcher = launcher.withArguments(argList.toArray(new String[argList.size()]));
+      
+      // Workaround to hide Gradle output in shell
+      PrintStream originalOut = System.out;
+      System.setOut(new PrintStream(new OutputStream()
+      {
+         
+         @Override
+         public void write(int b) throws IOException
+         {
+         }
+      }));
 
       final ResultHolder holder = new ResultHolder();
       final CountDownLatch latch = new CountDownLatch(1);
@@ -80,6 +94,10 @@ public class GradleManagerImpl implements GradleManager
       catch (InterruptedException e)
       {
          e.printStackTrace();
+      }
+      finally
+      {
+         System.setOut(originalOut);
       }
 
       return holder.result;
