@@ -46,5 +46,10 @@
          <classifier>forge-addon</classifier>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.jboss.forge.addon</groupId>
+         <artifactId>configuration</artifactId>
+         <classifier>forge-addon</classifier>
+      </dependency>
    </dependencies>
 </project>

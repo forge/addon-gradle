@@ -29,6 +29,14 @@ This addon *exports services* for use in other addons. The Gradle addon implemen
 |no
 |yes
 
+|maven
+|no
+|no
+
+|configuration
+|no
+|no
+
 |org.jboss.forge.furnace.container:cdi
 |no
 |no
