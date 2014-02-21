@@ -109,10 +109,10 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       }
       model.addManagedDependency(forgeDepToGradleDep(newDep));
 
-      if (listContainsDep(gradleDepsToForgeDeps(model.getDependencies()), dep))
+      if (listContainsDep(gradleDepsToForgeDeps(model.getDependencies()), newDep))
       {
-         model.removeDependency(forgeDepToGradleDep(dep));
-         model.addDependency(forgeDepToGradleDep(DependencyBuilder.create(dep).setVersion(null)));
+         model.removeDependency(forgeDepToGradleDep(newDep));
+         model.addDependency(forgeDepToGradleDep(DependencyBuilder.create(newDep).setVersion(null)));
       }
 
       getGradleFacet().setModel(model);
