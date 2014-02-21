@@ -47,7 +47,8 @@ public class GradleFacetTest
             @AddonDependency(name = "org.jboss.forge.addon:projects"),
             @AddonDependency(name = "org.jboss.forge.addon:parser-java"),
             @AddonDependency(name = "org.jboss.forge.addon:gradle"),
-            @AddonDependency(name = "org.jboss.forge.addon:maven")
+            @AddonDependency(name = "org.jboss.forge.addon:maven"),
+            @AddonDependency(name = "org.jboss.forge.addon:configuration")
    })
    public static ForgeArchive getDeployment()
    {
@@ -77,6 +78,23 @@ public class GradleFacetTest
    public void cleanUp()
    {
       projectProvider.clean();
+   }
+   
+   @Test
+   public void testInstallForgeLibrary()
+   {
+      facet.installForgeLibrary();
+      assertTrue(((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
+               .getFullyQualifiedName(), GradleSourceUtil.FORGE_LIBRARY))).exists());
+   }
+   
+   @Test
+   public void testNonIntrusiveMode()
+   {
+      facet.getModel();
+      assertFalse(((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
+               .getFullyQualifiedName(), GradleSourceUtil.FORGE_LIBRARY))).exists());
+      assertFalse(GradleSourceUtil.checkForIncludeForgeLibrary(facet.getBuildScriptResource().getContents()));
    }
    
    @Test
@@ -144,6 +162,7 @@ public class GradleFacetTest
    @Test
    public void testExecuteTask() throws IOException
    {
+      facet.installForgeLibrary();
       assertTrue(facet.executeTask("someOutput"));
       String output = ((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
                .getFullyQualifiedName(), "output.txt"))).getContents();
@@ -153,6 +172,7 @@ public class GradleFacetTest
    @Test
    public void testExecuteTaskWithProfile() throws IOException
    {
+      facet.installForgeLibrary();
       assertTrue(facet.executeTask("testProfileOutput", "test"));
       String output = ((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
                .getFullyQualifiedName(), "testOutput.txt"))).getContents();

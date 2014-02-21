@@ -126,6 +126,8 @@ public class GradlePackagingFacet extends AbstractFacet<Project> implements Pack
    @Override
    public void setFinalName(String finalName)
    {
+      getGradleFacet().installForgeLibrary();
+      
       GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
       model.setArchiveName(finalName);
       getGradleFacet().setModel(model);

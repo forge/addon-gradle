@@ -7,13 +7,12 @@
 package org.jboss.forge.addon.gradle.projects;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.gradle.jarjar.com.google.common.collect.Maps;
+import org.jboss.forge.addon.configuration.Configuration;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModel;
@@ -21,27 +20,33 @@ import org.jboss.forge.addon.gradle.projects.model.GradleModelLoadUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelMergeUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
 import org.jboss.forge.addon.projects.Project;
+import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.addon.resource.ResourceFilter;
-import org.jboss.forge.furnace.util.Streams;
+import org.jboss.forge.furnace.util.OperatingSystemUtils;
+
+import com.google.common.base.Strings;
 
 /**
  * @author Adam Wyłuda
  */
 public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFacet
 {
-   public static final String INITIAL_BUILD_FILE_CONTENTS = "" +
+   private static final String INITIAL_BUILD_FILE_CONTENTS = "" +
             "apply plugin: 'java'\n" +
             "repositories {\n" +
             "    mavenCentral()\n" +
             "}\n";
-   
+   private static final String FORGE_LIBRARY_LOCATION_CONF_KEY = "forgeLibraryLocation";
+
    @Inject
    private GradleManager manager;
    @Inject
    private ResourceFactory resourceFactory;
+   @Inject
+   private Configuration configuration;
 
    // Cached model
    private GradleModel model;
@@ -116,7 +121,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       for (GradleProfile profile : newModel.getProfiles())
       {
          FileResource<?> profileScriptResource = getProfileScriptResource(profile.getName());
-         
+
          // If profile doesn't exist we must create a file for it
          if (!profileScriptResource.exists())
          {
@@ -125,7 +130,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 
          // Merge new profile contents
          String oldProfileSource = profileScriptResource.getContents();
-         String newProfileSource = GradleModelMergeUtil.merge(oldProfileSource, 
+         String newProfileSource = GradleModelMergeUtil.merge(oldProfileSource,
                   profileModels.get(profile.getName()), profile.getModel());
          if (!newProfileSource.equals(oldProfileSource))
          {
@@ -176,20 +181,49 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
                getModel().getRootProjectPath(), "settings.gradle"));
    }
 
+   @Override
+   public void installForgeLibrary()
+   {
+      if (!isForgeLibraryInstalled())
+      {
+         String script = getBuildScriptResource().getContents();
+         String newScript = GradleSourceUtil.checkForIncludeForgeLibraryAndInstall(script);
+   
+         // If Forge library is not included
+         if (!script.equals(newScript))
+         {
+            getBuildScriptResource().setContents(newScript);
+            installForgeLibrary(getFaceted().getRootDirectory());
+         }
+      }
+   }
+
+   @Override
+   public boolean isForgeLibraryInstalled()
+   {
+      return isProjectForgeLibraryInstalled();
+   }
+
    private void loadModel()
    {
-      checkIfIsForgeLibraryInstalled();
-      
+      if (isProjectForgeLibraryInstalled())
+      {
+         runGradleNormally();
+      }
+      else
+      {
+         if (!isTemporaryForgeLibraryInstalled())
+         {
+            nonIntrusiveForgeLibraryInstall();
+         }
+         
+         runGradleInNonIntrusiveMode();
+      }
+
+      String forgeOutput = readForgeOutputAndClean();
+
       String script = getBuildScriptResource().getContents();
       Map<String, String> profileScripts = getProfileScripts();
-
-      manager.runGradleBuild(getFaceted().getRootDirectory().getFullyQualifiedName(),
-               GradleSourceUtil.FORGE_OUTPUT_TASK, "");
-
-      FileResource<?> forgeOutputFile = (FileResource<?>) getFaceted().getRootDirectory().getChild(
-               GradleSourceUtil.FORGE_OUTPUT_XML);
-      String forgeOutput = forgeOutputFile.getContents();
-      forgeOutputFile.delete();
 
       GradleModel loadedModel = GradleModelLoadUtil.load(script, profileScripts, forgeOutput);
 
@@ -203,42 +237,78 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       this.model = loadedModel;
    }
 
-   private void checkIfIsForgeLibraryInstalled()
-   {
-      String script = getBuildScriptResource().getContents();
-      String newScript = GradleSourceUtil.checkForIncludeForgeLibraryAndInsert(script);
-
-      // If Forge library is not included
-      if (!script.equals(newScript))
-      {
-         getBuildScriptResource().setContents(newScript);
-
-         FileResource<?> forgeLib = (FileResource<?>)
-                  getFaceted().getRootDirectory().getChild(GradleSourceUtil.FORGE_LIBRARY);
-         forgeLib.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
-      }
-   }
-   
    private FileResource<?> getProfileScriptResource(String name)
    {
       return (FileResource<?>) getBuildScriptResource().getParent()
                .getChild(name + GradleSourceUtil.PROFILE_SUFFIX);
    }
-   
+
    private Map<String, String> getProfileScripts()
    {
       Map<String, String> profileScripts = Maps.newHashMap();
-      
+
       for (Resource<?> resource : getBuildScriptResource().getParent().listResources())
       {
          FileResource<?> file = (FileResource<?>) resource;
          if (file.getName().endsWith(GradleSourceUtil.PROFILE_SUFFIX))
          {
-            String profile = file.getName().substring(0, file.getName().length() - GradleSourceUtil.PROFILE_SUFFIX.length());
+            String profile = file.getName().substring(0,
+                     file.getName().length() - GradleSourceUtil.PROFILE_SUFFIX.length());
             profileScripts.put(profile, file.getContents());
          }
       }
-      
+
       return profileScripts;
+   }
+
+   private String readForgeOutputAndClean()
+   {
+      FileResource<?> forgeOutputFile = (FileResource<?>) getFaceted().getRootDirectory().getChild(
+               GradleSourceUtil.FORGE_OUTPUT_XML);
+      String forgeOutput = forgeOutputFile.getContents();
+      forgeOutputFile.delete();
+
+      return forgeOutput;
+   }
+
+   private boolean isProjectForgeLibraryInstalled()
+   {
+      return (((FileResource<?>) getFaceted().getRootDirectory().getChild(GradleSourceUtil.FORGE_LIBRARY)).exists()) &&
+               GradleSourceUtil.checkForIncludeForgeLibrary(getBuildScriptResource().getContents());
+   }
+
+   private boolean isTemporaryForgeLibraryInstalled()
+   {
+      String libLocation = configuration.getString(FORGE_LIBRARY_LOCATION_CONF_KEY);
+
+      return !Strings.isNullOrEmpty(libLocation)
+               && resourceFactory.getFileOperations().fileExists(new File(libLocation));
+   }
+
+   private FileResource<?> installForgeLibrary(DirectoryResource directory)
+   {
+      FileResource<?> forgeLib = (FileResource<?>) directory.getChild(GradleSourceUtil.FORGE_LIBRARY);
+      forgeLib.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
+
+      return forgeLib;
+   }
+
+   private void nonIntrusiveForgeLibraryInstall()
+   {
+      File temporaryDir = OperatingSystemUtils.createTempDir();
+      FileResource<?> forgeLib = installForgeLibrary((DirectoryResource) resourceFactory.create(temporaryDir));
+      configuration.setProperty(FORGE_LIBRARY_LOCATION_CONF_KEY, forgeLib.getFullyQualifiedName());
+   }
+
+   private void runGradleNormally()
+   {
+      manager.runGradleBuild(getFaceted().getRootDirectory().getFullyQualifiedName(),
+               GradleSourceUtil.FORGE_OUTPUT_TASK, "");
+   }
+
+   private void runGradleInNonIntrusiveMode()
+   {
+      manager.runGradleBuild(getFaceted().getRootDirectory().getFullyQualifiedName(),
+               GradleSourceUtil.FORGE_OUTPUT_TASK, "", "-I", configuration.getString(FORGE_LIBRARY_LOCATION_CONF_KEY));
    }
 }

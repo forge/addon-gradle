@@ -840,13 +840,15 @@ public class GradleSourceUtilTest
       String source = "" +
                "task abcd << {\n" +
                "    println 'ABCD!!'\n" +
-               "}\n";
+               "}\n" +
+               "/*\napply from: 'forge.gradle'\n*/\n";
       String expected = "" +
                "apply from: 'forge.gradle'\n" +
                "task abcd << {\n" +
                "    println 'ABCD!!'\n" +
-               "}\n";
-      String result = GradleSourceUtil.checkForIncludeForgeLibraryAndInsert(source);
+               "}\n" +
+               "/*\napply from: 'forge.gradle'\n*/\n";
+      String result = GradleSourceUtil.checkForIncludeForgeLibraryAndInstall(source);
       assertEquals(expected, result);
    }
 
@@ -854,16 +856,12 @@ public class GradleSourceUtilTest
    public void testCheckForIncludeForgeLibraryAndInsertExisting()
    {
       String source = "" +
-               "apply from: 'forge.gradle'\n" +
                "task abcd << {\n" +
                "    println 'ABCD!!'\n" +
-               "}\n";
-      String expected = "" +
-               "apply from: 'forge.gradle'\n" +
-               "task abcd << {\n" +
-               "    println 'ABCD!!'\n" +
-               "}\n";
-      String result = GradleSourceUtil.checkForIncludeForgeLibraryAndInsert(source);
+               "}\n" +
+               "apply from: 'forge.gradle'\n";
+      String expected = source;
+      String result = GradleSourceUtil.checkForIncludeForgeLibraryAndInstall(source);
       assertEquals(expected, result);
    }
 

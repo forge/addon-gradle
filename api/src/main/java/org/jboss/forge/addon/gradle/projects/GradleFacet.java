@@ -63,4 +63,14 @@ public interface GradleFacet extends ProvidedProjectFacet
     * Returns file resource pointing to the build.gradle script of the root project.
     */
    FileResource<?> getSettingsScriptResource();
+
+   /**
+    * Installs Forge library in project directory.
+    */
+   void installForgeLibrary();
+   
+   /**
+    * Returns true if there is Forge library installed into project directory. 
+    */
+   boolean isForgeLibraryInstalled();
 }

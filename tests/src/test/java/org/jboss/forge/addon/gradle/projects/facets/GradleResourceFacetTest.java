@@ -43,7 +43,8 @@ public class GradleResourceFacetTest
             @AddonDependency(name = "org.jboss.forge.addon:projects"),
             @AddonDependency(name = "org.jboss.forge.addon:parser-java"),
             @AddonDependency(name = "org.jboss.forge.addon:gradle"),
-            @AddonDependency(name = "org.jboss.forge.addon:maven")
+            @AddonDependency(name = "org.jboss.forge.addon:maven"),
+            @AddonDependency(name = "org.jboss.forge.addon:configuration")
    })
    public static ForgeArchive getDeployment()
    {

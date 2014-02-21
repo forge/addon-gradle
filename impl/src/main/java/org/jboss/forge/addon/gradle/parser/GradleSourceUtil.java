@@ -530,9 +530,17 @@ public class GradleSourceUtil
    }
 
    /**
-    * Checks if source includes forge library and if not then adds it.
+    * Checks if source includes Forge library and if not then adds it.
     */
-   public static String checkForIncludeForgeLibraryAndInsert(String source)
+   public static String checkForIncludeForgeLibraryAndInstall(String source)
+   {
+      return checkForIncludeForgeLibrary(source) ? source : installForgeLibrary(source);
+   }
+
+   /**
+    * Checks if source includes Forge library. 
+    */
+   public static boolean checkForIncludeForgeLibrary(String source)
    {
       SimpleGroovyParser parser = SimpleGroovyParser.fromSource(source);
       for (InvocationWithMap invocation : parser.getInvocationsWithMap())
@@ -543,14 +551,21 @@ public class GradleSourceUtil
             String from = map.get("from");
 
             // If it is already included in source then we just return the source
-            if ("forge.gradle".equals(from))
+            if (FORGE_LIBRARY.equals(from))
             {
-               return source;
+               return true;
             }
          }
       }
 
-      // If statement including forge library was not found then we add it
+      return false;
+   }
+   
+   /**
+    * Installs Forge library into the source. 
+    */
+   public static String installForgeLibrary(String source)
+   {
       return INCLUDE_FORGE_LIBRARY + source;
    }
 

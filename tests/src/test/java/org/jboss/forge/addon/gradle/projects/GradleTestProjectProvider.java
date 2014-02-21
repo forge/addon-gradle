@@ -13,6 +13,7 @@ import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.ResourceFactory;
+import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.util.OperatingSystemUtils;
@@ -55,13 +56,13 @@ public class GradleTestProjectProvider
                         AddonDependencyEntry.create("org.jboss.forge.addon:gradle"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:projects"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:parser-java"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:maven")
+                        AddonDependencyEntry.create("org.jboss.forge.addon:maven"),
+                        AddonDependencyEntry.create("org.jboss.forge.addon:configuration")
                );
       for (String resource : resources)
       {
          archive = archive.addAsResource(resourcesPath + resource);
       }
-      archive = archive.addAsResource("forge.gradle");
       return archive;
    }
 
@@ -108,8 +109,5 @@ public class GradleTestProjectProvider
          resourceFile.createNewFile();
          resourceFile.setContents(getClass().getResourceAsStream("/" + resourcesPath + resource));
       }
-      FileResource<?> resourceFile = projectDir.getChild("forge.gradle").reify(FileResource.class);
-      resourceFile.createNewFile();
-      resourceFile.setContents(getClass().getResourceAsStream("/forge.gradle"));
    }
 }

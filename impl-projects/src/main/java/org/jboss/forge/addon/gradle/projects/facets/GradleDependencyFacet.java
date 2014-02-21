@@ -96,6 +96,8 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
    @Override
    public void addDirectManagedDependency(Dependency dep)
    {
+      getGradleFacet().installForgeLibrary();
+      
       GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
 
       Dependency newDep = null;
