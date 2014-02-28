@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.GradleTestProjectProvider;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
@@ -98,6 +99,7 @@ public class GradlePackagingFacetTest
    @Test
    public void testCreateBuilder()
    {
+      project.getFacet(GradleFacet.class).installForgeLibrary();
       FileResource<?> archive = (FileResource<?>) facet.createBuilder().runTests(true).build();
       assertEquals("archiveX.war", archive.getName());
       assertTrue(archive.exists());
@@ -107,6 +109,7 @@ public class GradlePackagingFacetTest
    @Test
    public void testCreateBuilderSkipTests()
    {
+      project.getFacet(GradleFacet.class).installForgeLibrary();
       FileResource<?> archive = (FileResource<?>) facet.createBuilder().runTests(false).build();
       assertEquals("archiveX.war", archive.getName());
       assertTrue(archive.exists());
