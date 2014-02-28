@@ -1,7 +1,5 @@
 apply plugin: 'application'
 
-apply from: 'forge.gradle'
-
 allprojects {
     group = 'org.complexproject'
 

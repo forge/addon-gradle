@@ -69,8 +69,7 @@ public class GradleComplexProjectTest
       assertEquals("x", facet.getProjectName());
       facet.setProjectName("newname");
 
-      Project sameProject = projectProvider.create("",
-               GradleTestProjectProvider.COMPLEX_RESOURCES_PATH);
+      Project sameProject = projectProvider.findProject();
       MetadataFacet sameFacet = sameProject.getFacet(MetadataFacet.class);
 
       assertEquals("newname", sameFacet.getProjectName());
