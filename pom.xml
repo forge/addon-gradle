@@ -29,7 +29,9 @@
 
    <properties>
       <version.forge>2.1.1.Final</version.forge>
+      <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
    </properties>
+   
    <dependencyManagement>
       <dependencies>
          <dependency>
