@@ -364,6 +364,13 @@ public class GradleDependencyFacetTest
    }
 
    @Test
+   public void testHasEffectiveDependencyWithoutVersion()
+   {
+      assertTrue(facet.hasEffectiveDependency(
+               DependencyBuilder.create("org.mockito:mockito-all")));
+   }
+
+   @Test
    public void tastHasEffectiveDependencyNot()
    {
       assertFalse(facet.hasEffectiveDependency(
@@ -375,6 +382,13 @@ public class GradleDependencyFacetTest
    {
       assertTrue(facet.hasEffectiveManagedDependency(
                DependencyBuilder.create("org.mockito:mockito-all:1.9.5")));
+   }
+
+   @Test
+   public void testHasEffectiveManagedDependencyWithoutVersion()
+   {
+      assertTrue(facet.hasEffectiveManagedDependency(
+               DependencyBuilder.create("org.mockito:mockito-all")));
    }
 
    @Test

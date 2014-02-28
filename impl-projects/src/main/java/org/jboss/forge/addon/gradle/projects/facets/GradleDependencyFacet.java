@@ -38,6 +38,7 @@ import org.jboss.forge.addon.gradle.projects.model.GradleRepository;
 import org.jboss.forge.addon.gradle.projects.model.GradleRepositoryBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
+import org.jboss.forge.furnace.util.Strings;
 
 /**
  * @author Adam Wyłuda
@@ -484,12 +485,13 @@ public class GradleDependencyFacet extends AbstractFacet<Project> implements Dep
       }
       return null;
    }
-
-   private boolean depEquals(Dependency dep1, Dependency dep2)
+   
+   private boolean depEquals(Dependency original, Dependency incoming)
    {
-      return dep1.getCoordinate().getGroupId().equals(dep2.getCoordinate().getGroupId()) &&
-               dep1.getCoordinate().getArtifactId().equals(dep2.getCoordinate().getArtifactId()) &&
-               dep1.getCoordinate().getVersion().equals(dep2.getCoordinate().getVersion());
+      return original.getCoordinate().getGroupId().equals(incoming.getCoordinate().getGroupId()) &&
+               original.getCoordinate().getArtifactId().equals(incoming.getCoordinate().getArtifactId()) &&
+               (Strings.isNullOrEmpty(incoming.getCoordinate().getVersion()) ||
+                        original.getCoordinate().getVersion().equals(incoming.getCoordinate().getVersion()));
    }
 
    private DependencyRepository findRepositoryByUrl(List<DependencyRepository> list, String url)
