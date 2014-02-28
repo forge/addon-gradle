@@ -13,7 +13,6 @@ import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.ResourceFactory;
-import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.util.OperatingSystemUtils;
@@ -93,12 +92,6 @@ public class GradleTestProjectProvider
    public Project findProject()
    {
       return projectFactory.findProject(projectDir);
-   }
-
-   public void clean()
-   {
-      projectDir.delete(true);
-      projectDir = null;
    }
 
    private void initResources(String resourcesPath, String... resources)

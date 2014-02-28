@@ -26,7 +26,6 @@ import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,12 +70,6 @@ public class GradleResourceFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
       facet = project.getFacet(ResourcesFacet.class);
-   }
-
-   @After
-   public void cleanUp()
-   {
-      projectProvider.clean();
    }
 
    @Test

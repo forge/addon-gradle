@@ -31,7 +31,6 @@ import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.JavaSource;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,12 +72,6 @@ public class GradleJavaSourceFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
       facet = project.getFacet(JavaSourceFacet.class);
-   }
-
-   @After
-   public void cleanUp()
-   {
-      injectedProjectProvider.clean();
    }
 
    @Test

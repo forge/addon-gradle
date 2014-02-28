@@ -22,7 +22,6 @@ import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,12 +59,6 @@ public class GradleComplexProjectTest
       subproject = projectProvider.create("subproject",
                GradleTestProjectProvider.COMPLEX_RESOURCES_PATH,
                GradleTestProjectProvider.COMPLEX_RESOURCES);
-   }
-
-   @After
-   public void cleanUp()
-   {
-      projectProvider.clean();
    }
 
    @Test

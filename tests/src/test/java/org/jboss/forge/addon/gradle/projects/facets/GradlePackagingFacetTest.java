@@ -6,7 +6,9 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
@@ -20,7 +22,6 @@ import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,12 +66,6 @@ public class GradlePackagingFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
       facet = project.getFacet(PackagingFacet.class);
-   }
-
-   @After
-   public void cleanUp()
-   {
-      projectProvider.clean();
    }
 
    @Test

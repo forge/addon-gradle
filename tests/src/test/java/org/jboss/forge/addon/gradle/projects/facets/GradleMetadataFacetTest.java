@@ -23,7 +23,6 @@ import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,12 +67,6 @@ public class GradleMetadataFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
       facet = project.getFacet(MetadataFacet.class);
-   }
-
-   @After
-   public void cleanUp()
-   {
-      projectProvider.clean();
    }
 
    @Test
