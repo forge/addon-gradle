@@ -35,12 +35,12 @@ public enum GradleDependencyConfiguration
    /**
     * Direct dependency configuration (which doesn't have defined version and config).
     */
-   DIRECT("direct", null),
+   DIRECT("direct", ""),
 
    /**
     * Dependency configuration not defined in {@link GradleDependencyConfiguration}.
     */
-   OTHER("", null);
+   OTHER("", "");
 
    private static class ConfigContainer
    {
