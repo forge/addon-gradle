@@ -16,8 +16,8 @@
            <scope>provided</scope>
         </dependency>
 		<dependency>
-			<groupId>org.jboss.forge</groupId>
-			<artifactId>xml-parser</artifactId>
+			<groupId>org.jboss.forge.addon</groupId>
+			<artifactId>parser-xml-api</artifactId>
 		</dependency>
 
 		<dependency>
@@ -34,11 +34,6 @@
 		<dependency>
 			<groupId>org.jboss.forge.addon</groupId>
 			<artifactId>dependencies-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

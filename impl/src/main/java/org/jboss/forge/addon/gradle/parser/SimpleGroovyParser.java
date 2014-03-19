@@ -303,7 +303,7 @@ public class SimpleGroovyParser
             TupleExpression argumentsExpression, PreInvocationWithClosure node,
             String methodName)
    {
-      Expression argumentExpression = ((TupleExpression) argumentsExpression).getExpressions().get(0);
+      Expression argumentExpression = argumentsExpression.getExpressions().get(0);
 
       // In case argument expression is a map
       if (argumentExpression instanceof NamedArgumentListExpression)
@@ -356,7 +356,7 @@ public class SimpleGroovyParser
 
    private Map<String, String> mapFromMapEntryExpressions(List<MapEntryExpression> mapEntries)
    {
-      Map<String, String> map = new HashMap<String, String>();
+      Map<String, String> map = new HashMap<>();
       for (MapEntryExpression mapEntryExpression : mapEntries)
       {
          Expression keyExpression = mapEntryExpression.getKeyExpression();
@@ -380,7 +380,7 @@ public class SimpleGroovyParser
       }
       else if (isGString(expression))
       {
-         return (String) ((GStringExpression) expression).getText();
+         return ((GStringExpression) expression).getText();
       }
       throw new IllegalArgumentException("Given expression is neither String nor GString expression");
    }

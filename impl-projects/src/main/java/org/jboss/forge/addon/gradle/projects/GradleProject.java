@@ -9,28 +9,37 @@ package org.jboss.forge.addon.gradle.projects;
 import org.jboss.forge.addon.projects.AbstractProject;
 import org.jboss.forge.addon.projects.ProjectFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
+import org.jboss.forge.addon.resource.Resource;
 
 /**
  * @author Adam Wyłuda
  */
 public class GradleProject extends AbstractProject
 {
-   private final DirectoryResource root;
+   private final Resource<?> root;
 
-   public GradleProject(DirectoryResource root)
+   public GradleProject(Resource<?> target)
    {
-      this.root = root;
+      this.root = target;
    }
 
    @Override
    public DirectoryResource getRootDirectory()
    {
-      return root;
+      if (root instanceof DirectoryResource)
+         return (DirectoryResource) root;
+      throw new IllegalStateException("Project root [" + root + "] is not an instance of DirectoryResource");
    }
 
    @Override
    public <F extends ProjectFacet> boolean supports(F facet)
    {
       return true;
+   }
+
+   @Override
+   public Resource<?> getRoot()
+   {
+      return root;
    }
 }

@@ -25,7 +25,7 @@ import org.jboss.forge.addon.projects.ProvidedProjectFacet;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
-import org.jboss.forge.addon.resource.DirectoryResource;
+import org.jboss.forge.addon.resource.Resource;
 
 /**
  * @author Adam Wyłuda
@@ -42,7 +42,7 @@ public class GradleProjectProviderImpl implements GradleProjectProvider
    }
 
    @Override
-   public Project createProject(DirectoryResource targetDir)
+   public Project createProject(Resource<?> targetDir)
    {
       Project project = new GradleProject(targetDir);
 
@@ -58,15 +58,16 @@ public class GradleProjectProviderImpl implements GradleProjectProvider
    }
 
    @Override
-   public boolean containsProject(DirectoryResource resource)
+   public boolean containsProject(Resource<?> resource)
    {
-      return resource.getChild("build.gradle").exists();
+      Resource<?> buildGradle = resource.getChild("build.gradle");
+      return buildGradle != null && buildGradle.exists();
    }
 
    @Override
    public Set<Class<? extends ProvidedProjectFacet>> getProvidedFacetTypes()
    {
-      Set<Class<? extends ProvidedProjectFacet>> result = new HashSet<Class<? extends ProvidedProjectFacet>>();
+      Set<Class<? extends ProvidedProjectFacet>> result = new HashSet<>();
       result.add(GradleFacet.class);
       result.add(MetadataFacet.class);
       result.add(DependencyFacet.class);

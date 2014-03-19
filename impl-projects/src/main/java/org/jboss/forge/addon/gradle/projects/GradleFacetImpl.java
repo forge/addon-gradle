@@ -20,11 +20,11 @@ import org.jboss.forge.addon.gradle.projects.model.GradleModelLoadUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelMergeUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
 import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.addon.resource.ResourceFilter;
+import org.jboss.forge.addon.resource.WriteableResource;
 import org.jboss.forge.furnace.util.OperatingSystemUtils;
 
 import com.google.common.base.Strings;
@@ -85,7 +85,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public boolean executeTask(String task, String profile, String... arguments)
    {
-      return manager.runGradleBuild(getFaceted().getRootDirectory().getFullyQualifiedName(), task, profile, arguments);
+      return manager.runGradleBuild(getFaceted().getRoot().getFullyQualifiedName(), task, profile, arguments);
    }
 
    @Override
@@ -139,7 +139,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       }
 
       // Remove profile scripts if they are not apparent on the list
-      for (Resource<?> resource : getFaceted().getRootDirectory().listResources(new ResourceFilter()
+      for (Resource<?> resource : getFaceted().getRoot().listResources(new ResourceFilter()
       {
          @Override
          public boolean accept(Resource<?> resource)
@@ -170,14 +170,14 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    @Override
    public FileResource<?> getBuildScriptResource()
    {
-      return (FileResource<?>) getFaceted().getRootDirectory().getChild("build.gradle");
+      return (FileResource<?>) getFaceted().getRoot().getChild("build.gradle");
    }
 
    @SuppressWarnings("unchecked")
    @Override
    public FileResource<?> getSettingsScriptResource()
    {
-      return (FileResource<?>) resourceFactory.create(FileResource.class, new File(
+      return resourceFactory.create(FileResource.class, new File(
                getModel().getRootProjectPath(), "settings.gradle"));
    }
 
@@ -188,12 +188,12 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       {
          String script = getBuildScriptResource().getContents();
          String newScript = GradleSourceUtil.checkForIncludeForgeLibraryAndInstall(script);
-   
+
          // If Forge library is not included
          if (!script.equals(newScript))
          {
             getBuildScriptResource().setContents(newScript);
-            installForgeLibrary(getFaceted().getRootDirectory());
+            installForgeLibrary(getFaceted().getRoot());
          }
       }
    }
@@ -216,7 +216,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          {
             nonIntrusiveForgeLibraryInstall();
          }
-         
+
          runGradleInNonIntrusiveMode();
       }
 
@@ -263,8 +263,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 
    private String readForgeOutputAndClean()
    {
-      FileResource<?> forgeOutputFile = (FileResource<?>) getFaceted().getRootDirectory().getChild(
-               GradleSourceUtil.FORGE_OUTPUT_XML);
+      Resource<?> forgeOutputFile = getFaceted().getRoot().getChild(GradleSourceUtil.FORGE_OUTPUT_XML);
       String forgeOutput = forgeOutputFile.getContents();
       forgeOutputFile.delete();
 
@@ -273,7 +272,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
 
    private boolean isProjectForgeLibraryInstalled()
    {
-      return (((FileResource<?>) getFaceted().getRootDirectory().getChild(GradleSourceUtil.FORGE_LIBRARY)).exists()) &&
+      return (getFaceted().getRoot().getChild(GradleSourceUtil.FORGE_LIBRARY)).exists() &&
                GradleSourceUtil.checkForIncludeForgeLibrary(getBuildScriptResource().getContents());
    }
 
@@ -285,9 +284,9 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
                && resourceFactory.getFileOperations().fileExists(new File(libLocation));
    }
 
-   private FileResource<?> installForgeLibrary(DirectoryResource directory)
+   private Resource<?> installForgeLibrary(Resource<?> resource)
    {
-      FileResource<?> forgeLib = (FileResource<?>) directory.getChild(GradleSourceUtil.FORGE_LIBRARY);
+      WriteableResource<?, ?> forgeLib = (WriteableResource<?, ?>) resource.getChild(GradleSourceUtil.FORGE_LIBRARY);
       forgeLib.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
 
       return forgeLib;
@@ -296,19 +295,19 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
    private void nonIntrusiveForgeLibraryInstall()
    {
       File temporaryDir = OperatingSystemUtils.createTempDir();
-      FileResource<?> forgeLib = installForgeLibrary((DirectoryResource) resourceFactory.create(temporaryDir));
+      Resource<?> forgeLib = installForgeLibrary(resourceFactory.create(temporaryDir));
       configuration.setProperty(FORGE_LIBRARY_LOCATION_CONF_KEY, forgeLib.getFullyQualifiedName());
    }
 
    private void runGradleNormally()
    {
-      manager.runGradleBuild(getFaceted().getRootDirectory().getFullyQualifiedName(),
+      manager.runGradleBuild(getFaceted().getRoot().getFullyQualifiedName(),
                GradleSourceUtil.FORGE_OUTPUT_TASK, "");
    }
 
    private void runGradleInNonIntrusiveMode()
    {
-      manager.runGradleBuild(getFaceted().getRootDirectory().getFullyQualifiedName(),
+      manager.runGradleBuild(getFaceted().getRoot().getFullyQualifiedName(),
                GradleSourceUtil.FORGE_OUTPUT_TASK, "", "-I", configuration.getString(FORGE_LIBRARY_LOCATION_CONF_KEY));
    }
 }

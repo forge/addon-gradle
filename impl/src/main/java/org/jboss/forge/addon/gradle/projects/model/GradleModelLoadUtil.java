@@ -56,7 +56,7 @@ public class GradleModelLoadUtil
 
    private static List<GradleProfile> profilesFromNode(Node rootNode, Map<String, String> profileScriptMap)
    {
-      List<GradleProfile> profiles = new ArrayList<GradleProfile>();
+      List<GradleProfile> profiles = new ArrayList<>();
       for (Node profileNode : rootNode.get("profile"))
       {
          String name = profileNode.getSingle("name").getText().trim();
@@ -179,14 +179,14 @@ public class GradleModelLoadUtil
 
    private static List<GradleTask> tasksFromNode(Node projectNode)
    {
-      List<GradleTask> tasks = new ArrayList<GradleTask>();
-      Map<GradleTask, List<String>> taskDepsMap = new HashMap<GradleTask, List<String>>();
-      Map<String, GradleTask> taskByNameMap = new HashMap<String, GradleTask>();
+      List<GradleTask> tasks = new ArrayList<>();
+      Map<GradleTask, List<String>> taskDepsMap = new HashMap<>();
+      Map<String, GradleTask> taskByNameMap = new HashMap<>();
 
       for (Node taskNode : projectNode.getSingle("tasks").get("task"))
       {
          String name = taskNode.getSingle("name").getText().trim();
-         List<String> taskDeps = new ArrayList<String>();
+         List<String> taskDeps = new ArrayList<>();
          for (Node dependsOnNode : taskNode.getSingle("dependsOn").get("task"))
          {
             String text = dependsOnNode.getText().trim();
@@ -215,7 +215,7 @@ public class GradleModelLoadUtil
    {
       // Gradle string -> Best dependency
       // (one which has the biggest priority, determined by overrides relationship)
-      Map<String, GradleDependency> depByString = new HashMap<String, GradleDependency>();
+      Map<String, GradleDependency> depByString = new HashMap<>();
 
       for (Node depNode : projectNode.getSingle("dependencies").get("dependency"))
       {
@@ -235,14 +235,14 @@ public class GradleModelLoadUtil
          }
       }
 
-      List<GradleDependency> deps = new ArrayList<GradleDependency>();
+      List<GradleDependency> deps = new ArrayList<>();
       deps.addAll(depByString.values());
       return deps;
    }
 
    private static List<GradleDependency> managedDepsFromNode(Node projectNode)
    {
-      List<GradleDependency> deps = new ArrayList<GradleDependency>();
+      List<GradleDependency> deps = new ArrayList<>();
       for (Node depNode : projectNode.getSingle("managedDependencies").get("dependency"))
       {
          deps.add(depFromNode(depNode));
@@ -262,7 +262,7 @@ public class GradleModelLoadUtil
                .setName(name)
                .setVersion(version)
                .setConfigurationName(config);
-      
+
       depBuilder = loadClassifierAndPackagingFromNode(depBuilder, depNode);
       depBuilder = loadExcludedDependenciesFromNode(depBuilder, depNode);
 
@@ -275,17 +275,17 @@ public class GradleModelLoadUtil
    {
       Node artifactsNode = depNode.getSingle("artifacts");
       Node artifactNode = artifactsNode != null ? artifactsNode.getSingle("artifact") : null;
-      
+
       if (artifactNode != null)
       {
          String classifier = artifactNode.getSingle("classifier").getText().trim();
          String type = artifactNode.getSingle("type").getText().trim();
-         
+
          if (!Strings.isNullOrEmpty(classifier))
          {
             depBuilder = depBuilder.setClassifier(classifier);
          }
-         
+
          if (!Strings.isNullOrEmpty(type))
          {
             depBuilder = depBuilder.setPackaging(type);
@@ -294,18 +294,18 @@ public class GradleModelLoadUtil
 
       return depBuilder;
    }
-   
+
    private static GradleDependencyBuilder loadExcludedDependenciesFromNode(
             GradleDependencyBuilder depBuilder,
             Node depNode)
    {
       Node excludeRulesNode = depNode.getSingle("excludeRules");
-      
+
       if (excludeRulesNode == null)
       {
          return depBuilder;
       }
-      
+
       List<GradleDependency> excludedDependencies = Lists.newArrayList();
       for (Node excludeRuleNode : excludeRulesNode.get("excludeRule"))
       {
@@ -321,7 +321,7 @@ public class GradleModelLoadUtil
 
    private static List<GradlePlugin> pluginsFromNode(Node projectNode)
    {
-      List<GradlePlugin> plugins = new ArrayList<GradlePlugin>();
+      List<GradlePlugin> plugins = new ArrayList<>();
       for (Node pluginNode : projectNode.getSingle("plugins").get("plugin"))
       {
          plugins.add(pluginFromNode(pluginNode));
@@ -338,7 +338,7 @@ public class GradleModelLoadUtil
 
    private static List<GradleRepository> reposFromNode(Node projectNode)
    {
-      List<GradleRepository> repos = new ArrayList<GradleRepository>();
+      List<GradleRepository> repos = new ArrayList<>();
       for (Node repoNode : projectNode.getSingle("repositories").get("repository"))
       {
          String name = repoNode.getSingle("name").getText().trim();
@@ -352,7 +352,7 @@ public class GradleModelLoadUtil
 
    private static List<GradleSourceSet> sourceSetsFromNode(Node projectNode)
    {
-      List<GradleSourceSet> sourceSets = new ArrayList<GradleSourceSet>();
+      List<GradleSourceSet> sourceSets = new ArrayList<>();
       for (Node sourceSetNode : projectNode.getSingle("sourceSets").get("sourceSet"))
       {
          sourceSets.add(sourceSetFromNode(sourceSetNode));
@@ -363,12 +363,12 @@ public class GradleModelLoadUtil
    private static GradleSourceSet sourceSetFromNode(Node sourceSetNode)
    {
       String name = sourceSetNode.getSingle("name").getText().trim();
-      List<GradleSourceDirectory> javaSourceDirs = new ArrayList<GradleSourceDirectory>();
+      List<GradleSourceDirectory> javaSourceDirs = new ArrayList<>();
       for (Node directoryNode : sourceSetNode.getSingle("java").get("directory"))
       {
          javaSourceDirs.add(sourceDirectoryFromNode(directoryNode));
       }
-      List<GradleSourceDirectory> resourceSourceDirs = new ArrayList<GradleSourceDirectory>();
+      List<GradleSourceDirectory> resourceSourceDirs = new ArrayList<>();
       for (Node directoryNode : sourceSetNode.getSingle("resources").get("directory"))
       {
          resourceSourceDirs.add(sourceDirectoryFromNode(directoryNode));
