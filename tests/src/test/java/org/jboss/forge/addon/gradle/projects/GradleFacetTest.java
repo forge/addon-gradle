@@ -72,29 +72,29 @@ public class GradleFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES);
       facet = project.getFacet(GradleFacet.class);
    }
-   
+
    @Test
    public void testInstallForgeLibrary()
    {
       facet.installForgeLibrary();
-      assertTrue(((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
+      assertTrue(((FileResource<?>) resourceFactory.create(new File(project.getRoot()
                .getFullyQualifiedName(), GradleSourceUtil.FORGE_LIBRARY))).exists());
    }
-   
+
    @Test
    public void testNonIntrusiveMode()
    {
       facet.getModel();
-      assertFalse(((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
+      assertFalse(((FileResource<?>) resourceFactory.create(new File(project.getRoot()
                .getFullyQualifiedName(), GradleSourceUtil.FORGE_LIBRARY))).exists());
       assertFalse(GradleSourceUtil.checkForIncludeForgeLibrary(facet.getBuildScriptResource().getContents()));
    }
-   
+
    @Test
    public void testForgeOutputCleanUp()
    {
       facet.getModel();
-      assertFalse(((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
+      assertFalse(((FileResource<?>) resourceFactory.create(new File(project.getRoot()
                .getFullyQualifiedName(), GradleSourceUtil.FORGE_OUTPUT_XML))).exists());
    }
 
@@ -157,7 +157,7 @@ public class GradleFacetTest
    {
       facet.installForgeLibrary();
       assertTrue(facet.executeTask("someOutput"));
-      String output = ((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
+      String output = ((FileResource<?>) resourceFactory.create(new File(project.getRoot()
                .getFullyQualifiedName(), "output.txt"))).getContents();
       assertEquals("XYZ", output);
    }
@@ -167,7 +167,7 @@ public class GradleFacetTest
    {
       facet.installForgeLibrary();
       assertTrue(facet.executeTask("testProfileOutput", "test"));
-      String output = ((FileResource<?>) resourceFactory.create(new File(project.getRootDirectory()
+      String output = ((FileResource<?>) resourceFactory.create(new File(project.getRoot()
                .getFullyQualifiedName(), "testOutput.txt"))).getContents();
       assertEquals("TEST", output);
    }

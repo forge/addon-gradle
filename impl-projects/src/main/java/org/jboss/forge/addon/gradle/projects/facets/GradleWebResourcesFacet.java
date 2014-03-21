@@ -33,6 +33,7 @@ import org.jboss.forge.addon.resource.visit.ResourceVisitor;
 public class GradleWebResourcesFacet extends AbstractFacet<Project> implements WebResourcesFacet
 {
 
+   @SuppressWarnings("deprecation")
    @Override
    public DirectoryResource getWebRootDirectory()
    {

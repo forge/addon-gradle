@@ -103,7 +103,7 @@ public class GradlePackagingFacetTest
       FileResource<?> archive = (FileResource<?>) facet.createBuilder().runTests(true).build();
       assertEquals("archiveX.war", archive.getName());
       assertTrue(archive.exists());
-      assertTrue(project.getRootDirectory().getChild("test.log").exists());
+      assertTrue(project.getRoot().getChild("test.log").exists());
    }
 
    @Test
@@ -113,7 +113,7 @@ public class GradlePackagingFacetTest
       FileResource<?> archive = (FileResource<?>) facet.createBuilder().runTests(false).build();
       assertEquals("archiveX.war", archive.getName());
       assertTrue(archive.exists());
-      assertFalse(project.getRootDirectory().getChild("test.log").exists());
+      assertFalse(project.getRoot().getChild("test.log").exists());
    }
 
    @Test

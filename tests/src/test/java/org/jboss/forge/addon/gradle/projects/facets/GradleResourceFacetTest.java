@@ -97,6 +97,7 @@ public class GradleResourceFacetTest
       ProjectAssert.assertDirectoryIsOneOf(dir, "src/test/resources", "src/test/templates");
    }
 
+   @SuppressWarnings("deprecation")
    @Test
    public void testCreateResource()
    {
@@ -106,6 +107,7 @@ public class GradleResourceFacetTest
       assertEquals("RESOURCE", res.getContents());
    }
 
+   @SuppressWarnings("deprecation")
    @Test
    public void testCreateTestResource()
    {

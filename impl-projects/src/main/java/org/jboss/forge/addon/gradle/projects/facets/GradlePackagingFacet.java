@@ -58,7 +58,7 @@ public class GradlePackagingFacet extends AbstractFacet<Project> implements Pack
    @Override
    public Resource<?> getFinalArtifact()
    {
-      return getFaceted().getRootDirectory().getChild(getGradleFacet().getModel().getArchivePath());
+      return getFaceted().getRoot().getChild(getGradleFacet().getModel().getArchivePath());
    }
 
    @Override
@@ -127,7 +127,7 @@ public class GradlePackagingFacet extends AbstractFacet<Project> implements Pack
    public void setFinalName(String finalName)
    {
       getGradleFacet().installForgeLibrary();
-      
+
       GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
       model.setArchiveName(finalName);
       getGradleFacet().setModel(model);
