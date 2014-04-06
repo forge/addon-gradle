@@ -39,7 +39,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
             "repositories {\n" +
             "    mavenCentral()\n" +
             "}\n";
-   private static final String FORGE_LIBRARY_LOCATION_CONF_KEY = "forgeLibraryLocation";
+   private static final String FORGE_OUTPUT_LIBRARY_LOCATION_CONF_KEY = "forgeOutputLibraryLocation";
 
    @Inject
    private GradleManager manager;
@@ -61,10 +61,6 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          {
             getBuildScriptResource().createNewFile();
             getBuildScriptResource().setContents(INITIAL_BUILD_FILE_CONTENTS);
-         }
-         if (!getSettingsScriptResource().exists())
-         {
-            getSettingsScriptResource().createNewFile();
          }
       }
       return isInstalled();
@@ -109,7 +105,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       // If we need to change model name then it must be done in settings.gradle
       if (!this.model.getName().equals(newModel.getName()))
       {
-         String settingsScript = getSettingsScriptResource().getContents();
+         String settingsScript = getSettingsScriptResource().exists() ? getSettingsScriptResource().getContents() : "";
          // Because setting project name in model also changes the project path
          // we must take project path from old model
          settingsScript = GradleSourceUtil.setProjectName(settingsScript, this.model.getProjectPath(),
@@ -193,32 +189,26 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          if (!script.equals(newScript))
          {
             getBuildScriptResource().setContents(newScript);
-            installForgeLibrary(getFaceted().getRoot());
          }
+         
+         installFileFromResources(getFaceted().getRoot(), GradleSourceUtil.FORGE_LIBRARY, GradleSourceUtil.FORGE_LIBRARY_RESOURCE);
       }
    }
 
    @Override
    public boolean isForgeLibraryInstalled()
    {
-      return isProjectForgeLibraryInstalled();
+      return (getFaceted().getRoot().getChild(GradleSourceUtil.FORGE_LIBRARY)).exists() &&
+               GradleSourceUtil.checkForIncludeForgeLibrary(getBuildScriptResource().getContents());
    }
 
    private void loadModel()
    {
-      if (isProjectForgeLibraryInstalled())
+      if (!isForgeOutputLibraryInstalled())
       {
-         runGradleNormally();
+         installForgeOutputLibrary();
       }
-      else
-      {
-         if (!isTemporaryForgeLibraryInstalled())
-         {
-            nonIntrusiveForgeLibraryInstall();
-         }
-
-         runGradleInNonIntrusiveMode();
-      }
+      runGradleWithForgeOutputLibrary();
 
       String forgeOutput = readForgeOutputAndClean();
 
@@ -270,44 +260,34 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       return forgeOutput;
    }
 
-   private boolean isProjectForgeLibraryInstalled()
+   private boolean isForgeOutputLibraryInstalled()
    {
-      return (getFaceted().getRoot().getChild(GradleSourceUtil.FORGE_LIBRARY)).exists() &&
-               GradleSourceUtil.checkForIncludeForgeLibrary(getBuildScriptResource().getContents());
-   }
-
-   private boolean isTemporaryForgeLibraryInstalled()
-   {
-      String libLocation = configuration.getString(FORGE_LIBRARY_LOCATION_CONF_KEY);
+      String libLocation = configuration.getString(FORGE_OUTPUT_LIBRARY_LOCATION_CONF_KEY);
 
       return !Strings.isNullOrEmpty(libLocation)
                && resourceFactory.getFileOperations().fileExists(new File(libLocation));
    }
 
-   private Resource<?> installForgeLibrary(Resource<?> resource)
+   private Resource<?> installFileFromResources(Resource<?> targetDirectory, String targetFileName,
+            String resourceFileName)
    {
-      WriteableResource<?, ?> forgeLib = (WriteableResource<?, ?>) resource.getChild(GradleSourceUtil.FORGE_LIBRARY);
-      forgeLib.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
+      WriteableResource<?, ?> forgeLib = (WriteableResource<?, ?>) targetDirectory.getChild(targetFileName);
+      forgeLib.setContents(getClass().getResourceAsStream(resourceFileName));
 
       return forgeLib;
    }
 
-   private void nonIntrusiveForgeLibraryInstall()
+   private void installForgeOutputLibrary()
    {
       File temporaryDir = OperatingSystemUtils.createTempDir();
-      Resource<?> forgeLib = installForgeLibrary(resourceFactory.create(temporaryDir));
-      configuration.setProperty(FORGE_LIBRARY_LOCATION_CONF_KEY, forgeLib.getFullyQualifiedName());
+      Resource<?> forgeLib = installFileFromResources(resourceFactory.create(temporaryDir),
+               GradleSourceUtil.FORGE_OUTPUT_LIBRARY, GradleSourceUtil.FORGE_OUTPUT_LIBRARY_RESOURCE);
+      configuration.setProperty(FORGE_OUTPUT_LIBRARY_LOCATION_CONF_KEY, forgeLib.getFullyQualifiedName());
    }
 
-   private void runGradleNormally()
+   private void runGradleWithForgeOutputLibrary()
    {
       manager.runGradleBuild(getFaceted().getRoot().getFullyQualifiedName(),
-               GradleSourceUtil.FORGE_OUTPUT_TASK, "");
-   }
-
-   private void runGradleInNonIntrusiveMode()
-   {
-      manager.runGradleBuild(getFaceted().getRoot().getFullyQualifiedName(),
-               GradleSourceUtil.FORGE_OUTPUT_TASK, "", "-I", configuration.getString(FORGE_LIBRARY_LOCATION_CONF_KEY));
+               GradleSourceUtil.FORGE_OUTPUT_TASK, "", "-I", configuration.getString(FORGE_OUTPUT_LIBRARY_LOCATION_CONF_KEY));
    }
 }

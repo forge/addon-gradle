@@ -58,20 +58,14 @@ public class GradleDependencyFacetTest
                GradleTestProjectProvider.SIMPLE_RESOURCES);
    }
 
-   private static GradleTestProjectProvider projectProvider;
-
    @Inject
-   private GradleTestProjectProvider injectedProjectProvider;
+   private GradleTestProjectProvider projectProvider;
    private Project project;
    private DependencyFacet facet;
 
    @Before
    public void setUp()
    {
-      if (projectProvider == null)
-      {
-         projectProvider = injectedProjectProvider;
-      }
       project = projectProvider.create("",
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);

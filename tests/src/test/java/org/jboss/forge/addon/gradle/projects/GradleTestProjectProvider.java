@@ -8,6 +8,7 @@ package org.jboss.forge.addon.gradle.projects;
 
 import javax.inject.Inject;
 
+import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
@@ -102,5 +103,9 @@ public class GradleTestProjectProvider
          resourceFile.createNewFile();
          resourceFile.setContents(getClass().getResourceAsStream("/" + resourcesPath + resource));
       }
+
+      FileResource<?> resourceFile = projectDir.getChild(GradleSourceUtil.FORGE_LIBRARY).reify(FileResource.class);
+      resourceFile.createNewFile();
+      resourceFile.setContents(getClass().getResourceAsStream(GradleSourceUtil.FORGE_LIBRARY_RESOURCE));
    }
 }

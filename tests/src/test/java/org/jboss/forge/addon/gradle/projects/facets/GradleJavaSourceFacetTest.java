@@ -59,14 +59,14 @@ public class GradleJavaSourceFacetTest
    }
 
    @Inject
-   private GradleTestProjectProvider injectedProjectProvider;
+   private GradleTestProjectProvider projectProvider;
    private Project project;
    private JavaSourceFacet facet;
 
    @Before
    public void setUp()
    {
-      project = injectedProjectProvider.create("",
+      project = projectProvider.create("",
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
                GradleTestProjectProvider.SIMPLE_RESOURCES);
       facet = project.getFacet(JavaSourceFacet.class);

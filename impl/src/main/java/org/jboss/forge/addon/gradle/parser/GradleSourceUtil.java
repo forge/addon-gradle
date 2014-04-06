@@ -30,7 +30,9 @@ import org.jboss.forge.furnace.util.Strings;
 public class GradleSourceUtil
 {
    public static final String FORGE_LIBRARY = "forge.gradle";
+   public static final String FORGE_OUTPUT_LIBRARY = "/forgeOutput.gradle";
    public static final String FORGE_LIBRARY_RESOURCE = "/forge.gradle";
+   public static final String FORGE_OUTPUT_LIBRARY_RESOURCE = "/forgeOutput.gradle";
    public static final String FORGE_OUTPUT_TASK = "forgeOutput";
    public static final String FORGE_OUTPUT_XML = "forge-output.xml";
    public static final String PROFILE_SUFFIX = "-profile.gradle";
