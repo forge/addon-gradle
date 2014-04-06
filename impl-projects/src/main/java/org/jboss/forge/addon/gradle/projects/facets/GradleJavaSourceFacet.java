@@ -26,7 +26,7 @@ import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFilter;
 import org.jboss.forge.addon.resource.visit.ResourceVisit;
 import org.jboss.forge.furnace.util.Strings;
-import org.jboss.forge.parser.java.JavaSource;
+import org.jboss.forge.roaster.model.source.*;
 
 /**
  * @author Adam Wyłuda

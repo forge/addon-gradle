@@ -19,7 +19,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.gradle.projects.GradleTestProjectProvider;
 import org.jboss.forge.addon.gradle.projects.ProjectAssert;
-import org.jboss.forge.addon.parser.java.JavaSourceFactory;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.parser.java.resources.JavaResource;
 import org.jboss.forge.addon.parser.java.resources.JavaResourceVisitor;
@@ -29,8 +28,10 @@ import org.jboss.forge.addon.resource.visit.VisitContext;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.jboss.forge.parser.java.JavaClass;
-import org.jboss.forge.parser.java.JavaSource;
+import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.MemberHolder;
+import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.JavaSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,9 +62,6 @@ public class GradleJavaSourceFacetTest
    private GradleTestProjectProvider injectedProjectProvider;
    private Project project;
    private JavaSourceFacet facet;
-
-   @Inject
-   private JavaSourceFactory factory;
 
    @Before
    public void setUp()
@@ -133,7 +131,7 @@ public class GradleJavaSourceFacetTest
    @Test
    public void testSaveJavaSource() throws FileNotFoundException
    {
-      JavaSource<JavaClass> source = factory.create(JavaClass.class);
+      JavaSource<JavaClassSource> source = Roaster.create(JavaClassSource.class);
       source.setName("ServiceImpl");
       source.setPackage("org.testproject.impl");
       source.setPublic();
@@ -141,15 +139,15 @@ public class GradleJavaSourceFacetTest
 
       JavaResource res = facet.getJavaResource("org/testproject/impl/ServiceImpl.java");
       assertTrue(res.exists());
-      assertEquals("ServiceImpl", res.getJavaSource().getName());
-      assertEquals("org.testproject.impl", res.getJavaSource().getPackage());
-      assertTrue(res.getJavaSource().isPublic());
+      assertEquals("ServiceImpl", res.getJavaType().getName());
+      assertEquals("org.testproject.impl", res.getJavaType().getPackage());
+      assertTrue(res.getJavaType().isPublic());
    }
 
    @Test
    public void testSaveTestJavaSource() throws FileNotFoundException
    {
-      JavaSource<JavaClass> source = factory.create(JavaClass.class);
+      JavaSource<JavaClassSource> source = Roaster.create(JavaClassSource.class);
       source.setName("ServiceImplTest");
       source.setPackage("org.testproject.impl.tests");
       source.setPackagePrivate();
@@ -157,9 +155,9 @@ public class GradleJavaSourceFacetTest
 
       JavaResource res = facet.getTestJavaResource("org/testproject/impl/tests/ServiceImplTest.java");
       assertTrue(res.exists());
-      assertEquals("ServiceImplTest", res.getJavaSource().getName());
-      assertEquals("org.testproject.impl.tests", res.getJavaSource().getPackage());
-      assertTrue(res.getJavaSource().isPackagePrivate());
+      assertEquals("ServiceImplTest", res.getJavaType().getName());
+      assertEquals("org.testproject.impl.tests", res.getJavaType().getPackage());
+      assertTrue(res.getJavaType().isPackagePrivate());
    }
 
    @Test
@@ -167,8 +165,8 @@ public class GradleJavaSourceFacetTest
    {
       JavaResource res = facet.getJavaResource("org/testproject/Service.java");
       assertTrue(res.exists());
-      assertEquals(1, res.getJavaSource().getMembers().size());
-      assertEquals("someMethod", res.getJavaSource().getMembers().get(0).getName());
+      assertEquals(1, ((MemberHolder<?>)res.getJavaType()).getMembers().size());
+      assertEquals("someMethod", ((MemberHolder<?>)res.getJavaType()).getMembers().get(0).getName());
    }
 
    @Test
@@ -176,8 +174,8 @@ public class GradleJavaSourceFacetTest
    {
       JavaResource res = facet.getTestJavaResource("org/testproject/TestMainClass.java");
       assertTrue(res.exists());
-      assertEquals(1, res.getJavaSource().getMembers().size());
-      assertEquals("main", res.getJavaSource().getMembers().get(0).getName());
+      assertEquals(1, ((MemberHolder<?>)res.getJavaType()).getMembers().size());
+      assertEquals("main", ((MemberHolder<?>)res.getJavaType()).getMembers().get(0).getName());
    }
 
    @Test
@@ -196,7 +194,7 @@ public class GradleJavaSourceFacetTest
          {
             try
             {
-               if (javaResource.getJavaSource().getName().equals("Service"))
+               if (javaResource.getJavaType().getName().equals("Service"))
                {
                   holder.value = true;
                }
@@ -230,7 +228,7 @@ public class GradleJavaSourceFacetTest
          {
             try
             {
-               if (javaResource.getJavaSource().getName().equals("TestMainClass"))
+               if (javaResource.getJavaType().getName().equals("TestMainClass"))
                {
                   holder.value = true;
                }
