@@ -46,4 +46,25 @@ public class GradleJavaCompilerFacet extends AbstractFacet<Project> implements J
       return model.hasPlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.JAVA.getClazz()));
    }
 
+   @Override public void setSourceCompilerVersion(CompilerVersion version)
+   {
+      // Leave it empty as the Gradle facet doesn't set Java compiler version
+   }
+
+   @Override public void setTargetCompilerVersion(CompilerVersion version)
+   {
+      // Leave it empty as the Gradle facet doesn't set Java compiler version
+   }
+
+   @Override public CompilerVersion getSourceCompilerVersion()
+   {
+      // The Gradle facet doesn't support working with Java compiler version
+      return DEFAULT_COMPILER_VERSION;
+   }
+
+   @Override public CompilerVersion getTargetCompilerVersion()
+   {
+      // The Gradle facet doesn't support working with Java compiler version
+      return DEFAULT_COMPILER_VERSION;
+   }
 }
