@@ -190,7 +190,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
          {
             getBuildScriptResource().setContents(newScript);
          }
-         
+
          installFileFromResources(getFaceted().getRoot(), GradleSourceUtil.FORGE_LIBRARY, GradleSourceUtil.FORGE_LIBRARY_RESOURCE);
       }
    }
@@ -265,7 +265,7 @@ public class GradleFacetImpl extends AbstractFacet<Project> implements GradleFac
       String libLocation = configuration.getString(FORGE_OUTPUT_LIBRARY_LOCATION_CONF_KEY);
 
       return !Strings.isNullOrEmpty(libLocation)
-               && resourceFactory.getFileOperations().fileExists(new File(libLocation));
+               && resourceFactory.create(new File(libLocation)).exists();
    }
 
    private Resource<?> installFileFromResources(Resource<?> targetDirectory, String targetFileName,
