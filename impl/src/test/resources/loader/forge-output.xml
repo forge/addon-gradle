@@ -13,7 +13,7 @@
             :
         </projectPath>
         <rootProjectDirectory>
-            C:\Users\Adam\git\gradle\impl\src\test\resources\loader
+            C:\Users\Adam\forge-workspace\addon-gradle\impl\src\test\resources\loader
         </rootProjectDirectory>
         <packaging>
             jar
@@ -21,21 +21,27 @@
         <archivePath>
             build/libs/Gradle Test Project-0.1-SNAPSHOT.jar
         </archivePath>
+        <sourceCompatibility>
+            1.6
+        </sourceCompatibility>
+        <targetCompatibility>
+            1.7
+        </targetCompatibility>
         <properties>
-            <property>
-                <key>
-                    someProperty
-                </key>
-                <value>
-                    testMe
-                </value>
-            </property>
             <property>
                 <key>
                     otherProperty
                 </key>
                 <value>
                     xyz
+                </value>
+            </property>
+            <property>
+                <key>
+                    someProperty
+                </key>
+                <value>
+                    testMe
                 </value>
             </property>
         </properties>
@@ -56,10 +62,10 @@
                 </name>
                 <dependsOn>
                     <task>
-                        assemble
+                        check
                     </task>
                     <task>
-                        check
+                        assemble
                     </task>
                 </dependsOn>
             </task>
@@ -99,16 +105,13 @@
                 </name>
                 <dependsOn>
                     <task>
-                        compileScala
-                    </task>
-                    <task>
-                        compileGroovy
+                        processResources
                     </task>
                     <task>
                         compileJava
                     </task>
                     <task>
-                        processResources
+                        compileGroovy
                     </task>
                 </dependsOn>
             </task>
@@ -125,13 +128,13 @@
                 </name>
                 <dependsOn>
                     <task>
+                        cleanEclipseJdt
+                    </task>
+                    <task>
                         cleanEclipseClasspath
                     </task>
                     <task>
                         cleanEclipseProject
-                    </task>
-                    <task>
-                        cleanEclipseJdt
                     </task>
                 </dependsOn>
             </task>
@@ -175,16 +178,6 @@
             </task>
             <task>
                 <name>
-                    compileScala
-                </name>
-                <dependsOn>
-                    <task>
-                        compileJava
-                    </task>
-                </dependsOn>
-            </task>
-            <task>
-                <name>
                     compileTestGroovy
                 </name>
                 <dependsOn>
@@ -208,30 +201,17 @@
             </task>
             <task>
                 <name>
-                    compileTestScala
-                </name>
-                <dependsOn>
-                    <task>
-                        classes
-                    </task>
-                    <task>
-                        compileTestJava
-                    </task>
-                </dependsOn>
-            </task>
-            <task>
-                <name>
                     eclipse
                 </name>
                 <dependsOn>
+                    <task>
+                        eclipseClasspath
+                    </task>
                     <task>
                         eclipseProject
                     </task>
                     <task>
                         eclipseJdt
-                    </task>
-                    <task>
-                        eclipseClasspath
                     </task>
                 </dependsOn>
             </task>
@@ -309,39 +289,6 @@
             </task>
             <task>
                 <name>
-                    scalaConsole
-                </name>
-                <dependsOn>
-                    <task>
-                        classes
-                    </task>
-                </dependsOn>
-            </task>
-            <task>
-                <name>
-                    scalaTestConsole
-                </name>
-                <dependsOn>
-                    <task>
-                        testClasses
-                    </task>
-                    <task>
-                        classes
-                    </task>
-                </dependsOn>
-            </task>
-            <task>
-                <name>
-                    scaladoc
-                </name>
-                <dependsOn>
-                    <task>
-                        classes
-                    </task>
-                </dependsOn>
-            </task>
-            <task>
-                <name>
                     test
                 </name>
                 <dependsOn>
@@ -359,16 +306,13 @@
                 </name>
                 <dependsOn>
                     <task>
-                        compileTestJava
+                        compileTestGroovy
                     </task>
                     <task>
                         processTestResources
                     </task>
                     <task>
-                        compileTestScala
-                    </task>
-                    <task>
-                        compileTestGroovy
+                        compileTestJava
                     </task>
                 </dependsOn>
             </task>
@@ -1013,16 +957,6 @@
             </plugin>
             <plugin>
                 <class>
-                    org.gradle.api.plugins.scala.ScalaBasePlugin
-                </class>
-            </plugin>
-            <plugin>
-                <class>
-                    org.gradle.api.plugins.scala.ScalaPlugin
-                </class>
-            </plugin>
-            <plugin>
-                <class>
                     org.gradle.plugins.ide.eclipse.EclipsePlugin
                 </class>
             </plugin>
@@ -1081,7 +1015,7 @@
                 :
             </projectPath>
             <rootProjectDirectory>
-                C:\Users\Adam\git\gradle\impl\src\test\resources\loader
+                C:\Users\Adam\forge-workspace\addon-gradle\impl\src\test\resources\loader
             </rootProjectDirectory>
             <packaging>
                 
@@ -1089,21 +1023,27 @@
             <archivePath>
                 
             </archivePath>
+            <sourceCompatibility>
+                1.6
+            </sourceCompatibility>
+            <targetCompatibility>
+                1.7
+            </targetCompatibility>
             <properties>
-                <property>
-                    <key>
-                        someProperty
-                    </key>
-                    <value>
-                        testMe
-                    </value>
-                </property>
                 <property>
                     <key>
                         otherProperty
                     </key>
                     <value>
                         xyz
+                    </value>
+                </property>
+                <property>
+                    <key>
+                        someProperty
+                    </key>
+                    <value>
+                        testMe
                     </value>
                 </property>
             </properties>
@@ -1236,7 +1176,7 @@
                 :
             </projectPath>
             <rootProjectDirectory>
-                C:\Users\Adam\git\gradle\impl\src\test\resources\loader
+                C:\Users\Adam\forge-workspace\addon-gradle\impl\src\test\resources\loader
             </rootProjectDirectory>
             <packaging>
                 
@@ -1244,21 +1184,27 @@
             <archivePath>
                 
             </archivePath>
+            <sourceCompatibility>
+                1.6
+            </sourceCompatibility>
+            <targetCompatibility>
+                1.7
+            </targetCompatibility>
             <properties>
-                <property>
-                    <key>
-                        someProperty
-                    </key>
-                    <value>
-                        testMe
-                    </value>
-                </property>
                 <property>
                     <key>
                         otherProperty
                     </key>
                     <value>
                         xyz
+                    </value>
+                </property>
+                <property>
+                    <key>
+                        someProperty
+                    </key>
+                    <value>
+                        testMe
                     </value>
                 </property>
             </properties>

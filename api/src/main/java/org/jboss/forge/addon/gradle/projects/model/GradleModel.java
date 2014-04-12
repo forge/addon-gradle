@@ -65,6 +65,16 @@ public interface GradleModel
     * Returns path to the output archive.
     */
    String getArchivePath();
+   
+   /**
+    * Returns version compatibility for Java sources.
+    */
+   String getSourceCompatibility();
+   
+   /**
+    * Returns target version of generated binaries.
+    */
+   String getTargetCompatiblity();
 
    /**
     * Returns list of tasks defined in the project.

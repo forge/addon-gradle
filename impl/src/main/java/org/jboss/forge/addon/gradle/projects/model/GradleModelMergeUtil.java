@@ -45,6 +45,14 @@ public class GradleModelMergeUtil
       {
          source = setPackaging(source, newModel.getPackaging());
       }
+      if (!newModel.getSourceCompatibility().equals(oldModel.getSourceCompatibility()))
+      {
+         source = setSourceCompatibility(source, newModel.getSourceCompatibility());
+      }
+      if (!newModel.getTargetCompatiblity().equals(oldModel.getTargetCompatiblity()))
+      {
+         source = setTargetCompatibility(source, newModel.getTargetCompatiblity());
+      }
 
       source = addTasks(source, newModel.getTasks());
 
@@ -70,20 +78,27 @@ public class GradleModelMergeUtil
 
    private static String setGroup(String source, String group)
    {
-      source = GradleSourceUtil.setProperty(source, "group", group);
-      return source;
+      return GradleSourceUtil.setProperty(source, "group", group);
    }
 
    private static String setVersion(String source, String version)
    {
-      source = GradleSourceUtil.setProperty(source, "version", version);
-      return source;
+      return GradleSourceUtil.setProperty(source, "version", version);
    }
 
    private static String setArchiveName(String source, String archiveName)
    {
-      source = GradleSourceUtil.setArchiveName(source, archiveName);
-      return source;
+      return GradleSourceUtil.setArchiveName(source, archiveName);
+   }
+   
+   private static String setSourceCompatibility(String source, String sourceCompatibility)
+   {
+      return GradleSourceUtil.setProperty(source, "sourceCompatibility", sourceCompatibility);
+   }
+   
+   private static String setTargetCompatibility(String source, String targetCompatibility)
+   {
+      return GradleSourceUtil.setProperty(source, "targetCompatibility", targetCompatibility);
    }
 
    private static String setPackaging(String source, String packaging)

@@ -97,6 +97,12 @@ allprojects {
                 "$buildDir.name/$libsDirName/$_assembleArchiveTask.archiveName"
             : ''
             outputDec '</archivePath>'
+            outputInc '<sourceCompatibility>'
+            output p.sourceCompatibility
+            outputDec '</sourceCompatibility>'
+            outputInc '<targetCompatibility>'
+            output p.targetCompatibility
+            outputDec '</targetCompatibility>'
             outputInc '<properties>'
             project.ext.properties.each { key, value ->
                 if (key instanceof String && value instanceof String) {

@@ -87,6 +87,13 @@ public class GradleModelLoadUtilTest
    {
       assertEquals("build/libs/Gradle Test Project-0.1-SNAPSHOT.jar", model.getArchivePath());
    }
+   
+   @Test
+   public void testSourceAndTargetCompatibility()
+   {
+      assertEquals("1.6", model.getSourceCompatibility());
+      assertEquals("1.7", model.getTargetCompatiblity());
+   }
 
    @Test
    public void testEffectiveTasks()
@@ -249,8 +256,6 @@ public class GradleModelLoadUtilTest
                model.hasEffectivePlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.JAVA.getClazz())));
       assertTrue("There is no groovy plugin",
                model.hasEffectivePlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.GROOVY.getClazz())));
-      assertTrue("There is no scala plugin",
-               model.hasEffectivePlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.SCALA.getClazz())));
       assertTrue("There is no eclipse plugin",
                model.hasEffectivePlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.ECLIPSE.getClazz())));
    }

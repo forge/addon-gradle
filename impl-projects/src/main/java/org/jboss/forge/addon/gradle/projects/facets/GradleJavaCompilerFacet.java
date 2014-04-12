@@ -30,9 +30,9 @@ public class GradleJavaCompilerFacet extends AbstractFacet<Project> implements J
       if (!this.isInstalled())
       {
          GradleModelBuilder model = GradleModelBuilder.create(getFaceted().getFacet(GradleFacet.class).getModel());
-         if (!model.hasPlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.JAVA.getClazz())))
+         if (!model.hasPlugin(GradlePluginBuilder.create(GradlePluginType.JAVA)))
          {
-            model.addPlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.JAVA.getShortName()));
+            model.addPlugin(GradlePluginBuilder.create(GradlePluginType.JAVA));
             getFaceted().getFacet(GradleFacet.class).setModel(model);
          }
       }
@@ -43,28 +43,39 @@ public class GradleJavaCompilerFacet extends AbstractFacet<Project> implements J
    public boolean isInstalled()
    {
       GradleModelBuilder model = GradleModelBuilder.create(getFaceted().getFacet(GradleFacet.class).getModel());
-      return model.hasPlugin(GradlePluginBuilder.create().setClazz(GradlePluginType.JAVA.getClazz()));
+      return model.hasPlugin(GradlePluginBuilder.create(GradlePluginType.JAVA));
    }
 
-   @Override public void setSourceCompilerVersion(CompilerVersion version)
+   @Override
+   public void setSourceCompilerVersion(CompilerVersion version)
    {
-      // Leave it empty as the Gradle facet doesn't set Java compiler version
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.setSourceCompatibility(version.toString());
+      getGradleFacet().setModel(model);
    }
 
-   @Override public void setTargetCompilerVersion(CompilerVersion version)
+   @Override
+   public void setTargetCompilerVersion(CompilerVersion version)
    {
-      // Leave it empty as the Gradle facet doesn't set Java compiler version
+      GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
+      model.setTargetCompatibility(version.toString());
+      getGradleFacet().setModel(model);
    }
 
-   @Override public CompilerVersion getSourceCompilerVersion()
+   @Override
+   public CompilerVersion getSourceCompilerVersion()
    {
-      // The Gradle facet doesn't support working with Java compiler version
-      return DEFAULT_COMPILER_VERSION;
+      return CompilerVersion.getValue(getGradleFacet().getModel().getSourceCompatibility());
    }
 
-   @Override public CompilerVersion getTargetCompilerVersion()
+   @Override
+   public CompilerVersion getTargetCompilerVersion()
    {
-      // The Gradle facet doesn't support working with Java compiler version
-      return DEFAULT_COMPILER_VERSION;
+      return CompilerVersion.getValue(getGradleFacet().getModel().getTargetCompatiblity());
+   }
+
+   private GradleFacet getGradleFacet()
+   {
+      return getFaceted().getFacet(GradleFacet.class);
    }
 }

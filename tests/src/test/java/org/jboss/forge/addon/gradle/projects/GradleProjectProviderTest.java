@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
  * @author Adam Wyłuda
  */
 @RunWith(Arquillian.class)
-public class GradleJavaProjectTypeTest
+public class GradleProjectProviderTest
 {
    @Deployment
    @Dependencies({

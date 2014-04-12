@@ -119,6 +119,8 @@ public class GradleModelLoadUtil
       builder.setPackaging(packagingFromNode(projectNode));
       builder.setArchivePath(archivePathFromNode(projectNode));
       builder.setArchiveName(archiveNameFromPath(builder.getArchivePath()));
+      builder.setSourceCompatibility(sourceCompatibilityFromNode(projectNode));
+      builder.setTargetCompatibility(targetCompatibilityFromNode(projectNode));
       builder.setProjectPath(projectPathFromNode(projectNode));
       builder.setRootProjectPath(rootProjectPathFromNode(projectNode));
       builder.setEffectiveTasks(tasksFromNode(projectNode));
@@ -175,6 +177,16 @@ public class GradleModelLoadUtil
       {
          return "";
       }
+   }
+
+   private static String sourceCompatibilityFromNode(Node projectNode)
+   {
+      return projectNode.getSingle("sourceCompatibility").getText().trim();
+   }
+
+   private static String targetCompatibilityFromNode(Node projectNode)
+   {
+      return projectNode.getSingle("targetCompatibility").getText().trim();
    }
 
    private static List<GradleTask> tasksFromNode(Node projectNode)

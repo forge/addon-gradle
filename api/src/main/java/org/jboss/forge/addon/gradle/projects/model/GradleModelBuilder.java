@@ -27,6 +27,8 @@ public class GradleModelBuilder implements GradleModel
    private String projectPath = "";
    private String rootProjectPath = "";
    private String archivePath = "";
+   private String sourceCompatibility = "";
+   private String targetCompatibility = "";
    private List<GradleTask> tasks = new ArrayList<GradleTask>();
    private List<GradleTask> effectiveTasks = new ArrayList<GradleTask>();
    private List<GradleDependency> dependencies = new ArrayList<GradleDependency>();
@@ -66,6 +68,8 @@ public class GradleModelBuilder implements GradleModel
       builder.projectPath = model.getProjectPath();
       builder.rootProjectPath = model.getRootProjectPath();
       builder.archivePath = model.getArchivePath();
+      builder.sourceCompatibility = model.getSourceCompatibility();
+      builder.targetCompatibility = model.getTargetCompatiblity();
       builder.tasks = GradleTaskBuilder.deepCopy(model.getTasks());
       builder.effectiveTasks = GradleTaskBuilder.deepCopy(model.getEffectiveTasks());
       builder.dependencies = GradleDependencyBuilder.deepCopy(model.getDependencies());
@@ -177,6 +181,30 @@ public class GradleModelBuilder implements GradleModel
    public GradleModelBuilder setArchivePath(String archivePath)
    {
       this.archivePath = archivePath;
+      return this;
+   }
+
+   @Override
+   public String getSourceCompatibility()
+   {
+      return sourceCompatibility;
+   }
+
+   public GradleModelBuilder setSourceCompatibility(String sourceCompatibility)
+   {
+      this.sourceCompatibility = sourceCompatibility;
+      return this;
+   }
+
+   @Override
+   public String getTargetCompatiblity()
+   {
+      return targetCompatibility;
+   }
+
+   public GradleModelBuilder setTargetCompatibility(String targetCompatibility)
+   {
+      this.targetCompatibility = targetCompatibility;
       return this;
    }
 

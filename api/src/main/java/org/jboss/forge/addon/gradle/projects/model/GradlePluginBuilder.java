@@ -28,6 +28,11 @@ public class GradlePluginBuilder implements GradlePlugin
    {
       return new GradlePluginBuilder();
    }
+   
+   public static GradlePluginBuilder create(GradlePluginType type)
+   {
+      return new GradlePluginBuilder().setClazz(type.getClazz());
+   }
 
    /**
     * Creates a copy of given plugin.
