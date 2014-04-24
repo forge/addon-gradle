@@ -43,7 +43,7 @@ public class GradleJavaCompilerFacet extends AbstractFacet<Project> implements J
    public boolean isInstalled()
    {
       GradleModelBuilder model = GradleModelBuilder.create(getFaceted().getFacet(GradleFacet.class).getModel());
-      return model.hasPlugin(GradlePluginBuilder.create(GradlePluginType.JAVA));
+      return model.hasEffectivePlugin(GradlePluginBuilder.create(GradlePluginType.JAVA));
    }
 
    @Override
