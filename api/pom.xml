@@ -3,7 +3,7 @@
    <parent>
       <groupId>org.jboss.forge.addon</groupId>
       <artifactId>gradle-parent</artifactId>
-      <version>2.5.1-SNAPSHOT</version>
+      <version>2.5.0.Final</version>
    </parent>
    <artifactId>gradle-api</artifactId>
    <name>Forge - Gradle API</name>
