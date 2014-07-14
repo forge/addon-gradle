@@ -6,10 +6,6 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
@@ -21,6 +17,9 @@ import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectProvider;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
+
+import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * @author Adam Wyłuda
@@ -73,12 +72,24 @@ public class GradleMetadataFacet extends AbstractFacet<Project> implements Metad
    }
 
    @Override
+   public String getProjectGroupName()
+   {
+      return getTopLevelPackage();
+   }
+
+   @Override
    public GradleMetadataFacet setTopLevelPackage(String groupId)
    {
       GradleModelBuilder model = GradleModelBuilder.create(getGradleFacet().getModel());
       model.setGroup(groupId);
       getGradleFacet().setModel(model);
       return this;
+   }
+
+   @Override
+   public MetadataFacet setProjectGroupName(String groupId)
+   {
+      return setTopLevelPackage(groupId);
    }
 
    @Override
