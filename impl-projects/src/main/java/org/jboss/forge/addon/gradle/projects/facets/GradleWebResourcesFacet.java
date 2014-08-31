@@ -7,14 +7,9 @@
 
 package org.jboss.forge.addon.gradle.projects.facets;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.enterprise.context.Dependent;
-
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
+import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
 import org.jboss.forge.addon.projects.facets.WebResourcesFacet;
@@ -25,11 +20,16 @@ import org.jboss.forge.addon.resource.ResourceFilter;
 import org.jboss.forge.addon.resource.visit.ResourceVisit;
 import org.jboss.forge.addon.resource.visit.ResourceVisitor;
 
+import javax.enterprise.context.Dependent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Adam Wyłuda
  */
 @Dependent
-@FacetConstraint({ PackagingFacet.class })
+@FacetConstraint({GradleFacet.class, PackagingFacet.class})
 public class GradleWebResourcesFacet extends AbstractFacet<Project> implements WebResourcesFacet
 {
 
