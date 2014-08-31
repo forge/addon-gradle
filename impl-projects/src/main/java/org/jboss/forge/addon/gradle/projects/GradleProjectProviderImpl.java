@@ -6,13 +6,6 @@
  */
 package org.jboss.forge.addon.gradle.projects;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Callable;
-
-import javax.inject.Inject;
-
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.gradle.projects.facets.GradleDependencyFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleJavaCompilerFacet;
@@ -20,6 +13,7 @@ import org.jboss.forge.addon.gradle.projects.facets.GradleJavaSourceFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleMetadataFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradlePackagingFacet;
 import org.jboss.forge.addon.gradle.projects.facets.GradleResourcesFacet;
+import org.jboss.forge.addon.gradle.projects.facets.GradleWebResourcesFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProvidedProjectFacet;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
@@ -27,11 +21,21 @@ import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
 import org.jboss.forge.addon.resource.Resource;
 
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * @author Adam Wyłuda
  */
 public class GradleProjectProviderImpl implements GradleProjectProvider
 {
+   private static final Logger LOG = Logger.getLogger(GradleProjectProviderImpl.class.getName());
+
    @Inject
    private FacetFactory facetFactory;
 
@@ -53,6 +57,16 @@ public class GradleProjectProviderImpl implements GradleProjectProvider
       facetFactory.install(project, GradleResourcesFacet.class);
       facetFactory.install(project, GradleJavaCompilerFacet.class);
       facetFactory.install(project, GradleJavaSourceFacet.class);
+
+      try
+      {
+         facetFactory.register(project, GradleWebResourcesFacet.class);
+      }
+      catch (IllegalStateException e)
+      {
+         LOG.log(Level.FINE, "Could not install [" + GradleWebResourcesFacet.class.getName() + "] into project ["
+                  + project + "]", e);
+      }
 
       return project;
    }
@@ -84,7 +98,9 @@ public class GradleProjectProviderImpl implements GradleProjectProvider
       {
          Class<? extends ProvidedProjectFacet> facetType = callable.call();
          if (facetType != null)
+         {
             result.add(facetType);
+         }
       }
       catch (NoClassDefFoundError e)
       {
