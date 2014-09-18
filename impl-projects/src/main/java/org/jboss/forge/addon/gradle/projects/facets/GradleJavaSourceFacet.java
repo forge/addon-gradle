@@ -6,9 +6,6 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
-import java.io.FileNotFoundException;
-import java.util.List;
-
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
@@ -26,7 +23,9 @@ import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFilter;
 import org.jboss.forge.addon.resource.visit.ResourceVisit;
 import org.jboss.forge.furnace.util.Strings;
-import org.jboss.forge.roaster.model.source.*;
+import org.jboss.forge.roaster.model.source.JavaSource;
+
+import java.util.List;
 
 /**
  * @author Adam Wyłuda
@@ -134,38 +133,38 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    }
 
    @Override
-   public JavaResource saveJavaSource(JavaSource<?> source) throws FileNotFoundException
+   public JavaResource saveJavaSource(JavaSource<?> source)
    {
       return getJavaResource(Packages.toFileSyntax(source.getQualifiedName()) + ".java").setContents(source);
    }
 
    @Override
-   public JavaResource saveTestJavaSource(JavaSource<?> source) throws FileNotFoundException
+   public JavaResource saveTestJavaSource(JavaSource<?> source)
    {
       return getTestJavaResource(Packages.toFileSyntax(source.getQualifiedName()) + ".java").setContents(source);
    }
 
    @Override
-   public JavaResource getJavaResource(String relativePath) throws FileNotFoundException
+   public JavaResource getJavaResource(String relativePath)
    {
       return GradleResourceUtil.findFileResource(getMainJavaSources(), relativePath).reify(JavaResource.class);
    }
 
    @Override
-   public JavaResource getJavaResource(JavaSource<?> javaClass) throws FileNotFoundException
+   public JavaResource getJavaResource(JavaSource<?> javaClass)
    {
       String pkg = Strings.isNullOrEmpty(javaClass.getPackage()) ? "" : javaClass.getPackage() + ".";
       return getJavaResource(pkg + javaClass.getName());
    }
 
    @Override
-   public JavaResource getTestJavaResource(String relativePath) throws FileNotFoundException
+   public JavaResource getTestJavaResource(String relativePath)
    {
       return GradleResourceUtil.findFileResource(getTestJavaSources(), relativePath).reify(JavaResource.class);
    }
 
    @Override
-   public JavaResource getTestJavaResource(JavaSource<?> javaClass) throws FileNotFoundException
+   public JavaResource getTestJavaResource(JavaSource<?> javaClass)
    {
       String pkg = Strings.isNullOrEmpty(javaClass.getPackage()) ? "" : javaClass.getPackage() + ".";
       return getTestJavaResource(pkg + javaClass.getName());

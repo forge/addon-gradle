@@ -6,9 +6,6 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
-import java.io.PrintStream;
-import java.util.List;
-
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
@@ -17,9 +14,15 @@ import org.jboss.forge.addon.gradle.projects.GradleFacet;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.building.BuildException;
+import org.jboss.forge.addon.projects.building.BuildMessage;
+import org.jboss.forge.addon.projects.building.BuildResult;
 import org.jboss.forge.addon.projects.building.ProjectBuilder;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
 import org.jboss.forge.addon.resource.Resource;
+
+import java.io.PrintStream;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Adam Wyłuda
@@ -64,50 +67,7 @@ public class GradlePackagingFacet extends AbstractFacet<Project> implements Pack
    @Override
    public ProjectBuilder createBuilder()
    {
-      return new ProjectBuilder()
-      {
-         private List<String> arguments = Lists.newArrayList();
-         private boolean runTests = false;
-
-         @Override
-         public ProjectBuilder addArguments(String... args)
-         {
-            for (String arg : args)
-            {
-               arguments.add(arg);
-            }
-            return this;
-         }
-
-         @Override
-         public ProjectBuilder runTests(boolean test)
-         {
-            runTests = test;
-            return this;
-         }
-
-         @Override
-         public Resource<?> build() throws BuildException
-         {
-            if (!(arguments.contains("build") || arguments.contains("assemble")))
-            {
-               // According to:
-               // http://www.gradle.org/docs/current/userguide/img/javaPluginTasks.png
-               // build is assemble + test
-               arguments.add(runTests ? "build" : "assemble");
-            }
-            getGradleFacet().executeTask(runTests ? "test" : "", "",
-                     (String[]) arguments.toArray(new String[arguments.size()]));
-            return getFinalArtifact();
-         }
-
-         @Override
-         public Resource<?> build(PrintStream out, PrintStream err) throws BuildException
-         {
-            // TODO: Redirect to provided out and err
-            return build();
-         }
-      };
+      return new GradleProjectBuilder();
    }
 
    @Override
@@ -115,6 +75,13 @@ public class GradlePackagingFacet extends AbstractFacet<Project> implements Pack
    {
       getGradleFacet().executeTask("build", "", args);
       return getFinalArtifact();
+   }
+
+   @Override
+   public BuildResult getBuildResult()
+   {
+      // TODO Return real Gradle build result
+      return new GradleBuildResult();
    }
 
    @Override
@@ -136,5 +103,80 @@ public class GradlePackagingFacet extends AbstractFacet<Project> implements Pack
    private GradleFacet getGradleFacet()
    {
       return getFaceted().getFacet(GradleFacet.class);
+   }
+
+   private class GradleProjectBuilder implements ProjectBuilder
+   {
+      private List<String> arguments = Lists.newArrayList();
+      private boolean runTests = false;
+      private boolean quiet = false;
+
+      @Override
+      public ProjectBuilder addArguments(String... args)
+      {
+         for (String arg : args)
+         {
+            arguments.add(arg);
+         }
+         return this;
+      }
+
+      @Override
+      public ProjectBuilder runTests(boolean runTests)
+      {
+         this.runTests = runTests;
+         return this;
+      }
+
+      @Override
+      public ProjectBuilder quiet(boolean quiet)
+      {
+         this.quiet = quiet;
+         return this;
+      }
+
+      @Override
+      public Resource<?> build() throws BuildException
+      {
+         if (!(arguments.contains("build") || arguments.contains("assemble")))
+         {
+            // According to:
+            // http://www.gradle.org/docs/current/userguide/img/javaPluginTasks.png
+            // build is assemble + test
+            arguments.add(runTests ? "build" : "assemble");
+         }
+
+         if (quiet)
+         {
+            arguments.add("--quiet");
+         }
+
+         getGradleFacet().executeTask(runTests ? "test" : "", "",
+                  (String[]) arguments.toArray(new String[arguments.size()]));
+         return getFinalArtifact();
+      }
+
+      @Override
+      public Resource<?> build(PrintStream out, PrintStream err) throws BuildException
+      {
+         // TODO: Redirect to provided out and err
+         return build();
+      }
+   }
+
+   private static class GradleBuildResult implements BuildResult
+   {
+
+      @Override
+      public boolean isSuccess()
+      {
+         return true;
+      }
+
+      @Override
+      public Iterable<BuildMessage> getMessages()
+      {
+         return Collections.emptyList();
+      }
    }
 }
