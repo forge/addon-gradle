@@ -17,9 +17,11 @@ import org.jboss.forge.addon.gradle.projects.model.GradleSourceSet;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.parser.java.resources.JavaResource;
 import org.jboss.forge.addon.parser.java.resources.JavaResourceVisitor;
+import org.jboss.forge.addon.parser.java.utils.Packages;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.Resource;
+import org.jboss.forge.addon.resource.ResourceException;
 import org.jboss.forge.addon.resource.ResourceFilter;
 import org.jboss.forge.addon.resource.visit.ResourceVisit;
 import org.jboss.forge.furnace.util.Strings;
@@ -147,27 +149,43 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    @Override
    public JavaResource getJavaResource(String relativePath)
    {
-      return GradleResourceUtil.findFileResource(getMainJavaSources(), relativePath).reify(JavaResource.class);
+      if (Strings.isNullOrEmpty(relativePath))
+      {
+         throw new ResourceException("Empty relative path");
+      }
+      String path = relativePath.trim().endsWith(".java")
+               ? relativePath.substring(0, relativePath.lastIndexOf(".java")) : relativePath;
+
+      path = Packages.toFileSyntax(path) + ".java";
+      JavaResource target = GradleResourceUtil.findFileResource(getMainJavaSources(), path).reify(JavaResource.class);
+      return target;
    }
 
    @Override
    public JavaResource getJavaResource(JavaSource<?> javaClass)
    {
-      String pkg = Strings.isNullOrEmpty(javaClass.getPackage()) ? "" : javaClass.getPackage() + ".";
-      return getJavaResource(pkg + javaClass.getName());
+      return getJavaResource(javaClass.getQualifiedName());
    }
 
    @Override
    public JavaResource getTestJavaResource(String relativePath)
    {
-      return GradleResourceUtil.findFileResource(getTestJavaSources(), relativePath).reify(JavaResource.class);
+      if (Strings.isNullOrEmpty(relativePath))
+      {
+         throw new ResourceException("Empty relative path");
+      }
+      String path = relativePath.trim().endsWith(".java")
+               ? relativePath.substring(0, relativePath.lastIndexOf(".java")) : relativePath;
+
+      path = Packages.toFileSyntax(path) + ".java";
+      JavaResource target = GradleResourceUtil.findFileResource(getTestJavaSources(), path).reify(JavaResource.class);
+      return target;
    }
 
    @Override
    public JavaResource getTestJavaResource(JavaSource<?> javaClass)
    {
-      String pkg = Strings.isNullOrEmpty(javaClass.getPackage()) ? "" : javaClass.getPackage() + ".";
-      return getTestJavaResource(pkg + javaClass.getName());
+      return getTestJavaResource(javaClass.getQualifiedName());
    }
 
    @Override
