@@ -8,7 +8,7 @@
 
    <groupId>org.jboss.forge.addon</groupId>
    <artifactId>gradle-parent</artifactId>
-   <version>2.10.2-SNAPSHOT</version>
+   <version>2.12.2.Final</version>
    <packaging>pom</packaging>
    <name>Forge - Gradle Addon Parent</name>
 
@@ -110,7 +110,7 @@
       <connection>scm:git:git@github.com:forge/addon-gradle.git</connection>
       <developerConnection>scm:git:git@github.com:forge/addon-gradle.git</developerConnection>
       <url>http://github.com/forge/addon-gradle</url>
-      <tag>HEAD</tag>
+      <tag>2.12.2.Final</tag>
    </scm>
 
 </project>
