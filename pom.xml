@@ -28,7 +28,7 @@
    </repositories>
 
    <properties>
-      <version.forge>2.10.2-SNAPSHOT</version.forge>
+      <version.forge>2.12.2.Final</version.forge>
       <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
       <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
    </properties>
