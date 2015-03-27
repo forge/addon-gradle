@@ -1,5 +1,7 @@
-== gradle
+== Gradle Addon for JBoss Forge 2
 :idprefix: id_ 
+
+image:https://travis-ci.org/forge/addon-gradle.svg?branch=master["Build Status", link="https://travis-ci.org/forge/addon-gradle"]
 
 This addon *exports services* for use in other addons. The Gradle addon implements extension points in several addons, enabling them to function using Gradle (in fact Maven or Ivy) dependency resolution, project building, and additionally provides Gradle build script manipulation services.
 
