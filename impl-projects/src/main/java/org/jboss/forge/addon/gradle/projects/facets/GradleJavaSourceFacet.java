@@ -6,6 +6,9 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
+import java.io.File;
+import java.util.List;
+
 import org.gradle.jarjar.com.google.common.collect.Lists;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
@@ -25,9 +28,9 @@ import org.jboss.forge.addon.resource.ResourceException;
 import org.jboss.forge.addon.resource.ResourceFilter;
 import org.jboss.forge.addon.resource.visit.ResourceVisit;
 import org.jboss.forge.furnace.util.Strings;
+import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.source.JavaPackageInfoSource;
 import org.jboss.forge.roaster.model.source.JavaSource;
-
-import java.util.List;
 
 /**
  * @author Adam Wyłuda
@@ -254,5 +257,51 @@ public class GradleJavaSourceFacet extends AbstractFacet<Project> implements Jav
    {
       return getFaceted().getFacet(GradleFacet.class).getBuildScriptResource().getParent()
                .getChildDirectory(path);
+   }
+
+   @Override
+   public DirectoryResource savePackage(String packageName, boolean createPackageInfo)
+   {
+      DirectoryResource child = getPackage(packageName);
+      if (!child.exists())
+      {
+         child.mkdirs();
+      }
+      if (createPackageInfo)
+      {
+         JavaPackageInfoSource packageInfo = Roaster.create(JavaPackageInfoSource.class).setPackage(packageName);
+         JavaResource resource = child.getChild("package-info.java").reify(JavaResource.class);
+         resource.setContents(packageInfo);
+      }
+      return child;
+   }
+
+   @Override
+   public DirectoryResource saveTestPackage(String packageName, boolean createPackageInfo)
+   {
+      DirectoryResource child = getTestPackage(packageName);
+      if (!child.exists())
+      {
+         child.mkdirs();
+      }
+      if (createPackageInfo)
+      {
+         JavaPackageInfoSource packageInfo = Roaster.create(JavaPackageInfoSource.class).setPackage(packageName);
+         JavaResource resource = child.getChild("package-info.java").reify(JavaResource.class);
+         resource.setContents(packageInfo);
+      }
+      return child;
+   }
+
+   @Override
+   public DirectoryResource getPackage(String packageName)
+   {
+      return getSourceDirectory().getChildDirectory(packageName.replace('.', File.separatorChar));
+   }
+
+   @Override
+   public DirectoryResource getTestPackage(String packageName)
+   {
+      return getTestSourceDirectory().getChildDirectory(packageName.replace('.', File.separatorChar));
    }
 }
