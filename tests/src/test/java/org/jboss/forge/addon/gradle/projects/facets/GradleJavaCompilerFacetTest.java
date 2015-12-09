@@ -18,9 +18,9 @@ import org.jboss.forge.addon.gradle.projects.GradleTestProjectProvider;
 import org.jboss.forge.addon.parser.java.facets.JavaCompilerFacet;
 import org.jboss.forge.addon.parser.java.facets.JavaCompilerFacet.CompilerVersion;
 import org.jboss.forge.addon.projects.Project;
+import org.jboss.forge.arquillian.AddonDependencies;
 import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 public class GradleJavaCompilerFacetTest
 {
    @Deployment
-   @Dependencies({
+   @AddonDependencies({
             @AddonDependency(name = "org.jboss.forge.addon:resources"),
             @AddonDependency(name = "org.jboss.forge.addon:projects"),
             @AddonDependency(name = "org.jboss.forge.addon:parser-java"),
@@ -40,7 +40,7 @@ public class GradleJavaCompilerFacetTest
             @AddonDependency(name = "org.jboss.forge.addon:maven"),
             @AddonDependency(name = "org.jboss.forge.addon:configuration")
    })
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
       return GradleTestProjectProvider.getDeployment(
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
@@ -73,7 +73,7 @@ public class GradleJavaCompilerFacetTest
    {
       facet.setSourceCompilerVersion(CompilerVersion.JAVA_1_4);
       facet.setTargetCompilerVersion(CompilerVersion.JAVA_1_6);
-      
+
       Project sameProject = projectProvider.findProject();
       JavaCompilerFacet sameFacet = sameProject.getFacet(JavaCompilerFacet.class);
 

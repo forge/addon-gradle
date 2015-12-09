@@ -14,7 +14,7 @@ import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.ResourceFactory;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.util.OperatingSystemUtils;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -44,9 +44,9 @@ public class GradleTestProjectProvider
             "subproject/build.gradle"
    };
 
-   public static ForgeArchive getDeployment(String resourcesPath, String... resources)
+   public static AddonArchive getDeployment(String resourcesPath, String... resources)
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
                .addBeansXML()
                .addClass(GradleTestProjectProvider.class)
                .addClass(ProjectAssert.class)
@@ -57,8 +57,7 @@ public class GradleTestProjectProvider
                         AddonDependencyEntry.create("org.jboss.forge.addon:projects"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:parser-java"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:maven"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:configuration")
-               );
+                        AddonDependencyEntry.create("org.jboss.forge.addon:configuration"));
       for (String resource : resources)
       {
          archive = archive.addAsResource(resourcesPath + resource);

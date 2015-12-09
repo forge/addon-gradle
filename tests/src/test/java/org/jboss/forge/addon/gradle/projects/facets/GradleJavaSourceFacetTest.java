@@ -25,9 +25,9 @@ import org.jboss.forge.addon.parser.java.resources.JavaResourceVisitor;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.visit.VisitContext;
+import org.jboss.forge.arquillian.AddonDependencies;
 import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.MemberHolder;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
 public class GradleJavaSourceFacetTest
 {
    @Deployment
-   @Dependencies({
+   @AddonDependencies({
             @AddonDependency(name = "org.jboss.forge.addon:resources"),
             @AddonDependency(name = "org.jboss.forge.addon:projects"),
             @AddonDependency(name = "org.jboss.forge.addon:parser-java"),
@@ -51,7 +51,7 @@ public class GradleJavaSourceFacetTest
             @AddonDependency(name = "org.jboss.forge.addon:maven"),
             @AddonDependency(name = "org.jboss.forge.addon:configuration")
    })
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
       return GradleTestProjectProvider.getDeployment(
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
@@ -165,8 +165,8 @@ public class GradleJavaSourceFacetTest
    {
       JavaResource res = facet.getJavaResource("org/testproject/Service.java");
       assertTrue(res.exists());
-      assertEquals(1, ((MemberHolder<?>)res.getJavaType()).getMembers().size());
-      assertEquals("someMethod", ((MemberHolder<?>)res.getJavaType()).getMembers().get(0).getName());
+      assertEquals(1, ((MemberHolder<?>) res.getJavaType()).getMembers().size());
+      assertEquals("someMethod", ((MemberHolder<?>) res.getJavaType()).getMembers().get(0).getName());
    }
 
    @Test
@@ -174,8 +174,8 @@ public class GradleJavaSourceFacetTest
    {
       JavaResource res = facet.getTestJavaResource("org/testproject/TestMainClass.java");
       assertTrue(res.exists());
-      assertEquals(1, ((MemberHolder<?>)res.getJavaType()).getMembers().size());
-      assertEquals("main", ((MemberHolder<?>)res.getJavaType()).getMembers().get(0).getName());
+      assertEquals(1, ((MemberHolder<?>) res.getJavaType()).getMembers().size());
+      assertEquals("main", ((MemberHolder<?>) res.getJavaType()).getMembers().get(0).getName());
    }
 
    @Test

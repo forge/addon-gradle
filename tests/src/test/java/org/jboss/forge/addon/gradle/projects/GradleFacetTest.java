@@ -27,9 +27,9 @@ import org.jboss.forge.addon.gradle.projects.model.GradleTaskBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.ResourceFactory;
+import org.jboss.forge.arquillian.AddonDependencies;
 import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 public class GradleFacetTest
 {
    @Deployment
-   @Dependencies({
+   @AddonDependencies({
             @AddonDependency(name = "org.jboss.forge.addon:resources"),
             @AddonDependency(name = "org.jboss.forge.addon:projects"),
             @AddonDependency(name = "org.jboss.forge.addon:parser-java"),
@@ -50,7 +50,7 @@ public class GradleFacetTest
             @AddonDependency(name = "org.jboss.forge.addon:maven"),
             @AddonDependency(name = "org.jboss.forge.addon:configuration")
    })
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
       return GradleTestProjectProvider.getDeployment(
                GradleTestProjectProvider.SIMPLE_RESOURCES_PATH,
@@ -78,7 +78,7 @@ public class GradleFacetTest
    public void testInstallForgeLibrary()
    {
       assertTrue(project.getRoot().getChild(GradleSourceUtil.FORGE_LIBRARY).delete());
-      
+
       facet.installForgeLibrary();
       assertTrue(((FileResource<?>) resourceFactory.create(new File(project.getRoot()
                .getFullyQualifiedName(), GradleSourceUtil.FORGE_LIBRARY))).exists());
