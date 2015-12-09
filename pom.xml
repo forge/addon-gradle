@@ -8,7 +8,7 @@
 
    <groupId>org.jboss.forge.addon</groupId>
    <artifactId>gradle-parent</artifactId>
-   <version>3.0.0.Alpha3</version>
+   <version>3.0.0-SNAPSHOT</version>
    <packaging>pom</packaging>
    <name>Forge - Gradle Addon Parent</name>
 
@@ -113,7 +113,7 @@
       <connection>scm:git:git@github.com:forge/addon-gradle.git</connection>
       <developerConnection>scm:git:git@github.com:forge/addon-gradle.git</developerConnection>
       <url>http://github.com/forge/addon-gradle</url>
-      <tag>3.0.0.Alpha3</tag>
+      <tag>HEAD</tag>
    </scm>
 
 </project>
