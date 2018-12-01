@@ -9,9 +9,9 @@ package org.jboss.forge.addon.gradle.parser;
 import java.util.List;
 import java.util.Map;
 
-import org.gradle.jarjar.com.google.common.base.Joiner;
-import org.gradle.jarjar.com.google.common.collect.Lists;
-import org.gradle.jarjar.com.google.common.collect.Maps;
+import org.gradle.internal.impldep.com.google.common.base.Joiner;
+import org.gradle.internal.impldep.com.google.common.collect.Lists;
+import org.gradle.internal.impldep.com.google.common.collect.Maps;
 import org.jboss.forge.addon.gradle.projects.exceptions.UnremovableElementException;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependency;
 import org.jboss.forge.addon.gradle.projects.model.GradleDependencyBuilder;

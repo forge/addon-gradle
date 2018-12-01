@@ -8,7 +8,8 @@ package org.jboss.forge.addon.gradle.parser;
 
 import java.util.Map;
 
-import org.gradle.jarjar.com.google.common.collect.ImmutableMap;
+import org.gradle.internal.impldep.com.google.common.collect.ImmutableMap;
+
 
 /**
  * Represents invocations of a method which takes map as a parameter.

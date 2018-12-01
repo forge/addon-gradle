@@ -30,10 +30,10 @@ import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
-import org.gradle.jarjar.com.google.common.base.Optional;
-import org.gradle.jarjar.com.google.common.base.Preconditions;
-import org.gradle.jarjar.com.google.common.collect.Lists;
-import org.gradle.jarjar.com.google.common.collect.Maps;
+import org.gradle.internal.impldep.com.google.common.base.Optional;
+import org.gradle.internal.impldep.com.google.common.base.Preconditions;
+import org.gradle.internal.impldep.com.google.common.collect.Lists;
+import org.gradle.internal.impldep.com.google.common.collect.Maps;
 
 /**
  * This is a minimal groovy parser necessary to obtain information about gradle project. It can create method invocation

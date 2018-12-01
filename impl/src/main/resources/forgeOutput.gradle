@@ -211,6 +211,7 @@ allprojects {
     
         outputInc '<forgeOutput>'
         outputProject project
+        /*
         projectDir.eachFileMatch(groovy.io.FileType.FILES, {
             it.matches('^[a-zA-Z0-9]+-profile\\.gradle$')
         }, {
@@ -232,6 +233,7 @@ allprojects {
             outputProject project
             outputDec '</profile>'
         })
+        */
         outputDec '</forgeOutput>'
     
         outputFile.close()

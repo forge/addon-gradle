@@ -17,7 +17,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.gradle.jarjar.com.google.common.collect.Lists;
+import org.gradle.internal.impldep.com.google.common.collect.Lists;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;

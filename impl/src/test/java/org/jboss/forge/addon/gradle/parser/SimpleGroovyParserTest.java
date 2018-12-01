@@ -6,12 +6,14 @@
  */
 package org.jboss.forge.addon.gradle.parser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
 
-import org.gradle.jarjar.com.google.common.base.Optional;
+import org.gradle.internal.impldep.com.google.common.base.Optional;
 import org.junit.Test;
 
 /**

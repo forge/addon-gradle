@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.gradle.jarjar.com.google.common.base.Optional;
-import org.gradle.jarjar.com.google.common.collect.ImmutableList;
-import org.gradle.jarjar.com.google.common.collect.Maps;
+import org.gradle.internal.impldep.com.google.common.base.Optional;
+import org.gradle.internal.impldep.com.google.common.collect.ImmutableList;
+import org.gradle.internal.impldep.com.google.common.collect.Maps;
+
 
 /**
  * Represents invocations of a method which takes closure as a parameter.

@@ -6,7 +6,11 @@
  */
 package org.jboss.forge.addon.gradle.projects.facets;
 
-import org.gradle.jarjar.com.google.common.collect.Lists;
+import java.io.PrintStream;
+import java.util.Collections;
+import java.util.List;
+
+import org.gradle.internal.impldep.com.google.common.collect.Lists;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;
@@ -19,10 +23,6 @@ import org.jboss.forge.addon.projects.building.BuildResult;
 import org.jboss.forge.addon.projects.building.ProjectBuilder;
 import org.jboss.forge.addon.projects.facets.PackagingFacet;
 import org.jboss.forge.addon.resource.Resource;
-
-import java.io.PrintStream;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Adam Wyłuda
