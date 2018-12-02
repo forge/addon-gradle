@@ -28,8 +28,8 @@
    </repositories>
 
    <properties>
-      <version.forge>3.0.0.Beta2</version.forge>
-      <version.furnace>2.23.0.Final</version.furnace>
+      <version.forge>3.9.1.Final</version.forge>
+      <version.furnace>2.28.2.Final</version.furnace>
       <maven.compiler.target>1.8</maven.compiler.target>
       <maven.compiler.source>1.8</maven.compiler.source>
       <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
@@ -71,7 +71,7 @@
          <dependency>
             <groupId>org.gradle</groupId>
             <artifactId>gradle-tooling-api</artifactId>
-            <version>1.11</version>
+            <version>4.10</version>
          </dependency>
          <dependency>
             <groupId>org.codehaus.groovy</groupId>

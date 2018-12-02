@@ -14,8 +14,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.gradle.jarjar.com.google.common.collect.Lists;
-import org.gradle.jarjar.com.google.common.collect.Sets;
+import org.gradle.internal.impldep.com.google.common.collect.Lists;
+import org.gradle.internal.impldep.com.google.common.collect.Sets;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.DependencyQuery;

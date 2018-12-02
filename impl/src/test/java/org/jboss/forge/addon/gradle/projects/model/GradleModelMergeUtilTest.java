@@ -6,11 +6,12 @@
  */
 package org.jboss.forge.addon.gradle.projects.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
-import org.gradle.jarjar.com.google.common.collect.Sets;
+import org.gradle.internal.impldep.com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 

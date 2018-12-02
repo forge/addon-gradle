@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.gradle.jarjar.com.google.common.collect.Maps;
+import org.gradle.internal.impldep.com.google.common.collect.Maps;
 import org.jboss.forge.furnace.util.Streams;
 import org.junit.BeforeClass;
 import org.junit.Test;

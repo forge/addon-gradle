@@ -1,4 +1,4 @@
-== Gradle Addon for JBoss Forge 2
+== Gradle Addon for JBoss Forge 3
 :idprefix: id_ 
 
 image:https://travis-ci.org/forge/addon-gradle.svg?branch=master["Build Status", link="https://travis-ci.org/forge/addon-gradle"]

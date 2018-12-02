@@ -6,7 +6,12 @@
  */
 package org.jboss.forge.addon.gradle.projects;
 
-import org.gradle.jarjar.com.google.common.collect.Maps;
+import java.io.File;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.gradle.internal.impldep.com.google.common.collect.Maps;
 import org.jboss.forge.addon.configuration.Configuration;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.gradle.parser.GradleSourceUtil;
@@ -15,13 +20,13 @@ import org.jboss.forge.addon.gradle.projects.model.GradleModelLoadUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleModelMergeUtil;
 import org.jboss.forge.addon.gradle.projects.model.GradleProfile;
 import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.resource.*;
+import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.addon.resource.Resource;
+import org.jboss.forge.addon.resource.ResourceFactory;
+import org.jboss.forge.addon.resource.ResourceFilter;
+import org.jboss.forge.addon.resource.WriteableResource;
 import org.jboss.forge.furnace.util.OperatingSystemUtils;
 import org.jboss.forge.roaster.model.util.Strings;
-
-import javax.inject.Inject;
-import java.io.File;
-import java.util.Map;
 
 /**
  * @author Adam Wyłuda

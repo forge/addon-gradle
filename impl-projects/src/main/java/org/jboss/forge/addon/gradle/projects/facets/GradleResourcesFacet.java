@@ -8,7 +8,7 @@ package org.jboss.forge.addon.gradle.projects.facets;
 
 import java.util.List;
 
-import org.gradle.jarjar.com.google.common.collect.Lists;
+import org.gradle.internal.impldep.com.google.common.collect.Lists;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;

@@ -13,7 +13,7 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import org.gradle.jarjar.com.google.common.collect.Lists;
+import org.gradle.internal.impldep.com.google.common.collect.Lists;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnectionException;
 import org.gradle.tooling.GradleConnector;
